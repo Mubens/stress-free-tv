@@ -2,9 +2,13 @@
   <div id="app">
     <Header />
     <div class="box">
-      <SlideGuide />
+      <div class="side-box">
+        <SideNav />
+      </div>
       <div class="content">
-        <router-view />
+        <keep-alive>
+          <router-view />
+        </keep-alive>
       </div>
     </div>
   </div>
@@ -12,12 +16,12 @@
 
 <script>
 import Header from './views/Header'
-import SlideGuide from './views/SlideGuide'
+import SideNav from './views/SideNav'
 
 export default {
   components: {
     Header,
-    SlideGuide
+    SideNav
   }
 }
 </script>
@@ -44,12 +48,23 @@ a {
   text-decoration: none;
 }
 
+ul,
+ol {
+  list-style: none;
+}
+
 .box {
   display: flex;
   height: calc(100% - 56px);
   background-color: #f9f9f9;
 }
+.side-box {
+  flex: 0 0 240px;
+  height: 100%;
+}
 .content {
+  box-sizing: border-box;
   flex: 1;
+  // margin: 16px 32px;
 }
 </style>

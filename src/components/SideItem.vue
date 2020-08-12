@@ -1,8 +1,14 @@
 <template>
   <div class="section">
     <template v-for="item in list">
-      <a :href="item.url" class="item" :key="item.title">
-        <i class="icon" :class="item.icon" :key="item.title"></i>
+      <a
+        :href="item.url"
+        class="item"
+        :class="item.title === current ? 'selected' : ''"
+        @click="changeCur(item.title)"
+        :key="item.url"
+      >
+        <i class="icon" :class="item.icon" :key="item.icon"></i>
         <span :key="item.title">{{ item.title }}</span>
       </a>
     </template>
@@ -12,7 +18,9 @@
 <script>
 export default {
   props: {
-    list: Array
+    list: Array,
+    current: String,
+    changeCur: Function
   }
 }
 </script>
@@ -32,11 +40,14 @@ export default {
   &:hover {
     background-color: #f2f2f2;
   }
+  &.selected {
+    background-color: #e5e5e5;
+    .icon {
+      color: #ff6b6b;
+    }
+  }
 
   .icon {
-    // width: 24px;
-    // height: 24px;
-    // fill: #606060;
     color: #606060;
     font-size: 22px;
   }
