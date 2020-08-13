@@ -6,7 +6,7 @@
 export default {}
 </script>
 
-<style scoped>
+<style >
 .header {
   height: 56px;
 

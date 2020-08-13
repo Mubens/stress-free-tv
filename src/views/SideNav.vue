@@ -37,7 +37,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 @import url("../font/style.css");
 .guide {
   width: 100%;

@@ -1,7 +1,8 @@
 <template>
   <div class="carousel" @mouseover="stopCricle" @mouseout="startCricle">
-    <ul :style="`transform: translateX(${translate()}px);`" class="animation" ref="ul">
-      <li v-for="(item, index) in list" :key="index">
+    <ul ref="ul">
+      <!-- :style="`transform: translateX(${translate()}px);`" class="animation" -->
+      <li v-for="(item, index) in datalist" :key="index">
         <a :href="item.url" target="_blank">
           <img class="slider-img" :src="item.img" />
           <span class="slider-title">{{ item.title }}</span>
@@ -10,10 +11,10 @@
     </ul>
     <ol>
       <li
-        :class="current === i ? 'current' : ''"
-        v-for="i in list.length"
+        :class="current % 5 === i - 1 ? 'current' : ''"
+        v-for="i in datalist.length - 1"
         :key="i"
-        @click="indexClick(i)"
+        @click="indexClick(i - 1)"
       ></li>
     </ol>
   </div>
@@ -21,38 +22,62 @@
 
 <script>
 export default {
+  props: {
+    datalist: Array
+  },
   data () {
     return {
-      current: 1,
-      timer: null,
-      list: [
-        { title: '官宣：我和租借女友结婚了！', url: '#1', img: 'https://imgs.aixifan.com/KeECzcB99K-ia6fq2-bYnEn2-uUF3u2-qUFZF3.png?imageView2/1/w/482/h/247' },
-        { title: 'SNH48 X AcFun 总决选', url: '#2', img: 'https://imgs.aixifan.com/7SqvxNJjWs-EjaIBz-BbIzaa-ryyae2-NVfENr.JPG?imageView2/1/w/482/h/247' },
-        { title: '当你唤起我的名字｜陆婷答应你们的一日VLOG', url: '#3', img: 'https://imgs.aixifan.com/nnlpgT0kTP-UVJjma-YjmQri-A7ZfUz-3EVFbu.jpg?imageView2/1/w/482/h/247' },
-        { title: '夏日蕉蕉同好会：召唤圈层硬核UP主！', url: '#4', img: 'https://imgs.aixifan.com/7KROtJnUJD-nQriEb-FZvA7b-zIvmQz-IJNVZb.jpg?imageView2/1/w/482/h/247' },
-        { title: 'AcFun虚拟直播工具自有形象上线！点击获取你的虚拟魔法钥匙~', url: '#5', img: 'https://imgs.aixifan.com/zoLVRdJ73U-IB77v2-NFn6Jf-ZNJBfu-qayQJf.png?imageView2/1/w/482/h/247' }
-      ]
+      current: 0, // 当前图片索引
+      timer: null,  // 定时器
+      width: 560, // 轮播图的宽度
+      durtion: 3000,  // 每一张图片的停滞时间
+      animeTime: 400  // 动画的持续时间，与 css 保持一致
     }
   },
   methods: {
+    // 自动循环轮播
     startCricle () {
       this.timer = setInterval(() => {
-        this.current = this.current >= 5 ? 1 : this.current + 1
-      }, 3000)
+        // cur 下一张图片的索引
+        let cur = this.current + 1
+        // 如果 下一张是最后一张（后来手动添加的那一张），那么直接播放最后一张，并立刻回到第一张图片
+        if (cur === this.datalist.length - 1) {
+          this.translate(() => {
+            this.current = 0
+            this.$refs.ul.style.transform = `translateX(-0)`
+          })
+        }
+        // 播放下一张图片
+        this.current = cur
+        this.translate()
+      }, this.durtion)
     },
+    // 停止自动播放
     stopCricle () {
       clearInterval(this.timer)
     },
+    // 圆点点击事件
     indexClick (index) {
       this.stopCricle()
       this.current = index
+      this.translate()
     },
-    translate () {
-      let distace = -(this.current - 1) * 560
-      return distace
+    // translate 动画效果
+    translate (calback) {
+      const ul = this.$refs.ul
+      ul.classList.add('animation')
+      ul.style.transform = `translateX(${-this.current * this.width}px)`
+
+      // 滑动动画完成后要做的事情
+      let timer = setTimeout(() => {
+        ul.classList.remove('animation')
+        calback && calback()
+        clearTimeout(timer)
+      }, this.animeTime)
     }
   },
   mounted () {
+
     this.startCricle()
   },
   beforeDestroy () {
@@ -61,18 +86,20 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-@imgWidth: 560px;
-@imgCount: 5;
-
-.animation {
-  transition: transform 0.4s linear;
-}
+<style lang="less" >
 .carousel {
+  @imgWidth: 560px;
+  @imgCount: 5;
+  @duration: 0.4s;
+
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
+
+  .animation {
+    transition: transform @duration linear;
+  }
   ul {
     display: flex;
     width: @imgWidth * (@imgCount + 1);

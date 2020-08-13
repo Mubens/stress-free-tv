@@ -65,6 +65,7 @@ ol {
 .content {
   box-sizing: border-box;
   flex: 1;
-  // margin: 16px 32px;
+  min-width: 1120px;
+  margin-top: 16px;
 }
 </style>

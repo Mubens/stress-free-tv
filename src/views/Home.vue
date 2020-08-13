@@ -19,29 +19,19 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 #home {
-  max-width: 1560px;
   width: 1512px;
-
   margin: 0 auto;
 }
 
-// @media screen and(max-width: 1756px) {
-//   #home {
-//     // width: ;
-//     width: 1400px;
-//   }
-// }
 @media screen and(max-width: 1756px) {
   #home {
-    // width: ;
-    width: 1400px;
+    width: 1360px;
   }
 }
 @media screen and(max-width: 1650px) {
   #home {
-    // width: ;
     width: 1098px;
   }
 }

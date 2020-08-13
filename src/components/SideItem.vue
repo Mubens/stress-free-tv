@@ -25,35 +25,35 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 .section {
   padding: 16px 0;
   border-bottom: 1px solid #e4e4e4;
-}
 
-.item {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  padding: 0 24px;
+  .item {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 24px;
 
-  &:hover {
-    background-color: #f2f2f2;
-  }
-  &.selected {
-    background-color: #e5e5e5;
-    .icon {
-      color: #ff6b6b;
+    &:hover {
+      background-color: #f2f2f2;
     }
-  }
+    &.selected {
+      background-color: #e5e5e5;
+      .icon {
+        color: #ff6b6b;
+      }
+    }
 
-  .icon {
-    color: #606060;
-    font-size: 22px;
-  }
+    .icon {
+      color: #606060;
+      font-size: 22px;
+    }
 
-  span {
-    padding-left: 20px;
+    span {
+      padding-left: 20px;
+    }
   }
 }
 </style>
