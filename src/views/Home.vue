@@ -1,5 +1,6 @@
 <template>
-  <div id="home">
+  <div class="wrapper">
+    <h3 class="h-title">热门推荐</h3>
     <Slider />
   </div>
 </template>
@@ -8,10 +9,8 @@
 import Slider from '../components/Slider'
 
 export default {
-  data () {
-    return {
-
-    }
+  data() {
+    return {}
   },
   components: {
     Slider
@@ -19,20 +18,4 @@ export default {
 }
 </script>
 
-<style lang="less">
-#home {
-  width: 1512px;
-  margin: 0 auto;
-}
-
-@media screen and(max-width: 1756px) {
-  #home {
-    width: 1360px;
-  }
-}
-@media screen and(max-width: 1650px) {
-  #home {
-    width: 1098px;
-  }
-}
-</style>
+<style lang="less"></style>

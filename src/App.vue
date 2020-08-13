@@ -6,9 +6,8 @@
         <SideNav />
       </div>
       <div class="content">
-        <keep-alive>
-          <router-view />
-        </keep-alive>
+        <router-view />
+        <Footer />
       </div>
     </div>
   </div>
@@ -17,11 +16,13 @@
 <script>
 import Header from './views/Header'
 import SideNav from './views/SideNav'
+import Footer from './views/Footer'
 
 export default {
   components: {
     Header,
-    SideNav
+    SideNav,
+    Footer
   }
 }
 </script>
@@ -40,7 +41,10 @@ body,
 }
 
 html {
-  font-size: 14px;
+  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, sans-serif;
+  color: #505050;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -67,5 +71,27 @@ ol {
   flex: 1;
   min-width: 1120px;
   margin-top: 16px;
+}
+
+.wrapper {
+  width: 1512px;
+  margin: 0 auto;
+}
+
+@media screen and(max-width: 1756px) {
+  .wrapper {
+    width: 1360px;
+  }
+}
+@media screen and(max-width: 1650px) {
+  .wrapper {
+    width: 1098px;
+  }
+}
+
+.h-title {
+  font-size: 20px;
+  line-height: 2em;
+  font-weight: 700;
 }
 </style>
