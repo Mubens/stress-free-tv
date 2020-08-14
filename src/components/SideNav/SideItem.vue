@@ -4,8 +4,8 @@
       <a
         :href="item.url"
         class="item"
-        :class="item.title === current ? 'selected' : ''"
-        @click="changeCur(item.title)"
+        :class="item.name === current ? 'selected' : ''"
+        @click="changeCur(item.name)"
         :key="item.url"
       >
         <i class="icon" :class="item.icon" :key="item.icon"></i>
@@ -27,14 +27,14 @@ export default {
 
 <style lang="less" >
 .section {
-  padding: 16px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #e4e4e4;
 
   .item {
     display: flex;
     align-items: center;
     height: 40px;
-    padding: 0 24px;
+    padding: 0 28px;
 
     &:hover {
       background-color: #f2f2f2;

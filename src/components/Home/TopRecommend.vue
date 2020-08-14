@@ -78,10 +78,10 @@
 </template>
 
 <script>
-import CarouselBox from './Slider/CarouselBox'
+import CarouselBox from './Carousel'
 
 export default {
-  data() {
+  data () {
     return {
       page: 0,
       dataList: {
@@ -262,7 +262,7 @@ export default {
     }
   },
   methods: {
-    pClick() {
+    pClick () {
       const width = this.$refs.recommend.offsetWidth
       let arr = this.dataList.recommend
       if (width > 900) {
@@ -279,7 +279,7 @@ export default {
   components: {
     CarouselBox
   },
-  mounted() {
+  mounted () {
     this.dataList.carousel.push(this.dataList.carousel[0])
     // const url = ''
     // axios.get(url).then(res => {

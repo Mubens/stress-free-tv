@@ -1,12 +1,14 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :narrowChange="narrowChange" />
     <div class="box">
-      <div class="side-box">
+      <div class="side-box" :class="isNarrow ? 'narrow' : ''">
         <SideNav />
       </div>
-      <div class="content">
+      <div class="content" :class="isNarrow ? 'narrow' : ''">
+        <!-- <keep-alive> -->
         <router-view />
+        <!-- </keep-alive> -->
         <Footer />
       </div>
     </div>
@@ -14,11 +16,21 @@
 </template>
 
 <script>
-import Header from './views/Header'
-import SideNav from './views/SideNav'
-import Footer from './views/Footer'
+import Header from './components/Header'
+import SideNav from './components/SideNav/SideNav'
+import Footer from './components/Footer'
 
 export default {
+  data () {
+    return {
+      isNarrow: false
+    }
+  },
+  methods: {
+    narrowChange () {
+      this.isNarrow = !this.isNarrow
+    }
+  },
   components: {
     Header,
     SideNav,
@@ -36,15 +48,20 @@ export default {
 html,
 body,
 #app {
+  position: relative;
   width: 100%;
   height: 100%;
 }
 
 html {
-  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, sans-serif;
+  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial,
+    PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
   color: #505050;
   -webkit-font-smoothing: antialiased;
+}
+body {
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -59,22 +76,48 @@ ol {
 
 .box {
   display: flex;
+  padding-top: 56px;
+  width: 100%;
   height: calc(100% - 56px);
   background-color: #f9f9f9;
 }
 .side-box {
-  flex: 0 0 240px;
-  height: 100%;
+  position: fixed;
+  width: 220px;
+  height: calc(100% - 56px);
+  z-index: 99;
+  overflow-y: auto;
+  &.narrow {
+    width: 80px;
+    a {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      padding: 0 8px;
+      height: 60px;
+    }
+    span {
+      padding: 4px 0 0;
+      font-size: 12px;
+    }
+  }
 }
 .content {
-  box-sizing: border-box;
-  flex: 1;
+  position: relative;
+  flex: auto;
+  margin-left: 220px;
+  &.narrow {
+    margin-left: 80px;
+  }
   min-width: 1120px;
   margin-top: 16px;
 }
 
 .wrapper {
   width: 1512px;
+  height: 100%;
   margin: 0 auto;
 }
 
