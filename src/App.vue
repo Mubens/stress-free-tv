@@ -1,14 +1,15 @@
 <template>
   <div id="app">
     <Header :narrowChange="narrowChange" />
-    <div class="box">
+    <div class="container">
       <div class="side-box" :class="isNarrow ? 'narrow' : ''">
         <SideNav />
       </div>
-      <div class="content" :class="isNarrow ? 'narrow' : ''">
+      <div class="page-box" :class="isNarrow ? 'narrow' : ''">
         <!-- <keep-alive> -->
         <router-view />
         <!-- </keep-alive> -->
+        <!-- <div style="width: 100%;height: 300px;background-color: skyblue;">123</div> -->
         <Footer />
       </div>
     </div>
@@ -21,13 +22,13 @@ import SideNav from './components/SideNav/SideNav'
 import Footer from './components/Footer'
 
 export default {
-  data () {
+  data() {
     return {
       isNarrow: false
     }
   },
   methods: {
-    narrowChange () {
+    narrowChange() {
       this.isNarrow = !this.isNarrow
     }
   },
@@ -54,8 +55,8 @@ body,
 }
 
 html {
-  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial,
-    PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, sans-serif;
   color: #505050;
   -webkit-font-smoothing: antialiased;
 }
@@ -74,11 +75,11 @@ ol {
   list-style: none;
 }
 
-.box {
+.container {
   display: flex;
   padding-top: 56px;
   width: 100%;
-  height: calc(100% - 56px);
+
   background-color: #f9f9f9;
 }
 .side-box {
@@ -104,20 +105,18 @@ ol {
     }
   }
 }
-.content {
-  position: relative;
-  flex: auto;
+.page-box {
+  flex: 1;
+  min-width: 1120px;
   margin-left: 220px;
+  margin-top: 16px;
   &.narrow {
     margin-left: 80px;
   }
-  min-width: 1120px;
-  margin-top: 16px;
 }
 
 .wrapper {
   width: 1512px;
-  height: 100%;
   margin: 0 auto;
 }
 

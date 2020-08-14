@@ -2,19 +2,19 @@
   <!-- Home 页 -->
   <div class="wrapper">
     <h3 class="h-title">热门推荐</h3>
-    <Slider />
+    <TopRecommend />
   </div>
 </template>
 
 <script>
-import Slider from '../components/Home/TopRecommend'
+import TopRecommend from '../components/Home/TopRecommend'
 
 export default {
-  data () {
+  data() {
     return {}
   },
   components: {
-    Slider
+    TopRecommend
   }
 }
 </script>

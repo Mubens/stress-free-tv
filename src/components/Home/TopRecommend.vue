@@ -34,7 +34,7 @@
               </i>
               {{ item.up }}
             </p>
-            <p class="play">{{ item.play }}</p>
+            <p class="play">{{ item.play | playFormat }}</p>
           </div>
         </a>
         <!-- </div> -->
@@ -80,8 +80,10 @@
 <script>
 import CarouselBox from './Carousel'
 
+import { playFormat } from '../../assets/js/format'
+
 export default {
-  data () {
+  data() {
     return {
       page: 0,
       dataList: {
@@ -119,8 +121,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 2,
@@ -128,8 +129,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 3,
@@ -137,8 +137,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 4,
@@ -146,8 +145,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 5,
@@ -155,8 +153,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 6,
@@ -164,8 +161,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 7,
@@ -173,8 +169,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 8,
@@ -182,8 +177,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 9,
@@ -191,8 +185,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 10,
@@ -200,8 +193,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 11,
@@ -209,8 +201,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 12,
@@ -218,8 +209,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 13,
@@ -227,8 +217,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 14,
@@ -236,8 +225,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 15,
@@ -245,8 +233,7 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           },
           {
             id: 16,
@@ -254,15 +241,14 @@ export default {
             up: '白兔子菌',
             play: 41000,
             url: '#',
-            img:
-              'https://i.ytimg.com/vi/05iDR3i5vYQ/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLC4MlI0Z9roNEljroF4cvU5LqPpqQ'
+            img: require('../../images/hq720.webp')
           }
         ]
       }
     }
   },
   methods: {
-    pClick () {
+    pClick() {
       const width = this.$refs.recommend.offsetWidth
       let arr = this.dataList.recommend
       if (width > 900) {
@@ -276,10 +262,13 @@ export default {
       this.dataList.recommend = arr.slice(4).concat(arr.slice(0, 4))
     }
   },
+  filters: {
+    playFormat
+  },
   components: {
     CarouselBox
   },
-  mounted () {
+  mounted() {
     this.dataList.carousel.push(this.dataList.carousel[0])
     // const url = ''
     // axios.get(url).then(res => {
@@ -329,18 +318,16 @@ export default {
       display: block;
       width: 100%;
       height: 100%;
+      border-radius: 4px;
       overflow: hidden;
     }
     &:hover {
       .info {
-        background-color: #0e0d0d3f;
+        background-color: #0f0e0e57;
         transform: translateY(0);
         .title {
           overflow: auto;
-          // word-break: break-all;
-          // word-wrap: normal;
           white-space: normal;
-          // text-overflow: ellipsis;
         }
       }
     }

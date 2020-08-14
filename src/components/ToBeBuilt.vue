@@ -1,19 +1,17 @@
 <template>
-  <div class="h-title todo">模块开发中，咕！咕！咕！</div>
+  <div class="h-title todo">已经再做了。（咕！咕！咕！）</div>
 </template>
 
 <script>
-export default {
-
-}
+export default {}
 </script>
 
 <style scoped>
 .todo {
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
-  padding-top: 5%;
+  height: calc(100vh - 280px);
+  padding: 5% 0;
   text-align: center;
 }
 </style>

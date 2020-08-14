@@ -15,10 +15,13 @@
         <dd>
           <a href="#">用户反馈</a>
         </dd>
+        <dd>
+          <a href="#">功能建议</a>
+        </dd>
       </dl>
     </div>
     <div class="copyright">
-      <p>个人使用，请勿随意传播网站信息，感谢配合！</p>
+      <p>私人使用，请勿随意传播本网站信息，感谢配合！</p>
     </div>
   </div>
 </template>
@@ -29,17 +32,16 @@ export default {}
 
 <style lang="less">
 .footer {
-  position: relative;
-  left: 0;
-  bottom: 0;
   width: 100%;
   padding: 20px 0;
+  margin-top: 40px;
   text-align: center;
   line-height: 2em;
   background-color: #e5e5e5;
   .link-box {
     display: flex;
     justify-content: center;
+    margin-bottom: 10px;
     text-align: left;
     dl {
       margin: 0 20px;
