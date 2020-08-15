@@ -40,8 +40,9 @@ export default {
 }
 </script>
 
+
 <style lang="less">
-@import url("./fonts/style.css");
+// initial css
 * {
   margin: 0;
   padding: 0;
@@ -75,7 +76,48 @@ ul,
 ol {
   list-style: none;
 }
+</style>
 
+<style lang="less">
+// common css in all .vue
+@import url("./fonts/style.css");
+
+.page-box {
+  flex: 1;
+  min-width: 1120px;
+  margin-left: 220px;
+  margin-top: 16px;
+  &.narrow {
+    margin-left: 80px;
+  }
+}
+
+.wrapper {
+  width: 1512px;
+  margin: 0 auto;
+}
+
+.h-title {
+  font-size: 20px;
+  line-height: 2em;
+  font-weight: 700;
+}
+
+@media screen and(max-width: 1756px) {
+  .wrapper {
+    width: 1360px;
+  }
+}
+@media screen and(max-width: 1650px) {
+  .wrapper {
+    width: 1098px;
+  }
+}
+</style>
+
+
+<style lang="less">
+// css in App.vue
 .container {
   display: flex;
   padding-top: 56px;
@@ -89,6 +131,7 @@ ol {
   height: calc(100% - 56px);
   z-index: 99;
   overflow-y: auto;
+
   &.narrow {
     width: 80px;
     a {
@@ -105,36 +148,9 @@ ol {
       font-size: 12px;
     }
   }
-}
-.page-box {
-  flex: 1;
-  min-width: 1120px;
-  margin-left: 220px;
-  margin-top: 16px;
-  &.narrow {
-    margin-left: 80px;
-  }
-}
 
-.wrapper {
-  width: 1512px;
-  margin: 0 auto;
-}
-
-@media screen and(max-width: 1756px) {
-  .wrapper {
-    width: 1360px;
+  &::-webkit-scrollbar {
+    width: 0;
   }
-}
-@media screen and(max-width: 1650px) {
-  .wrapper {
-    width: 1098px;
-  }
-}
-
-.h-title {
-  font-size: 20px;
-  line-height: 2em;
-  font-weight: 700;
 }
 </style>
