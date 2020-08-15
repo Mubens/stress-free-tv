@@ -1,0 +1,78 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?4cnrcr');
+  src:  url('fonts/icomoon.eot?4cnrcr#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?4cnrcr') format('truetype'),
+    url('fonts/icomoon.woff?4cnrcr') format('woff'),
+    url('fonts/icomoon.svg?4cnrcr#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-anime:before {
+  content: "\e900";
+}
+.icon-danmu:before {
+  content: "\e902";
+}
+.icon-down:before {
+  content: "\e903";
+}
+.icon-play:before {
+  content: "\e90e";
+}
+.icon-left:before {
+  content: "\e90f";
+}
+.icon-list:before {
+  content: "\e910";
+}
+.icon-play-count:before {
+  content: "\e912";
+}
+.icon-right:before {
+  content: "\e913";
+}
+.icon-up:before {
+  content: "\e915";
+}
+.icon-up-zhu:before {
+  content: "\e916";
+}
+.icon-game:before {
+  content: "\e904";
+}
+.icon-his-play:before {
+  content: "\e905";
+}
+.icon-home:before {
+  content: "\e906";
+}
+.icon-movie:before {
+  content: "\e907";
+}
+.icon-later-play:before {
+  content: "\e908";
+}
+.icon-collect:before {
+  content: "\e909";
+}
+.icon-subs:before {
+  content: "\e90a";
+}

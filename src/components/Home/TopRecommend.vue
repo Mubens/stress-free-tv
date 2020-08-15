@@ -5,73 +5,23 @@
     </div>
     <div class="slider-right" ref="recommend">
       <div class="item" v-for="item in dataList.recommend" :key="item.id">
-        <!-- <div style="width: 100%;height: 100%;"> -->
         <a style :href="item.url">
           <img :src="item.img" />
           <div class="info">
             <p class="title">{{ item.title }}</p>
             <p class="up">
-              <i class="icon">
-                <svg
-                  t="1597306990498"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="2258"
-                  width="100%"
-                  height="100%"
-                >
-                  <path
-                    d="M800 128H224C134.4 128 64 198.4 64 288v448c0 89.6 70.4 160 160 160h576c89.6 0 160-70.4 160-160V288c0-89.6-70.4-160-160-160z m96 608c0 54.4-41.6 96-96 96H224c-54.4 0-96-41.6-96-96V288c0-54.4 41.6-96 96-96h576c54.4 0 96 41.6 96 96v448z"
-                    p-id="2259"
-                  />
-                  <path
-                    d="M419.2 544c0 51.2-3.2 108.8-83.2 108.8S252.8 595.2 252.8 544v-217.6H192v243.2c0 96 51.2 140.8 140.8 140.8 89.6 0 147.2-48 147.2-144v-240h-60.8V544zM710.4 326.4h-156.8V704h60.8v-147.2h96c102.4 0 121.6-67.2 121.6-115.2 0-44.8-19.2-115.2-121.6-115.2z m-3.2 179.2h-92.8V384h92.8c32 0 60.8 12.8 60.8 60.8 0 44.8-32 60.8-60.8 60.8z"
-                    p-id="2260"
-                  />
-                </svg>
-              </i>
+              <i class="icon icon-up-zhu"></i>
               {{ item.up }}
             </p>
             <p class="play">{{ item.play | playFormat }}</p>
           </div>
         </a>
-        <!-- </div> -->
       </div>
       <span class="btn left" @click="pClick">
-        <svg
-          t="1597319994097"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="2091"
-          width="100%"
-          height="100%"
-        >
-          <path
-            d="M734.40567908 1020.17407454c-13.74131198 0-27.48262396-5.34384356-37.9158423-15.7770619L245.31676009 553.22393594c-20.99367108-20.99367108-20.99367108-54.96524792 0-75.83168463l457.02585771-457.28032646c20.99367108-20.99367108 54.96524792-20.99367108 75.83168465 0 20.99367108 20.99367108 20.99367108 54.96524792 0 75.83168463L358.93705266 515.30809361l413.38446874 413.38446876c20.99367108 20.99367108 20.99367108 54.96524792 0 75.83168464-10.43321836 10.30598399-24.17453035 15.64982755-37.91584232 15.64982753z m0 0"
-            p-id="2092"
-          />
-        </svg>
+        <i class="icon icon-left"></i>
       </span>
       <span class="btn right" @click="pClick">
-        <svg
-          t="1597320013511"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="2830"
-          width="100%"
-          height="100%"
-        >
-          <path
-            d="M777.7792 548.736L329.4592 1007.104a53.8496 53.8496 0 0 1-39.04 16.896 56.1664 56.1664 0 0 1-39.5904-95.36l409.2928-418.432L246.3744 95.616a56.64 56.64 0 0 1-0.5632-79.104 55.04 55.04 0 0 1 78.08-0.512l450.4192 451.456a37.12 37.12 0 0 1 2.9184 2.304 56.4864 56.4864 0 0 1 0.5504 78.976z"
-            p-id="2831"
-          />
-        </svg>
+        <i class="icon icon-right"></i>
       </span>
     </div>
   </div>
@@ -83,7 +33,7 @@ import CarouselBox from './Carousel'
 import { playFormat } from '../../assets/js/format'
 
 export default {
-  data() {
+  data () {
     return {
       page: 0,
       dataList: {
@@ -248,7 +198,7 @@ export default {
     }
   },
   methods: {
-    pClick() {
+    pClick () {
       const width = this.$refs.recommend.offsetWidth
       let arr = this.dataList.recommend
       if (width > 900) {
@@ -268,7 +218,7 @@ export default {
   components: {
     CarouselBox
   },
-  mounted() {
+  mounted () {
     this.dataList.carousel.push(this.dataList.carousel[0])
     // const url = ''
     // axios.get(url).then(res => {
@@ -389,6 +339,10 @@ export default {
   .right {
     right: 4px;
     border-radius: 4px 0 0 4px;
+  }
+  .icon {
+    color: #ffffff;
+    font-size: 20px;
   }
 }
 @media screen and(max-width: 1756px) {

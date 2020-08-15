@@ -22,13 +22,13 @@ import SideNav from './components/SideNav/SideNav'
 import Footer from './components/Footer'
 
 export default {
-  data() {
+  data () {
     return {
       isNarrow: false
     }
   },
   methods: {
-    narrowChange() {
+    narrowChange () {
       this.isNarrow = !this.isNarrow
     }
   },
@@ -41,6 +41,7 @@ export default {
 </script>
 
 <style lang="less">
+@import url("./fonts/style.css");
 * {
   margin: 0;
   padding: 0;
@@ -55,8 +56,8 @@ body,
 }
 
 html {
-  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, sans-serif;
+  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial,
+    PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
   color: #505050;
   -webkit-font-smoothing: antialiased;
 }

@@ -15,16 +15,16 @@ export default {
     return {
       current: this.$store.state.routeName,
       prod: [
-        { name: 'Home', url: '#/', title: '首页', icon: 'icon-index' },
+        { name: 'Home', url: '#/', title: '首页', icon: 'icon-home' },
         { name: 'Movie', url: '#/movie', title: '电影', icon: 'icon-movie' },
         { name: 'Game', url: '#/game', title: '游戏', icon: 'icon-game' },
-        { name: 'Anime', url: '#/anime', title: '动漫', icon: 'icon-fan-ju' }
+        { name: 'Anime', url: '#/anime', title: '动漫', icon: 'icon-anime' }
       ],
       user: [
         { name: 'History', url: '#/history', title: '播放历史', icon: 'icon-his-play' },
-        { name: 'Later', url: '#/later', title: '稍后播放', icon: 'icon-next-play' },
-        { name: 'Subs', url: '#/subs', title: '订阅', icon: 'icon-zhui-fan' },
-        { name: 'Collect', url: '#/collect', title: '收藏', icon: 'icon-shou-cang' }
+        { name: 'Later', url: '#/later', title: '稍后播放', icon: 'icon-later-play' },
+        { name: 'Subs', url: '#/subs', title: '订阅', icon: 'icon-subs' },
+        { name: 'Collect', url: '#/collect', title: '收藏', icon: 'icon-collect' }
       ]
     }
   },
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style lang="less" >
-@import url("../../font/style.css");
+// @import url("../../fonts/style.css");
 .guide {
   width: 100%;
   height: 100%;

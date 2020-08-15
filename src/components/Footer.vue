@@ -4,19 +4,19 @@
       <dl>
         <dt>合作</dt>
         <dd>
-          <a href="#">关于我们</a>
+          <a href="javascript:;">关于我们</a>
         </dd>
         <dd>
-          <a href="#">联系我们</a>
+          <a href="javascript:;">联系我们</a>
         </dd>
       </dl>
       <dl>
         <dt>反馈</dt>
         <dd>
-          <a href="#">用户反馈</a>
+          <a href="javascript:;">用户反馈</a>
         </dd>
         <dd>
-          <a href="#">功能建议</a>
+          <a href="javascript:;">功能建议</a>
         </dd>
       </dl>
     </div>
