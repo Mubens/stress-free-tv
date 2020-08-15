@@ -44,10 +44,8 @@ export default {
   }
   .right-part {
     box-sizing: border-box;
-    flex: 0 0 300px;
-    height: 200px;
+    flex: 0 0 360px;
     padding-left: 40px;
-    padding-top: 40px;
   }
 }
 </style>

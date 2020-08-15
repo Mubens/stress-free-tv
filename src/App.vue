@@ -6,10 +6,7 @@
         <SideNav />
       </div>
       <div class="page-box" :class="isNarrow ? 'narrow' : ''">
-        <!-- <keep-alive> -->
         <router-view />
-        <!-- </keep-alive> -->
-        <!-- <div style="width: 100%;height: 300px;background-color: skyblue;">123</div> -->
         <Footer />
       </div>
     </div>
@@ -21,15 +18,18 @@ import Header from './components/Header'
 import SideNav from './components/SideNav/SideNav'
 import Footer from './components/Footer'
 
+import { getLocal, setLocal } from './assets/js/storage'
+
 export default {
   data () {
     return {
-      isNarrow: false
+      isNarrow: getLocal('narrow-icon') || false
     }
   },
   methods: {
     narrowChange () {
       this.isNarrow = !this.isNarrow
+      setLocal('narrow-icon', this.isNarrow)
     }
   },
   components: {

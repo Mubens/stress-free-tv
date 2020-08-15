@@ -9,6 +9,7 @@
 <script>
 export default {
   props: {
+    // from App.vue
     narrowChange: Function
   }
 }

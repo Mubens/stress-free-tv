@@ -1,30 +1,34 @@
 <template>
-  <div class="update-box">
+  <div class="update-box" :class="showAll ? 'toggle-show' : ''">
+    <!-- <div class="left-part"> -->
     <slot></slot>
-    <ul :class="showAll ? 'toggle-show' : ''">
+    <ul>
       <li v-for="(item, i) in dataList" :key="i">
         <div class="left-pic">
-          <a :href="item.url">
+          <a :href="item.url" target="_blank">
             <img :src="item.img" />
           </a>
         </div>
         <div class="right-info">
           <p class="title" :title="item.title">
-            <a :href="item.url">{{ item.title }}</a>
+            <a :href="item.url" target="_blank">{{ item.title }}</a>
           </p>
           <p class="update-ep">
             更新至
-            <a :href="item.url">{{ item.current }}话</a>
+            <a :href="item.url" target="_blank">{{ item.current }}话</a>
           </p>
         </div>
       </li>
     </ul>
-    <div class="toggle-block" @click="showAll = !showAll">
-      <div class="toggle-btn">
+    <!-- 收放按钮 -->
+    <div class="toggle-block">
+      <div class="toggle-btn" @click="showOrHide">
         <span>{{ showAll ? '收起' : '全部' }}</span>
         <i class="icon" :class="showAll ? 'icon-up' : 'icon-down'"></i>
       </div>
     </div>
+    <!-- </div> -->
+    <!-- <div class="right-part">123456</div> -->
   </div>
 </template>
 
@@ -32,7 +36,7 @@
 export default {
   data () {
     return {
-      showAll: true,
+      showAll: false,
       dataList: [
         { title: '新樱花大战新樱花大战新樱花花大战新樱花大战新樱花大战新', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
         { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
@@ -45,8 +49,32 @@ export default {
         { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
         { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
         { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
-        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' }
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 10, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' },
+        { title: '新樱花大战', current: 1000, img: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'), url: '#' }
       ]
+    }
+  },
+  methods: {
+    showOrHide () {
+      if (this.showAll) {
+        window.scrollTo(0, 320)
+      }
+      this.showAll = !this.showAll
     }
   }
 }
@@ -56,13 +84,15 @@ export default {
 .update-box {
   position: relative;
   width: 100%;
+  height: 390px;
   margin-top: 30px;
+  margin-bottom: 80px;
 
   ul {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    height: 275px;
+    height: 100%;
     overflow: hidden;
     li {
       box-sizing: border-box;
@@ -98,7 +128,6 @@ export default {
     }
     .update-ep {
       position: absolute;
-      bottom: 0;
       left: 5px;
       a {
         padding: 2px 4px;
@@ -130,6 +159,7 @@ export default {
     color: #6d757a;
     font-size: 12px;
     cursor: pointer;
+
     &:hover {
       color: #ff6b6b;
     }
@@ -146,19 +176,25 @@ export default {
       transform: scale(0.8) translate(0, 9px);
     }
   }
-  ul.toggle-show {
-    height: 100%;
+  &.toggle-show {
+    height: auto;
   }
 }
 
 @media screen and(max-width: 1756px) {
-  .update-box ul li {
-    width: 25%;
+  .update-box {
+    height: 410px;
+    ul li {
+      width: 25%;
+    }
   }
 }
 @media screen and(max-width: 1650px) {
-  .update-box ul li {
-    width: 33.33%;
+  .update-box {
+    height: 400px;
+    ul li {
+      width: 33.33%;
+    }
   }
 }
 </style>

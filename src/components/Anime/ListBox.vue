@@ -1,10 +1,11 @@
 <template>
   <div class="box-list">
+    <!-- <div class="left-part"> -->
     <slot></slot>
     <ul>
       <li v-for="(item, i) in lian_zai" :key="i">
         <a :href="item.url" target="_blank">
-          <img class="pic" :src="item.img" alt />
+          <img class="pic" :src="item.img" target="_blank" />
           <div class="info">
             <p class="title" :title="item.title">{{ item.title }}</p>
             <p class="msg">
@@ -21,6 +22,8 @@
         </a>
       </li>
     </ul>
+    <!-- </div> -->
+    <!-- <div class="right-part"></div> -->
   </div>
 </template>
 
