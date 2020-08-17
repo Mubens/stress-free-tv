@@ -12,7 +12,7 @@ export default {
   data () {
     return {
       prod: [
-        { name: 'Home', url: '/', title: '首页', icon: 'icon-home' },
+        { name: 'Home', url: '/home', title: '首页', icon: 'icon-home' },
         { name: 'Movie', url: '/movie', title: '电影', icon: 'icon-movie' },
         { name: 'Game', url: '/game', title: '游戏', icon: 'icon-game' },
         { name: 'Anime', url: '/anime', title: '动漫', icon: 'icon-anime' }

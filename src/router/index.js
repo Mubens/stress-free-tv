@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 const MAIN_ROUTE = [
   {
-    path: '/',
+    path: '/home',
     name: 'Home',
     component: () => import('../views/Index/Home')
   },
@@ -55,12 +55,15 @@ const MAIN_ROUTE = [
 ]
 
 const routes = [
-  ...MAIN_ROUTE
-  // {
-  //   path: '/',
-  //   component: () => import('../views/Index.vue'),
-  //   children: [...MAIN_ROUTE]
-  // }
+  {
+    path: '/',
+    redirect: '/home'
+  },
+  ...MAIN_ROUTE,
+  {
+    path: '*',
+    component: () => import('../components/NotFound')
+  }
 ]
 
 const router = new VueRouter({

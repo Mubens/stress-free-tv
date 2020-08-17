@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header :narrowChange="narrowChange" />
+    <Header />
     <div class="container">
       <div class="side-box" :class="isNarrow ? 'narrow' : ''">
         <SideNav />
@@ -18,18 +18,10 @@ import Header from './components/Header'
 import SideNav from './components/SideNav/SideNav'
 import Footer from './components/Footer'
 
-import { getLocal, setLocal } from './assets/js/storage'
-
 export default {
-  data () {
-    return {
-      isNarrow: getLocal('narrow-icon') || false
-    }
-  },
-  methods: {
-    narrowChange () {
-      this.isNarrow = !this.isNarrow
-      setLocal('narrow-icon', this.isNarrow)
+  computed: {
+    isNarrow () {
+      return this.$store.state.narrowSide
     }
   },
   components: {
