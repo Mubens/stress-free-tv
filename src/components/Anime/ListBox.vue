@@ -1,29 +1,31 @@
 <template>
-  <div class="box-list">
-    <!-- <div class="left-part"> -->
-    <slot></slot>
-    <ul>
-      <li v-for="(item, i) in lian_zai" :key="i">
-        <a :href="item.url" target="_blank">
-          <img class="pic" :src="item.img" target="_blank" />
-          <div class="info">
-            <p class="title" :title="item.title">{{ item.title }}</p>
-            <p class="msg">
-              <span class="play">
-                <i class="icon icon-play-count"></i>
-                {{ item.play | numfilter }}
-              </span>
-              <span class="danmu">
-                <i class="icon icon-danmu"></i>
-                {{ item.danmu | numfilter }}
-              </span>
-            </p>
-          </div>
-        </a>
-      </li>
-    </ul>
-    <!-- </div> -->
-    <!-- <div class="right-part"></div> -->
+  <div class="box-list part-split">
+    <div class="left-part">
+      <slot name="title"></slot>
+      <ul>
+        <li v-for="(item, i) in lian_zai" :key="i">
+          <a :href="item.url" target="_blank">
+            <img class="pic" :src="item.img" target="_blank" />
+            <div class="info">
+              <p class="title" :title="item.title">{{ item.title }}</p>
+              <p class="msg">
+                <span class="play">
+                  <i class="icon icon-play-count"></i>
+                  {{ item.play | numfilter }}
+                </span>
+                <span class="danmu">
+                  <i class="icon icon-danmu"></i>
+                  {{ item.danmu | numfilter }}
+                </span>
+              </p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="right-part">
+      <slot name="sub-content"></slot>
+    </div>
   </div>
 </template>
 

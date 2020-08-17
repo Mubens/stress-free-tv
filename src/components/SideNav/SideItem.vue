@@ -1,16 +1,10 @@
 <template>
   <div class="section">
     <template v-for="item in list">
-      <a
-        :href="item.url"
-        class="item"
-        :class="item.name === current ? 'selected' : ''"
-        @click="changeCur(item.name)"
-        :key="item.url"
-      >
+      <router-link :to="item.url" class="item" :key="item.url">
         <i class="icon" :class="item.icon" :key="item.icon"></i>
         <span :key="item.title">{{ item.title }}</span>
-      </a>
+      </router-link>
     </template>
   </div>
 </template>
@@ -20,7 +14,7 @@ export default {
   props: {
     list: Array,
     current: String,
-    changeCur: Function
+    // changeCur: Function
   }
 }
 </script>
@@ -39,7 +33,13 @@ export default {
     &:hover {
       background-color: #f2f2f2;
     }
-    &.selected {
+    // &.selected {
+    //   background-color: #e5e5e5;
+    //   .icon {
+    //     color: #ff6b6b;
+    //   }
+    // }
+    &.router-link-exact-active {
       background-color: #e5e5e5;
       .icon {
         color: #ff6b6b;
@@ -54,6 +54,45 @@ export default {
     span {
       padding-left: 20px;
     }
+  }
+}
+</style>
+
+<style lang="less">
+// css in App.vue
+.container {
+  display: flex;
+  padding-top: 56px;
+  width: 100%;
+
+  background-color: #f9f9f9;
+}
+.side-box {
+  position: fixed;
+  width: 220px;
+  height: calc(100% - 56px);
+  z-index: 99;
+  overflow-y: auto;
+
+  &.narrow {
+    width: 80px;
+    a {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      padding: 0 8px;
+      height: 60px;
+    }
+    span {
+      padding: 4px 0 0;
+      font-size: 12px;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 0;
   }
 }
 </style>

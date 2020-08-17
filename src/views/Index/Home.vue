@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import TopRecommend from '../components/Home/TopRecommend'
+import TopRecommend from '../../components/Home/TopRecommend'
 
 export default {
-  data() {
+  data () {
     return {}
   },
   components: {

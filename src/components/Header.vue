@@ -1,16 +1,20 @@
 <template>
   <div class="header">
-    <div class="nar-btn" @click="narrowChange">
+    <div class="nar-btn" @click="toggleSidesWides">
       <i class="icon icon-list"></i>
     </div>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
-  props: {
-    // from App.vue
-    narrowChange: Function
+  methods: {
+    ...mapMutations(['toggleSidesWide']),
+    toggleSidesWides () {
+      this.$store.commit('toggleSidesWide')
+    }
   }
 }
 </script>

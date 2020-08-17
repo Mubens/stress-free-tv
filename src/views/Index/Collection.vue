@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ToBeBuilt from '../components/ToBeBuilt'
+import ToBeBuilt from '../../components/ToBeBuilt'
 export default {
   components: {
     ToBeBuilt

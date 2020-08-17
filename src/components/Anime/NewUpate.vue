@@ -1,34 +1,36 @@
 <template>
-  <div class="update-box" :class="showAll ? 'toggle-show' : ''">
-    <!-- <div class="left-part"> -->
-    <slot></slot>
-    <ul>
-      <li v-for="(item, i) in dataList" :key="i">
-        <div class="left-pic">
-          <a :href="item.url" target="_blank">
-            <img :src="item.img" />
-          </a>
+  <div class="update-box part-split">
+    <div class="left-part">
+      <slot name="title"></slot>
+      <ul :class="showAll ? 'auto-height' : ''">
+        <li v-for="(item, i) in dataList" :key="i">
+          <div class="left-pic">
+            <a :href="item.url" target="_blank">
+              <img :src="item.img" />
+            </a>
+          </div>
+          <div class="right-info">
+            <p class="title" :title="item.title">
+              <a :href="item.url" target="_blank">{{ item.title }}</a>
+            </p>
+            <p class="update-ep">
+              更新至
+              <a :href="item.url" target="_blank">{{ item.current }}话</a>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <!-- 收放按钮 -->
+      <div class="toggle-block">
+        <div class="toggle-btn" @click="showOrHide">
+          <span>{{ showAll ? '收起' : '全部' }}</span>
+          <i class="icon" :class="showAll ? 'icon-up' : 'icon-down'"></i>
         </div>
-        <div class="right-info">
-          <p class="title" :title="item.title">
-            <a :href="item.url" target="_blank">{{ item.title }}</a>
-          </p>
-          <p class="update-ep">
-            更新至
-            <a :href="item.url" target="_blank">{{ item.current }}话</a>
-          </p>
-        </div>
-      </li>
-    </ul>
-    <!-- 收放按钮 -->
-    <div class="toggle-block">
-      <div class="toggle-btn" @click="showOrHide">
-        <span>{{ showAll ? '收起' : '全部' }}</span>
-        <i class="icon" :class="showAll ? 'icon-up' : 'icon-down'"></i>
       </div>
     </div>
-    <!-- </div> -->
-    <!-- <div class="right-part">123456</div> -->
+    <div class="right-part">
+      <slot name="sub-content"></slot>
+    </div>
   </div>
 </template>
 
@@ -84,30 +86,29 @@ export default {
 .update-box {
   position: relative;
   width: 100%;
-  height: 390px;
   margin-top: 30px;
-  margin-bottom: 80px;
 
   ul {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    height: 100%;
+    height: 420px;
     overflow: hidden;
     li {
       box-sizing: border-box;
       display: flex;
-      width: 20%;
+      width: 25%;
       margin: 15px 0;
     }
+    .left-pic {
+      flex: 0 0 35%;
+    }
+    img {
+      width: 100%;
+      border-radius: 3px;
+    }
   }
-  .left-pic {
-    flex: 0 0 40%;
-  }
-  img {
-    width: 100%;
-    border-radius: 3px;
-  }
+
   .right-info {
     position: relative;
     box-sizing: border-box;
@@ -115,7 +116,7 @@ export default {
     margin-right: 10px;
     flex: 1;
     .title {
-      height: 76px;
+      height: 100% - 20px;
       overflow: hidden;
       a {
         display: block;
@@ -128,6 +129,7 @@ export default {
     }
     .update-ep {
       position: absolute;
+      bottom: 0;
       left: 5px;
       a {
         padding: 2px 4px;
@@ -142,12 +144,12 @@ export default {
   .toggle-block {
     background: url("../../assets/imgs/toggle-base.png") center -480px no-repeat;
     position: relative;
-    height: 40px;
+    height: 15px;
     width: 100%;
   }
   .toggle-btn {
     display: flex;
-    position: absolute;
+    position: relative;
     top: -7px;
     left: 50%;
     transform: translateX(-50%);
@@ -176,23 +178,20 @@ export default {
       transform: scale(0.8) translate(0, 9px);
     }
   }
-  &.toggle-show {
+  .auto-height {
     height: auto;
   }
 }
 
 @media screen and(max-width: 1756px) {
-  .update-box {
-    height: 410px;
-    ul li {
-      width: 25%;
-    }
+  .update-box ul {
+    height: 380px;
   }
 }
 @media screen and(max-width: 1650px) {
-  .update-box {
-    height: 400px;
-    ul li {
+  .update-box ul {
+    height: 370px;
+    li {
       width: 33.33%;
     }
   }

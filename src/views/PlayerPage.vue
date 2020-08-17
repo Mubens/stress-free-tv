@@ -1,15 +1,12 @@
 <template>
   <div class="wrapper">
-    <ToBeBuilt />
+    <h3>123</h3>
   </div>
 </template>
 
 <script>
-import ToBeBuilt from '../components/ToBeBuilt'
 export default {
-  components: {
-    ToBeBuilt
-  }
+
 }
 </script>
 

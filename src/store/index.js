@@ -1,15 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import { getLocal, setLocal } from '../assets/js/storage'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    routeName: 'Home'
+    narrowSide: getLocal('narrow-icon') || false
   },
   mutations: {
-    routeChange(state, name) {
-      state.routeName = name
+    toggleSidesWide(state) {
+      state.narrowSide = !state.narrowSide
+      setLocal('narrow-icon', state.narrowSide)
     }
   },
   actions: {},
