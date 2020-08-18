@@ -60,13 +60,13 @@ export default {
 
 <style lang="less">
 // css in App.vue
-.container {
-  display: flex;
-  padding-top: 56px;
-  width: 100%;
+// .container {
+//   display: flex;
+//   padding-top: 56px;
+//   width: 100%;
 
-  background-color: #f9f9f9;
-}
+//   background-color: #f9f9f9;
+// }
 .side-box {
   position: fixed;
   width: 220px;

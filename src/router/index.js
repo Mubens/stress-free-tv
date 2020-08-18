@@ -24,13 +24,7 @@ const MAIN_ROUTE = [
   {
     path: '/anime',
     name: 'Anime',
-    component: () => import('../views/Index/Anime'),
-    children: [
-      {
-        path: '/player',
-        component: () => import('../views/PlayerPage')
-      }
-    ]
+    component: () => import('../views/Index/Anime')
   },
   {
     path: '/history',
@@ -61,19 +55,25 @@ const routes = [
   },
   ...MAIN_ROUTE,
   {
+    path: '/play/:id',
+    component: () => import('../views/PlayerPage')
+  },
+  {
     path: '*',
     component: () => import('../components/NotFound')
   }
 ]
 
 const router = new VueRouter({
-  // mode: 'history',
+  mode: 'history',
   base: process.env.BASE_URL,
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   console.log(to, from, next)
-// })
+router.beforeEach((to, from, next) => {
+  const showSide = ['Home', 'Movie', 'Game', 'Anime', 'History', 'Later', 'Subs', 'Collect'].includes(to.name)
+  router.app.$options.store.commit('toggleSide', !showSide)
+  next()
+})
 
 export default router

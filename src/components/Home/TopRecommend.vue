@@ -40,27 +40,27 @@ export default {
         carousel: [
           {
             title: '官宣：我和租借女友结婚了！',
-            url: '#1',
+            url: 'http://localhost:8080/play/123456',
             img: 'https://imgs.aixifan.com/KeECzcB99K-ia6fq2-bYnEn2-uUF3u2-qUFZF3.png?imageView2/1/w/482/h/247'
           },
           {
             title: 'SNH48 X AcFun 总决选',
-            url: '#2',
+            url: 'http://localhost:8080/play/123456',
             img: 'https://imgs.aixifan.com/7SqvxNJjWs-EjaIBz-BbIzaa-ryyae2-NVfENr.JPG?imageView2/1/w/482/h/247'
           },
           {
             title: '当你唤起我的名字｜陆婷答应你们的一日VLOG',
-            url: '#3',
+            url: 'http://localhost:8080/play/123456',
             img: 'https://imgs.aixifan.com/nnlpgT0kTP-UVJjma-YjmQri-A7ZfUz-3EVFbu.jpg?imageView2/1/w/482/h/247'
           },
           {
             title: '夏日蕉蕉同好会：召唤圈层硬核UP主！',
-            url: '#4',
+            url: 'http://localhost:8080/play/123456',
             img: 'https://imgs.aixifan.com/7KROtJnUJD-nQriEb-FZvA7b-zIvmQz-IJNVZb.jpg?imageView2/1/w/482/h/247'
           },
           {
             title: 'AcFun虚拟直播工具自有形象上线！点击获取你的虚拟魔法钥匙~',
-            url: '#5',
+            url: 'http://localhost:8080/play/123456',
             img: 'https://imgs.aixifan.com/zoLVRdJ73U-IB77v2-NFn6Jf-ZNJBfu-qayQJf.png?imageView2/1/w/482/h/247'
           }
         ],

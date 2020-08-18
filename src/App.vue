@@ -2,10 +2,12 @@
   <div id="app">
     <Header />
     <div class="container">
-      <div class="side-box" :class="isNarrow ? 'narrow' : ''">
+      <!-- :class="isNarrow ? 'narrow' : ''" -->
+      <!-- :class="isHide ? ('hide-side' + isNarrow ? 'hide' : '') : (isNarrow ? 'narrow' : '')" -->
+      <div class="side-box" :class="state">
         <SideNav />
       </div>
-      <div class="page-box" :class="isNarrow ? 'narrow' : ''">
+      <div class="page-box" :class="state" @click="toggleSidesWide">
         <router-view />
         <Footer />
       </div>
@@ -18,12 +20,43 @@ import Header from './components/Header'
 import SideNav from './components/SideNav/SideNav'
 import Footer from './components/Footer'
 
+import { mapMutations } from 'vuex'
+
 export default {
+  data () {
+    return {
+
+    }
+  },
   computed: {
     isNarrow () {
       return this.$store.state.narrowSide
+    },
+    isHide () {
+      return this.$store.state.hideSide
+    },
+    state () {
+      if (this.isHide) {
+        return this.isNarrow ? 'hide-side hide' : 'hide-side'
+      } else {
+        return this.isNarrow ? 'narrow' : ''
+      }
     }
   },
+  methods: {
+    ...mapMutations(['toggleSidesWide']),
+    toggleSidesWide () {
+      if (this.isHide) {
+        this.$store.commit('toggleSidesWide', true)
+      }
+    }
+  },
+  // mounted () {
+  //   const body = document.documentElement || document.body
+  //   body.addEventListener('click', () => {
+  //     this.$store.commit('toggleSidesWide', false)
+  //   })
+  // },
   components: {
     Header,
     SideNav,
@@ -64,6 +97,10 @@ a {
   text-decoration: none;
 }
 
+[tabindex] {
+  outline: none;
+}
+
 ul,
 ol {
   list-style: none;
@@ -75,10 +112,14 @@ ol {
 @import url("./fonts/style.css");
 
 .page-box {
+  box-sizing: border-box;
   flex: 1;
   min-width: 1120px;
   margin-left: 220px;
-  margin-top: 16px;
+  // margin-top: 16px;
+  padding-top: 16px;
+  height: 100%;
+
   &.narrow {
     margin-left: 80px;
   }
@@ -114,6 +155,7 @@ ol {
   display: flex;
   padding-top: 56px;
   width: 100%;
+  height: calc(100% - 56px);
 
   background-color: #f9f9f9;
 }
@@ -144,5 +186,16 @@ ol {
   &::-webkit-scrollbar {
     width: 0;
   }
+}
+
+.side-box.hide-side.hide {
+  transform: translateX(-100%);
+}
+.side-box.hide-side {
+  transform: translateX(0);
+  transition: transform 0.2s;
+}
+.page-box.hide-side {
+  margin-left: 0;
 }
 </style>

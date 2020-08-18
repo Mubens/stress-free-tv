@@ -1,6 +1,6 @@
 <template>
-  <div class="header">
-    <div class="nar-btn" @click="toggleSidesWides">
+  <div class="header" @click.self="hideSide">
+    <div class="nar-btn" @click="toggleSidesWide">
       <i class="icon icon-list"></i>
     </div>
   </div>
@@ -12,9 +12,15 @@ import { mapMutations } from 'vuex'
 export default {
   methods: {
     ...mapMutations(['toggleSidesWide']),
-    toggleSidesWides () {
+    toggleSidesWide () {
       this.$store.commit('toggleSidesWide')
-    }
+    },
+    hideSide () {
+      if (this.$store.state.hideSide) {
+        this.$store.commit('toggleSidesWide', true)
+      }
+    },
+
   }
 }
 </script>
