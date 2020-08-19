@@ -71,8 +71,14 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const showSide = ['Home', 'Movie', 'Game', 'Anime', 'History', 'Later', 'Subs', 'Collect'].includes(to.name)
-  router.app.$options.store.commit('toggleSide', !showSide)
+  const isMain = ['Home', 'Movie', 'Game', 'Anime', 'History', 'Later', 'Subs', 'Collect'].includes(to.name)
+
+  if (!isMain) {
+    //
+    router.app.$options.store.commit('toggleNavHide', true)
+    //
+    router.app.$options.store.commit('toggleNavNarrow', true)
+  }
   next()
 })
 

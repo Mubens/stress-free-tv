@@ -7,20 +7,22 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    narrowSide: getLocal('narrow-icon') || false,
-    hideSide: false
+    // 左侧边栏是否要缩略
+    narrowNav: getLocal('narrow-icon') || false,
+    // 是否完全隐藏左侧边栏
+    hideNav: false
   },
   mutations: {
-    toggleSidesWide(state, val) {
+    toggleNavNarrow(state, val) {
       if (val) {
-        state.narrowSide = val
+        state.narrowNav = val
       } else {
-        state.narrowSide = !state.narrowSide
-        setLocal('narrow-icon', state.narrowSide)
+        state.narrowNav = !state.narrowNav
+        setLocal('narrow-icon', state.narrowNav)
       }
     },
-    toggleSide(state, val) {
-      state.hideSide = val
+    toggleNavHide(state, val) {
+      state.hideNav = val
     }
   },
   actions: {},

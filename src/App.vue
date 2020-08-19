@@ -2,12 +2,10 @@
   <div id="app">
     <Header />
     <div class="container">
-      <!-- :class="isNarrow ? 'narrow' : ''" -->
-      <!-- :class="isHide ? ('hide-side' + isNarrow ? 'hide' : '') : (isNarrow ? 'narrow' : '')" -->
       <div class="side-box" :class="state">
         <SideNav />
       </div>
-      <div class="page-box" :class="state" @click="toggleSidesWide">
+      <div class="page-box" :class="state" @mousedown="toggleNavNarrow">
         <router-view />
         <Footer />
       </div>
@@ -30,10 +28,10 @@ export default {
   },
   computed: {
     isNarrow () {
-      return this.$store.state.narrowSide
+      return this.$store.state.narrowNav
     },
     isHide () {
-      return this.$store.state.hideSide
+      return this.$store.state.hideNav
     },
     state () {
       if (this.isHide) {
@@ -44,17 +42,17 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['toggleSidesWide']),
-    toggleSidesWide () {
+    ...mapMutations(['toggleNavNarrow']),
+    toggleNavNarrow () {
       if (this.isHide) {
-        this.$store.commit('toggleSidesWide', true)
+        this.$store.commit('toggleNavNarrow', true)
       }
     }
   },
   // mounted () {
   //   const body = document.documentElement || document.body
   //   body.addEventListener('click', () => {
-  //     this.$store.commit('toggleSidesWide', false)
+  //     this.$store.commit('toggleNavNarrow', false)
   //   })
   // },
   components: {
