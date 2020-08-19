@@ -1,6 +1,6 @@
 <template>
   <div class="header" @mousedown.self="hideNav">
-    <div class="nar-btn" @click="toggleNavNarrow">
+    <div v-if="this.$store.state.hideNav" class="nar-btn" @click="toggleNavNarrow">
       <i class="icon icon-list"></i>
     </div>
   </div>
@@ -14,26 +14,25 @@ export default {
     ...mapMutations(['toggleNavNarrow']),
     toggleNavNarrow () {
       this.$store.commit('toggleNavNarrow')
+
     },
     hideNav () {
       if (this.$store.state.hideNav) {
         this.$store.commit('toggleNavNarrow', true)
       }
-    },
-
+    }
   }
 }
 </script>
 
 <style lang="less" >
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 56px;
   background-color: #ffffff;
+  box-shadow: 0 -2px 16px 0px rgba(0, 0, 0, 0.08);
   z-index: 999;
+
   .nar-btn {
     position: relative;
     top: 10px;

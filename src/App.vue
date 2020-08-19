@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <Header />
-    <div class="container">
-      <div class="side-box" :class="state">
+    <div class="container" ref="container">
+      <div class="side-box" :class="classList">
         <SideNav />
       </div>
-      <div class="page-box" :class="state" @mousedown="toggleNavNarrow">
+      <div class="page-box" :class="classList" @mousedown="toggleNavNarrow">
+        <Header />
         <router-view />
         <Footer />
       </div>
@@ -21,40 +21,23 @@ import Footer from './components/Footer'
 import { mapMutations } from 'vuex'
 
 export default {
-  data () {
-    return {
-
-    }
-  },
   computed: {
-    isNarrow () {
-      return this.$store.state.narrowNav
-    },
-    isHide () {
-      return this.$store.state.hideNav
-    },
-    state () {
-      if (this.isHide) {
-        return this.isNarrow ? 'hide-side hide' : 'hide-side'
+    classList () {
+      if (this.$store.state.hideNav) {
+        return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
       } else {
-        return this.isNarrow ? 'narrow' : ''
+        return this.$store.state.narrowNav ? 'narrow' : ''
       }
     }
   },
   methods: {
-    ...mapMutations(['toggleNavNarrow']),
+    ...mapMutations(['toggleNavNarrow', 'toggleNavHide']),
     toggleNavNarrow () {
-      if (this.isHide) {
+      if (this.$store.state.hideNav) {
         this.$store.commit('toggleNavNarrow', true)
       }
     }
   },
-  // mounted () {
-  //   const body = document.documentElement || document.body
-  //   body.addEventListener('click', () => {
-  //     this.$store.commit('toggleNavNarrow', false)
-  //   })
-  // },
   components: {
     Header,
     SideNav,
@@ -86,8 +69,7 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 body {
-  display: flex;
-  flex-direction: column;
+  background-color: #f9f9f9;
 }
 
 a {
@@ -95,13 +77,16 @@ a {
   text-decoration: none;
 }
 
-[tabindex] {
-  outline: none;
-}
-
 ul,
 ol {
   list-style: none;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  vertical-align: middle;
 }
 </style>
 
@@ -115,7 +100,7 @@ ol {
   min-width: 1120px;
   margin-left: 220px;
   // margin-top: 16px;
-  padding-top: 16px;
+  // padding-top: 16px;
   height: 100%;
 
   &.narrow {
@@ -151,18 +136,18 @@ ol {
 // css in App.vue
 .container {
   display: flex;
-  padding-top: 56px;
+  // padding-top: 56px;
   width: 100%;
-  height: calc(100% - 56px);
-
-  background-color: #f9f9f9;
 }
+
 .side-box {
   position: fixed;
   width: 220px;
-  height: calc(100% - 56px);
-  z-index: 99;
+  // height: calc(100% - 56px);
+  height: 100%;
   overflow-y: auto;
+  // box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.08);
+  z-index: 999;
 
   &.narrow {
     width: 80px;

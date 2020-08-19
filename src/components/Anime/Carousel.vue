@@ -161,15 +161,4 @@ export default {
     }
   }
 }
-
-@media screen and(max-width: 1756px) {
-  .carousel {
-    height: 288px;
-  }
-}
-@media screen and(max-width: 1650px) {
-  .carousel {
-    height: 232px;
-  }
-}
 </style>

@@ -1,5 +1,8 @@
 <template>
   <div class="guide">
+    <div class="nar-btn">
+      <i class="icon icon-list" @click="toggleNavNarrow"></i>
+    </div>
     <SideItem :list="prod" />
     <SideItem :list="user" />
   </div>
@@ -7,6 +10,8 @@
 
 <script>
 import SideItem from './SideItem'
+
+import { mapMutations } from 'vuex'
 
 export default {
   data () {
@@ -25,6 +30,17 @@ export default {
       ]
     }
   },
+  methods: {
+    ...mapMutations(['toggleNavNarrow']),
+    toggleNavNarrow () {
+      this.$store.commit('toggleNavNarrow')
+    },
+    hideNav () {
+      if (this.$store.state.hideNav) {
+        this.$store.commit('toggleNavNarrow', true)
+      }
+    }
+  },
   components: {
     SideItem
   }
@@ -34,8 +50,33 @@ export default {
 <style lang="less" >
 // @import url("../../fonts/style.css");
 .guide {
+  position: relative;
   width: 100%;
   height: 100%;
   background-color: #ffffff;
+
+  .nar-btn {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 56px;
+  }
+
+  .icon-list {
+    position: relative;
+    top: 18px;
+    left: 20px;
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    margin-bottom: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    &:hover {
+      background-color: #e5e5e5;
+    }
+    font-size: 24px;
+    color: #000000;
+  }
 }
 </style>

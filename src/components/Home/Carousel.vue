@@ -25,7 +25,7 @@ export default {
   props: {
     datalist: Array
   },
-  data() {
+  data () {
     return {
       current: 0, // 当前图片索引
       timer: null, // 定时器
@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     // 自动循环轮播
-    startCricle() {
+    startCricle () {
       this.timer = setInterval(() => {
         // cur 下一张图片的索引
         let cur = this.current + 1
@@ -53,17 +53,17 @@ export default {
       }, this.durtion)
     },
     // 停止自动播放
-    stopCricle() {
+    stopCricle () {
       clearInterval(this.timer)
     },
     // 圆点点击事件
-    indexClick(index) {
+    indexClick (index) {
       this.stopCricle()
       this.current = index
       this.translate()
     },
     // translate 动画效果
-    translate(calback) {
+    translate (calback) {
       const ul = this.$refs.ul
       ul.classList.add('animation')
       ul.style.transform = `translateX(${-this.current * this.width}px)`
@@ -76,10 +76,10 @@ export default {
       }, this.animeTime)
     }
   },
-  mounted() {
+  mounted () {
     this.startCricle()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.stopCricle()
   }
 }
