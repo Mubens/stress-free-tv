@@ -138,7 +138,7 @@ export default {
           // 寻找当前时间之后最近的点
           if (buffered.start(buffered.length - 1 - i) < video.currentTime) {
             let bufferedLength = (buffered.end(buffered.length - 1 - i) / myAudio.duration) * 100;
-            console.log(bufferedLength)
+            // console.log(bufferedLength)
             this.videoBuffer = bufferedLength;
             break;
           }

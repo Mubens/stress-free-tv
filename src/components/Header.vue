@@ -1,7 +1,7 @@
 <template>
   <div class="header" @mousedown.self="hideNav">
     <div v-if="this.$store.state.hideNav" class="nar-btn" @click="toggleNavNarrow">
-      <i class="icon icon-list"></i>
+      <i class="icon icon-toggle"></i>
     </div>
   </div>
 </template>

@@ -47,16 +47,16 @@
 
       <!-- 下方内容组件容器 -->
       <div class="content-wrapper">
-        <comment-area />
+        <!-- <comment-area /> -->
       </div>
     </div>
 
     <!-- 右侧组件容器 -->
     <div class="right-wrapper" :style="{ top: size.rightContainerTop + 10 + 'px' }">
       <!-- 弹幕组件 -->
-      <danmu-list />
+      <!-- <danmu-list /> -->
       <!-- 选集组件 -->
-      <episode-list />
+      <!-- <episode-list /> -->
     </div>
   </div>
 </template>
@@ -72,15 +72,16 @@ import EpisodeList from '../components/player/EpisodeList'
 export default {
   data () {
     return {
+      mode: ['normall-size', 'wide-size'],
       size: {
         screenFlag: 0,
-        currentMode: 'smallScreen', // 当前模式
+        currentMode: 'normall-size', // 当前模式
         containerWidth: 0, // 主容器宽度
         playerWidth: 0, // 播放器宽度
         playerHeight: 0, // 播放器的高度
         rightContainerTop: 0, // 右侧容器的 top
-        smallScreen: 'smallScreen', // 小屏
-        wideScreen: 'wideScreen', // 宽屏
+        normallSize: 'normall-size', // 小屏
+        wideScreen: 'wide-size', // 宽屏
         scrollTop: 0
       },
       // videoSrc: require('../../assets/videos/04.mp4')
@@ -132,7 +133,7 @@ export default {
         this.wideScreenChange()
       } else {
         this.size.screenFlag = 0
-        this.size.currentMode = 'smallScreen'
+        this.size.currentMode = 'normall-size'
         this.smallScreenChange()
       }
     },
@@ -140,7 +141,7 @@ export default {
     pageFullScreen: function () {
       if (this.size.screenFlag === 2) {
         this.size.screenFlag = 0
-        this.size.currentMode = 'smallScreen'
+        this.size.currentMode = 'normall-size'
         this.smallScreenChange()
         document.body.style.overflow = 'scroll'
         document.documentElement.scrollTop = this.size.scrollTop
@@ -168,7 +169,7 @@ export default {
         document.body.style.overflow = 'scroll'
         document.documentElement.scrollTop = this.size.scrollTop
         this.size.screenFlag = 0
-        this.size.currentMode = 'smallScreen'
+        this.size.currentMode = 'normall-size'
         // this.wideScreen()
       } else {
         let docElm = document.documentElement
@@ -248,11 +249,13 @@ export default {
 
 <style>
 .main-wrapper {
+  box-sizing: border-box;
   position: relative;
   top: 0;
   left: 0;
   margin: 0 auto;
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  padding-top: 20px;
   box-sizing: border-box;
 }
 
@@ -271,14 +274,16 @@ export default {
   z-index: 999;
 }
 
-.smallScreen {
+/* 默认范围 */
+.normall-size {
   min-width: 638px;
   max-width: 1138px;
   min-height: 493px;
   max-height: 774px;
 }
 
-.wideScreen {
+/* 宽屏范围 */
+.wide-size {
   min-width: 988px;
   max-width: 1488px;
   min-height: 602px;
@@ -288,18 +293,12 @@ export default {
 .left-wrapper {
   width: 100%;
   margin-bottom: 40px;
-
-  /* height: 800px; */
-  /* background-color: skyblue; */
 }
 
 .right-wrapper {
   position: absolute;
   right: 0;
   width: 320px;
-
-  /* height: 500px;
-  background-color: tomato; */
 }
 
 .player-wrapper {
@@ -308,27 +307,20 @@ export default {
 
 .content-wrapper {
   width: 100%;
-
-  /* height: 500px; */
-  /* background-color: violet; */
 }
 
 .player-content {
   width: 100%;
   height: calc(100% - 45px);
-
-  /* background-color: yellowgreen; */
 }
 
 .player-bottom {
   width: 100%;
   height: 45px;
-  /* background-color: springgreen; */
 }
 
 .video-player {
   width: 100%;
   height: 100%;
-  /* background-color: tomato; */
 }
 </style>

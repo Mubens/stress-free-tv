@@ -56,7 +56,7 @@ const routes = [
   ...MAIN_ROUTE,
   {
     path: '/play/:id',
-    component: () => import('../views/PlayerPage')
+    component: () => import('../views/PlayPage')
   },
   {
     path: '*',

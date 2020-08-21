@@ -1,7 +1,7 @@
 <template>
   <div class="guide">
     <div class="nar-btn">
-      <i class="icon icon-list" @click="toggleNavNarrow"></i>
+      <i class="icon icon-toggle" @click="toggleNavNarrow"></i>
     </div>
     <SideItem :list="prod" />
     <SideItem :list="user" />
@@ -23,10 +23,10 @@ export default {
         { name: 'Anime', url: '/anime', title: '动漫', icon: 'icon-anime' }
       ],
       user: [
-        { name: 'History', url: '/history', title: '播放历史', icon: 'icon-his-play' },
+        { name: 'History', url: '/history', title: '播放历史', icon: 'icon-history-play' },
         { name: 'Later', url: '/later', title: '稍后播放', icon: 'icon-later-play' },
-        { name: 'Subs', url: '/subs', title: '订阅', icon: 'icon-subs' },
-        { name: 'Collect', url: '/collect', title: '收藏', icon: 'icon-collect' }
+        { name: 'Subs', url: '/subs', title: '订阅', icon: 'icon-subscribe' },
+        { name: 'Collect', url: '/collect', title: '收藏', icon: 'icon-collection' }
       ]
     }
   },
@@ -62,7 +62,7 @@ export default {
     height: 56px;
   }
 
-  .icon-list {
+  .icon-toggle {
     position: relative;
     top: 18px;
     left: 20px;

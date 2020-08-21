@@ -4,7 +4,7 @@
       <div class="side-box" :class="classList">
         <SideNav />
       </div>
-      <div class="page-box" :class="classList" @mousedown="toggleNavNarrow">
+      <div class="page-box" :class="classList" @mousedown="toggleNavNarrow" ref="page">
         <Header />
         <router-view />
         <Footer />
@@ -88,11 +88,21 @@ video {
   outline: none;
   vertical-align: middle;
 }
+
+button,
+input,
+textarea {
+  outline: none;
+  border: none;
+}
+button,
+input[type="button"] {
+  cursor: pointer;
+}
 </style>
 
 <style lang="less">
 // common css in all .vue
-@import url("./fonts/style.css");
 
 .page-box {
   box-sizing: border-box;

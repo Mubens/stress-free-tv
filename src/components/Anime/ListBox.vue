@@ -14,7 +14,7 @@
                   {{ item.play | numfilter }}
                 </span>
                 <span class="danmu">
-                  <i class="icon icon-danmu"></i>
+                  <i class="icon icon-danmu-count"></i>
                   {{ item.danmu | numfilter }}
                 </span>
               </p>
@@ -144,7 +144,7 @@ export default {
       padding-top: 1px;
       font-size: 18px;
     }
-    .icon-danmu {
+    .icon-danmu-count {
       padding-top: 2px;
       font-size: 16px;
     }

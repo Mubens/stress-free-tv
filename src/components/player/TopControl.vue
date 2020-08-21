@@ -9,10 +9,12 @@
 
 <script>
 export default {
-  props: ["percent", "videoBuffer"],
+  // props: ["percent", "videoBuffer"],
   data () {
     return {
-      progressDrag: false //拖拽状态标志
+      progressDrag: false, //拖拽状态标志,
+      percent: 0,
+      videoBuffer: 0
     };
   },
   methods: {
@@ -26,7 +28,8 @@ export default {
       if (movX > maxX) {
         movX = maxX;
       }
-      this.$emit("updateProgress", "drag", movX / maxX);
+      // this.$emit("updateProgress", "drag", movX / maxX);
+      this.percent = (movX / maxX) * 100
     }
   },
   mounted () {
