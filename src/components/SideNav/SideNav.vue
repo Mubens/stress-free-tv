@@ -48,7 +48,6 @@ export default {
 </script>
 
 <style lang="less" >
-// @import url("../../fonts/style.css");
 .guide {
   position: relative;
   width: 100%;

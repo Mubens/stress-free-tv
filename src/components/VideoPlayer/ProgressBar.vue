@@ -12,52 +12,67 @@ export default {
   props: {
     buffer: { type: Number, default: 0 },
     percent: { type: Number, default: 0 },
-    setCurrentTime: Function
+    setCurrentTime: Function,
   },
   data () {
     return {
-      dragFlag: false, //拖拽状态标志,
-      // buffer: 0,
-      // current: 0
-    };
+      dragFlag: false, //拖拽状态标志
+      dragPercent: 0,
+    }
+  },
+  computed: {
+    progress () {
+      if (!this.dragFlag) {
+        return this.percent
+      } else {
+        return this.dragPercent
+      }
+    }
   },
   methods: {
+    mouseDown (event) {
+      if (!this.dragFlag) {
+        const e = event || window.event
+        this.dragPercent = (e.offsetX / this.$refs.progress.offsetWidth) * 100
+        this.setCurrentTime(this.dragPercent)
+        this.dragFlag = true
+      }
+    },
+    mouseMove (event) {
+      if (this.dragFlag) {
+        const e = event || window.event
+        const progress = this.$refs.progress
+        let width = e.clientX - document.querySelector('#play-page').offsetLeft
+
+        if (width < 0) {
+          width = 0
+        }
+        if (width > progress.offsetWidth) {
+          width = progress.offsetWidth
+        }
+        this.dragPercent = (width / progress.offsetWidth) * 100
+        this.setCurrentTime(this.dragPercent)
+
+        // 解决拖动时选中页面中的文本
+        window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty()
+      }
+    },
+    mouseUp () {
+      if (this.dragFlag) {
+        this.setCurrentTime(this.dragPercent, true)
+        this.dragFlag = false
+      }
+    }
   },
   mounted () {
-    let width = 0
-    let startX = 0
-    let flag = false
-
-    const progress = this.$refs.progress
-
-    progress.addEventListener('mousedown', (e) => {
-      e = e || window.e
-      startX = e.clientX
-      this.percent = (e.offsetX / progress.offsetWidth) * 100
-      flag = true
-
-      document.addEventListener('mousemove', (e) => {
-        if (flag) {
-          e = e || window.e
-          width = e.clientX - document.querySelector('#play-page').offsetLeft
-
-          if (width < 0) {
-            width = 0
-          }
-          if (width > progress.offsetWidth) {
-            width = progress.offsetWidth
-          }
-
-          this.percent = (width / progress.offsetWidth) * 100
-
-          window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty()
-        }
-      })
-    })
-
-    document.addEventListener('mouseup', () => {
-      flag = false
-    })
+    this.$refs.progress.addEventListener('mousedown', this.mouseDown)
+    document.addEventListener('mousemove', this.mouseMove)
+    document.addEventListener('mouseup', this.mouseUp)
+  },
+  beforeDestroy () {
+    this.$refs.progress.removeEventListener('mousedown', this.mouseDown)
+    document.removeEventListener('mousemove', this.mouseMove)
+    document.removeEventListener('mouseup', this.mouseUp)
   }
 }
 </script>

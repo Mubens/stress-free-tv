@@ -14,6 +14,11 @@
           :isPlaying="isPlaying"
           :playOrPause="playOrPause"
           :fullScreen="fullScreen"
+          :duration="duration"
+          :percent="percent"
+          :setCurrentTime="setCurrentTime"
+          :setVolume="setVolume"
+          :volume="volume"
         />
       </div>
     </div>
@@ -26,6 +31,8 @@
 import ProgressBar from './ProgressBar'
 import ControlBox from './ControlBox'
 
+import { getLocal } from '../../assets/js/storage'
+
 export default {
   props: {
     mode: { type: Number, default: 0 },
@@ -33,16 +40,26 @@ export default {
   },
   data () {
     return {
-      // modeType: 0,
       isPlaying: false, // 是否播放中
       duration: 0,  // 视频总时间
       currentTime: 0, // 当前视频时间
       percent: 0, // 进度值（0-100）
       buffer: 0, // 缓冲值（0-100）
-      lastMode: 0
+      lastMode: 0,
+      isDrag: false,
+      volume: 1
     }
   },
   methods: {
+    setVolume (val) {
+      if (val === 0) {
+        this.$refs.video.muted = true
+      } else {
+        this.$refs.video.muted = false
+        this.$refs.video.volume = val
+      }
+      this.volume = val
+    },
     // 暂停/播放
     playOrPause () {
       if (this.isPlaying) {
@@ -53,12 +70,22 @@ export default {
       this.isPlaying = !this.isPlaying
     },
     // 设置视频时间
-    setCurrentTime (percent) {
-      this.$refs.video.currentTime = this.duration * percent
+    setCurrentTime (percent, flag) {
+      this.percent = percent
+      this.isDrag = true
+      if (flag) {
+        this.$refs.video.currentTime = this.duration * (percent / 100)
+        this.isDrag = false
+        this.$refs.video.play()
+        this.isPlaying = true
+      }
     },
+    // 进度条跟随
     updateProgress () {
-      this.currentTime = this.$refs.video.currentTime
-      this.percent = (100 * this.currentTime) / this.duration
+      if (!this.isDrag) {
+        this.currentTime = this.$refs.video.currentTime
+        this.percent = (100 * this.currentTime) / this.duration
+      }
     },
     // 获取视频时长
     getDurdation () {
@@ -84,6 +111,7 @@ export default {
 
       setTimeout(this.getBuffered, 100);
     },
+    // 全屏事件
     fullScreen () {
       let isFull = !!(
         document.fullscreen ||
@@ -103,10 +131,9 @@ export default {
         } else if (document.webkitExitFullscreen) {
           document.webkitExitFullscreen()
         }
-        this.modeChange(this.lastMode)
       } else {
         // console.log('全屏')
-        const player = this.player
+        const player = this.$refs.player
         if (player.requestFullscreen) {
           player.requestFullscreen()
         } else if (player.msRequestFullscreen) {
@@ -116,23 +143,25 @@ export default {
         } else if (player.webkitRequestFullscreen) {
           player.webkitRequestFullscreen()
         }
-        this.lastMode = this.mode
-        this.modeChange(3)
       }
+    },
+    // 全屏自定义事件
+    fullScreenChange () {
+      this.modeChange(3)
     }
   },
   filters: {
     // 格式化时间
-    timeFormat: function (seconds) {
-      var minite = Math.floor(seconds / 60);
+    timeFormat (seconds) {
+      let minite = Math.floor(seconds / 60);
       if (minite < 10) {
-        minite = "0" + minite;
+        minite = '0' + minite;
       }
-      var second = Math.floor(seconds % 60);
+      let second = Math.floor(seconds % 60);
       if (second < 10) {
-        second = "0" + second;
+        second = '0' + second;
       }
-      return minite + ":" + second;
+      return minite + ':' + second;
     }
   },
   computed: {
@@ -147,13 +176,19 @@ export default {
     }
   },
   mounted () {
-    this.player = this.$refs.player
+    this.volume = getLocal('sptv-volume') || 1
     this.$refs.video.addEventListener("canplaythrough", this.getDurdation)
     this.$refs.video.addEventListener("timeupdate", this.updateProgress)
+      ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
+        document.addEventListener(item, this.fullScreenChange)
+      })
   },
   beforeDestroy () {
     this.$refs.video.removeEventListener("canplaythrough", this.getDurdation)
     this.$refs.video.removeEventListener("timeupdate", this.updateProgress)
+      ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
+        document.removeEventListener(item, this.fullScreenChange)
+      })
   },
   components: {
     ProgressBar,
@@ -167,6 +202,10 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
   .player-main-content {
     width: 100%;

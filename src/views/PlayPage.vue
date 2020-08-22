@@ -4,8 +4,11 @@
       <div class="view-box">
         <div class="if"></div>
       </div>
-      <div class="player-wrap" :class="normalOrWide">
+      <div class="player-wrap" :class="this.mode === 1 ? 'wide-size' : ''">
         <VideoPlayer :mode="mode" :modeChange="modeChange" />
+      </div>
+      <div class="view-box">
+        <div class="if"></div>
       </div>
     </div>
     <div class="right-wrap">1</div>
@@ -18,40 +21,33 @@ import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
 export default {
   data () {
     return {
-      mode: 0  // 0: normal-size, 1: wide-size, 2: full-webpage, 3: full-window
+      mode: 0,  // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
+      lastMode: 0
     }
   },
   methods: {
     modeChange (type) {
       if (this.mode !== type) {
+        // 全屏不记录 lastMode
+        if (type !== 3) {
+          this.lastMode = this.mode
+        }
         this.mode = type
       } else {
-        this.mode = 0
+        this.mode = type === 1 ? 0 : this.lastMode
       }
     }
   },
   watch: {
+    // 监听 mode 变化，网页全屏（mode = 2）需要隐藏滚动条
     mode () {
       const doc = document.documentElement || document.body
       if (this.mode === 2) {
         doc.style.overflow = 'hidden'
       } else {
-        doc.style.overflow = 'auto'
+        doc.style.overflow = ''
       }
     }
-  },
-  computed: {
-    normalOrWide () {
-      if (this.mode === 0) {
-        return 'normal-size'
-      }
-      if (this.mode === 1) {
-        return 'wide-size big-size'
-      }
-      return ''
-    }
-  },
-  mounted () {
   },
   components: { VideoPlayer }
 }
@@ -96,7 +92,7 @@ export default {
 }
 
 #play-page {
-  .big-size {
+  .wide-size {
     padding-right: 0;
   }
 }
