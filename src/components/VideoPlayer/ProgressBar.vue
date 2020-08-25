@@ -86,7 +86,7 @@ export default {
   cursor: pointer;
 
   &:hover .progress {
-    height: 4px;
+    height: 3px;
   }
 
   .progress {
@@ -97,7 +97,7 @@ export default {
     height: 2px;
     transform: translateY(-50%);
     background-color: #7c7d824d;
-    transition: all 0.2s;
+    // transition: all 0.2s;
 
     .buffer {
       height: 100%;
@@ -118,7 +118,7 @@ export default {
       display: block;
       border-radius: 5px;
       z-index: 3;
-      background-color: #23ade5;
+      background-color: #ff6b6b;
     }
   }
 }

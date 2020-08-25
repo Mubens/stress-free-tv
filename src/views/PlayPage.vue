@@ -29,7 +29,7 @@ export default {
     modeChange (type) {
       if (this.mode !== type) {
         // 全屏不记录 lastMode
-        if (type !== 3) {
+        if (this.mode !== 2 && type !== 3) {
           this.lastMode = this.mode
         }
         this.mode = type

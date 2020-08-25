@@ -95,9 +95,14 @@ textarea {
   outline: none;
   border: none;
 }
+
 button,
 input[type="button"] {
   cursor: pointer;
+}
+
+[tabindex] {
+  outline: none;
 }
 </style>
 
