@@ -3,6 +3,7 @@
     <div
       class="player-main-content"
       :class="classList"
+      :style="{height: (mode === 2 ) ? '100vh' : playerHeight + 'px'}"
       @mouseleave="showControl = false"
       ref="player"
     >
@@ -23,7 +24,7 @@
           src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4"
           ref="video"
         />
-        <DanmuAnimeBox :arr="arr" :isPause="!isPlaying" />
+        <DanmuAnimeBox :danmu="arr" :isPause="!isPlaying" />
       </div>
       <div
         class="player-controller"
@@ -82,6 +83,7 @@ export default {
   },
   data () {
     return {
+      playerHeight: 0,
       isPlaying: false, // 是否播放中
       duration: 0,  // 视频总时间
       currentTime: 0, // 当前视频时间
@@ -94,12 +96,48 @@ export default {
       showControl: false,
       timer: null,
       arr: [
-        { content: '123456', direction: 'default' }
+        { type: 'roll', text: '？？？', style: { 'color': '#ffffff' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始我开始变色了变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变我开始变色了色了我开始变我开始变色了色了我开始变我开始变色了色了我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始我开始变色了v变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: 'fd', style: { 'color': '#FFD2' } },
+        { type: 'roll', text: '我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开我开始变色了我开始变色了csf始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } }
       ]
     }
   },
   mounted () {
     this.initTestData()
+  },
+  watch: {
+    mode () {
+      if (this.mode === 0 || this.mode === 1) {
+        this.$nextTick(() => {
+          this.playerHeight = this.$refs.player.clientWidth * 0.5625
+        })
+      }
+    }
   },
   methods: {
     initTestData () {
@@ -230,9 +268,14 @@ export default {
     fullScreenChange () {
       this.modeChange(3)
     },
-    toShowInnerDanmu () {
-      const body = document.documentElement || document.body
-      this.showInnerDanmu = body.offsetWidth > 1024
+    windowResize () {
+      if (this.mode === 2 || this.mode === 3) {
+        const body = document.documentElement || document.body
+        this.showInnerDanmu = body.offsetWidth > 1024
+      } else {
+        this.showInnerDanmu = false
+      }
+      this.playerHeight = this.$refs.player.clientWidth * 0.5625
     },
     controllerShow (flag) {
       this.showControl = true
@@ -278,7 +321,8 @@ export default {
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
         document.addEventListener(item, this.fullScreenChange)
       })
-    window.addEventListener('resize', this.toShowInnerDanmu)
+    this.windowResize()
+    window.addEventListener('resize', this.windowResize)
   },
   beforeDestroy () {
     this.$refs.video.removeEventListener("canplaythrough", this.getDurdation)
@@ -286,7 +330,7 @@ export default {
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
         document.removeEventListener(item, this.fullScreenChange)
       })
-    window.removeEventListener('resize', this.toShowInnerDanmu)
+    window.removeEventListener('resize', this.windowResize)
   },
   components: {
     ProgressBar,
@@ -335,7 +379,7 @@ export default {
       rgba(0, 0, 0, 0.4),
       rgba(0, 0, 0, 0)
     );
-    transition: all ease 0.4s;
+    transition: opacity ease 0.4s;
     opacity: 0;
     z-index: 999;
   }
