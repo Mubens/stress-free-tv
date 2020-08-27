@@ -24,7 +24,7 @@
           src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4"
           ref="video"
         />
-        <DanmuAnimeBox :danmu="arr" :isPause="!isPlaying" />
+        <DanmuPool :danmu="arr" :isPlaying="isPlaying" ref="danmu-pool" />
       </div>
       <div
         class="player-controller"
@@ -48,7 +48,7 @@
             v-if="(mode === 2 || mode === 3) && showInnerDanmu"
             slot="danmu"
             css="transparent"
-            v-model="danmu"
+            v-model="danmuText"
             :danmuSubmit="danmuSubmit"
           />
         </ControlBox>
@@ -61,7 +61,7 @@
         <input type="checkbox" class="checke" />
       </div>
       <div class="danmu-right-box">
-        <DanmuBox v-model="danmu" :danmuSubmit="danmuSubmit" />
+        <DanmuBox v-model="danmuText" :danmuSubmit="danmuSubmit" />
       </div>
     </div>
   </div>
@@ -71,8 +71,7 @@
 import ProgressBar from './ProgressBar'
 import ControlBox from './ControlBox'
 import DanmuBox from './DanmuBox'
-import DanmuAnimeBox from './DanmuAnimeBox'
-// import DanmuAnimeBox from './Danmuku'
+import DanmuPool from './DanmuPool'
 
 import { getLocal } from '../../assets/js/storage'
 
@@ -91,44 +90,21 @@ export default {
       buffer: 0, // 缓冲值（0-100）
       isDrag: false,
       volume: 1,
-      danmu: '',
+      danmuText: '',
       showInnerDanmu: true,
       showControl: false,
       timer: null,
       arr: [
-        { type: 'roll', text: '？？？', style: { 'color': '#ffffff' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始我开始变色了变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变我开始变色了色了我开始变我开始变色了色了我开始变我开始变色了色了我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始我开始变色了v变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: 'fd', style: { 'color': '#FFD2' } },
-        { type: 'roll', text: '我开始变我开始变色了色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开我开始变色了我开始变色了csf始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了', style: { 'color': '#FFD302' } }
+        { type: 'roll', text: '我开始变色了1', style: { 'color': '#ffffff' } },
+        { type: 'roll', text: '我开始变色了2', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了3', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了4我开始变色了4', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了5我开始变色了4', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了6我开始变色了4', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了7我开始变色了4', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了8我开始变色了9999999', style: { 'color': '#FFD302' } }
       ]
     }
-  },
-  mounted () {
-    this.initTestData()
   },
   watch: {
     mode () {
@@ -140,34 +116,12 @@ export default {
     }
   },
   methods: {
-    initTestData () {
-      let arr = [
-        '这是一条有弹幕',
-        '今天去打LOL',
-        '可以吗？',
-        '一起嗨！！！'
-      ]
-      for (let i = 0; i < 6; i++) {
-        for (let index = 0; index < 1000; index++) {
-          if (index % 2 == 0) {
-            this.arr.push({
-              direction: 'top',
-              content: arr[parseInt(Math.random() * arr.length)]
-            })
-          } else {
-            this.arr.push({
-              direction: 'default',
-              content: arr[parseInt(Math.random() * arr.length)]
-            })
-          }
-        }
-      }
-    },
     danmuSubmit () {
-      const danmu = this.danmu.trim()
+      const danmu = this.danmuText.trim()
       if (danmu) {
         // axios()
-        this.danmu = ''
+        this.arr.push({ type: 'top', text: danmu, style: { color: 'tomato' }, isCurr: true })
+        this.danmuText = ''
       }
     },
     setVolume (val) {
@@ -323,6 +277,13 @@ export default {
       })
     this.windowResize()
     window.addEventListener('resize', this.windowResize)
+    setTimeout(() => {
+      this.arr.push({ type: 'roll', text: '我开始变色了5', style: { 'color': '#ffffff' } },
+        { type: 'roll', text: '我开始变色了6', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了7', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了8', style: { 'color': '#FFD302' } },
+        { type: 'roll', text: '我开始变色了9', style: { 'color': '#FFD302' } })
+    }, 10000);
   },
   beforeDestroy () {
     this.$refs.video.removeEventListener("canplaythrough", this.getDurdation)
@@ -336,7 +297,7 @@ export default {
     ProgressBar,
     ControlBox,
     DanmuBox,
-    DanmuAnimeBox
+    DanmuPool
   }
 }
 </script>
@@ -381,7 +342,7 @@ export default {
     );
     transition: opacity ease 0.4s;
     opacity: 0;
-    z-index: 999;
+    // z-index: 999;
   }
 
   .video-title {
