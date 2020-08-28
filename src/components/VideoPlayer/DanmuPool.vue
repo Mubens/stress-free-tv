@@ -19,16 +19,15 @@ export default {
       // DOM 池
       rollDomPool: [],
       topDomPool: [],
+      bottomDomPool: [],
       // 定时器
       timer: null,
       // 取弹幕的时间间隔 ms
       interval: 300,
-      // 弹幕移动时间 s
-      duration: 6,
-      // 滚动弹幕通道
+      // 弹幕通道
       freeRollTrack: [],
-      // 顶部弹幕通道
       freeTopTrack: [],
+      freeBottomTrack: [],
       // 弹幕容器
       container: null,
       // 自定义样式
@@ -91,25 +90,28 @@ export default {
       for (let row = 0; row < this.TRACK_COUNT; row++) {
         this.freeRollTrack[row] = true
         this.freeTopTrack[row] = true
+        this.freeBottomTrack[row] = true
       }
     },
-    /* 获取可以发射滚动弹幕的通道 */
-    getRollTrack () {
-      for (let i = 0; i < this.TRACK_COUNT; i++) {
-        if (this.freeRollTrack[i]) {
-          return i
-        }
-      }
-      return -1
-    },
-    /* 获取可以发送滚动弹幕的容器 */
+    /* 获取可以发送滚动弹幕的 dom */
     findFreeRollDom (track) {
       return this.rollDomPool[track].find(item => item.isFree)
     },
-    /* 获取可以发射顶部弹幕的通道 */
-    getTopTrack () {
+    /* 获取可以发射弹幕的通道 */
+    getTrack (type) {
+      let trackType = null
+      if (type === 'roll') {
+        trackType = this.freeRollTrack
+      } else if (type === 'top') {
+        trackType = this.freeTopTrack
+      } else if (type === 'bottom') {
+        trackType = this.freeBottomTrack
+      } else {
+        return -1
+      }
+
       for (let i = 0; i < this.TRACK_COUNT; i++) {
-        if (this.freeTopTrack[i]) {
+        if (trackType[i]) {
           return i
         }
       }
@@ -187,28 +189,37 @@ export default {
         this.freeRollTrack[track] = true
       }, (span.clientWidth / domItem.speed) * 1000)
     },
-    /* 发送顶部弹幕 */
-    shootTopDanmu (danmu, track) {
+    /* 发送顶部/底部弹幕 */
+    shootFixedDanmu (type, danmu, track) {
+      let domPoll = null
+      if (type === 'top') {
+        domPoll = this.topDomPool
+      } else if (type === 'bottom') {
+        domPoll = this.bottomDomPool
+      } else {
+        return
+      }
+
       // 设置当前通道状态为非空闲
       this.freeTopTrack[track] = false
 
       // 弹幕显示持续时间
-      const duration = 2
+      const duration = 1.5
 
       // 动态复用 dom
       let span
-      // 如果 topDomPool 中没有该通道，动态创建并 append 到 container 容器
+      // 如果 domPool 中没有该通道，动态创建并 append 到 container 容器
       //    如果有，直接拿
-      if (!this.topDomPool[track]) {
+      if (!domPoll[track]) {
         span = document.createElement('div')
-        span.className = 'top-danmu'
-        span.style.top = `${track * 1.3}em`
+        span.className = 'fixed-danmu'
+        span.style[type] = `${track * 1.3}em`
         span.style.animationName = 'danmu-away'
         span.style.animationDuration = `${duration}s`
 
         this.container.appendChild(span)
       } else {
-        span = this.topDomPool[track]
+        span = domPoll[track]
       }
 
       // 动画结束后初始化
@@ -259,23 +270,25 @@ export default {
         if (this.danmu.length > 0) {
           // 取出第一条弹幕
           const danmu = this.danmu.shift()
-          if (danmu.type === 'roll') {
-            const rollTrack = this.getRollTrack()
+          // 判断弹幕类型
+          const danmuType = danmu.type
+          if (danmuType === 'roll') {
+            // 获取空闲通道
+            const rollTrack = this.getTrack(danmuType)
             if (rollTrack > -1) {
               const dom = this.findFreeRollDom(rollTrack)
               this.shootRollDanmu(dom, danmu, rollTrack)
             } else {
               this.danmu.push(danmu)
             }
-          } else if (danmu.type === 'top') {
-            const topTrack = this.getTopTrack()
-            if (topTrack > -1) {
-              this.shootTopDanmu(danmu, topTrack)
+          } else if (danmuType === 'top' || danmuType === 'bottom') {
+            // 获取空闲通道
+            const track = this.getTrack(danmuType)
+            if (track > -1) {
+              this.shootFixedDanmu(danmuType, danmu, track)
             } else {
               this.danmu.push(danmu)
             }
-          } else if (danmu.type === 'bottom') {
-            // todo
           }
         }
       }, this.interval)
@@ -295,6 +308,9 @@ export default {
   mounted () {
     this.container = this.$refs.container
     this.init()
+    if (this.isPlaying) {
+      this.danmuPlay()
+    }
   },
   beforeDestroy () {
     this.danmuPause()
@@ -304,15 +320,12 @@ export default {
 
 <style lang="less">
 .danmu-pool {
-  // display: flex;
-  // justify-content: center;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  // overflow: hidden;
-  // background-color: skyblue;
+  overflow: hidden;
 
   .roll-danmu {
     position: absolute;
@@ -323,7 +336,7 @@ export default {
     animation-timing-function: linear;
   }
 
-  .top-danmu {
+  .fixed-danmu {
     position: absolute;
     left: 50%;
     color: #ffffff;

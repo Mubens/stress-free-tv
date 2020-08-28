@@ -1,5 +1,13 @@
 <template>
-  <div class="video-player" @keydown.prevent.space="playOrPause" tabindex="1">
+  <div
+    class="video-player"
+    @keydown.prevent.space="playOrPause"
+    @keydown.prevent.right="setCurrentTimeByKey('right')"
+    @keydown.prevent.left="setCurrentTimeByKey('left')"
+    @keydown.prevent.up="setVolumeByKey('up')"
+    @keydown.prevent.down="setVolumeByKey('down')"
+    tabindex="1"
+  >
     <div
       class="player-main-content"
       :class="classList"
@@ -7,31 +15,34 @@
       @mouseleave="showControl = false"
       ref="player"
     >
+      <!-- 视频标题 -->
       <div class="video-title" :class="showControl ? 'show' : ''">
         <span
           class="title"
           @mouseover="showControl = true"
         >{{ '在党的领导下，共青团紧跟时代步伐，引领广大青年与祖国共同奋斗。作为共青团一份子，我们要始终坚定地跟着党走，听从团中央的指挥，高举习近平新时代中国特色社会主义思想伟大旗帜，奋发激情、增长才干，树立高尚情操。' }}</span>
       </div>
-      <!-- 视频源 -->
+      <!-- 视频和弹幕 -->
       <div
         class="video-content"
         @click="playOrPause"
         @mousemove="controllerShow(false)"
         @mouseleave="controllerShow(true)"
       >
-        <video
-          src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4"
-          ref="video"
-        />
-        <DanmuPool :danmu="arr" :isPlaying="isPlaying" ref="danmu-pool" />
+        <!-- src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4" -->
+        <video src="http://localhost:3000/video" ref="video" />
+        <!-- 弹幕池 -->
+        <DanmuPool v-if="needDanmuPlay" :danmu="danmuList" :isPlaying="isPlaying" />
       </div>
+      <!-- 控制器 -->
       <div
         class="player-controller"
         :class="showControl ? 'show' : ''"
         @mouseover="showControl = true"
       >
+        <!-- 进度条 -->
         <ProgressBar :percent="percent" :buffer="buffer" :setCurrentTime="setCurrentTime" />
+        <!-- 其他功能 -->
         <ControlBox
           :mode="mode"
           :modeChange="modeChange"
@@ -44,6 +55,7 @@
           :volume="volume"
           :setVolume="setVolume"
         >
+          <!-- 发送弹幕的 表单 -->
           <DanmuBox
             v-if="(mode === 2 || mode === 3) && showInnerDanmu"
             slot="danmu"
@@ -53,12 +65,21 @@
           />
         </ControlBox>
       </div>
+      <div class="volume-info" :class="showVolumeInfo ? 'fade-out' : 'transparent'">
+        <i class="icon" :class="volume === 0 ? 'icon-mute' : 'icon-volume'"></i>
+        <span>{{ volume === 0 ? '静音' : `${parseInt(volume * 100)}%` }}</span>
+      </div>
     </div>
     <!-- 弹幕盒子 -->
     <div class="danmu-box">
       <div class="danmu-left-box">
         <span class="danmu-msg">{{ 1 }}人正在观看，{{ 0 }}条弹幕</span>
-        <input type="checkbox" class="checke" />
+        <input
+          type="checkbox"
+          class="checke"
+          :checked="needDanmuPlay"
+          @click="danmuSwitch($event.target.checked)"
+        />
       </div>
       <div class="danmu-right-box">
         <DanmuBox v-model="danmuText" :danmuSubmit="danmuSubmit" />
@@ -71,7 +92,6 @@
 import ProgressBar from './ProgressBar'
 import ControlBox from './ControlBox'
 import DanmuBox from './DanmuBox'
-import DanmuPool from './DanmuPool'
 
 import { getLocal } from '../../assets/js/storage'
 
@@ -82,19 +102,34 @@ export default {
   },
   data () {
     return {
+      // video 的高度
       playerHeight: 0,
-      isPlaying: false, // 是否播放中
-      duration: 0,  // 视频总时间
-      currentTime: 0, // 当前视频时间
-      percent: 0, // 进度值（0-100）
-      buffer: 0, // 缓冲值（0-100）
+      // 视频是否在播放
+      isPlaying: false,
+      // 视频持续时间
+      duration: 0,
+      // 当前视频时间
+      currentTime: 0,
+      // 进度值（0-100）%
+      percent: 0,
+      // 缓冲值（0-100）
+      buffer: 0,
+      // 进度条拖拽节流阀
       isDrag: false,
+      // 视频音量（0-1）
       volume: 1,
+      // 要发送的弹幕
       danmuText: '',
       showInnerDanmu: true,
+      // 是否显示控制器和标题
       showControl: false,
-      timer: null,
-      arr: [
+      // 控制器 hover 定时器
+      controlTimer: null,
+      // 音量 info 定时器
+      volumeInfoTimer: null,
+      showVolumeInfo: false,
+      // 要发送的弹幕数组
+      danmuList: [
         { type: 'roll', text: '我开始变色了1', style: { 'color': '#ffffff' } },
         { type: 'roll', text: '我开始变色了2', style: { 'color': '#FFD302' } },
         { type: 'roll', text: '我开始变色了3', style: { 'color': '#FFD302' } },
@@ -103,7 +138,8 @@ export default {
         { type: 'roll', text: '我开始变色了6我开始变色了4', style: { 'color': '#FFD302' } },
         { type: 'roll', text: '我开始变色了7我开始变色了4', style: { 'color': '#FFD302' } },
         { type: 'roll', text: '我开始变色了8我开始变色了9999999', style: { 'color': '#FFD302' } }
-      ]
+      ],
+      needDanmuPlay: true
     }
   },
   watch: {
@@ -116,14 +152,23 @@ export default {
     }
   },
   methods: {
-    danmuSubmit () {
+    /* 弹幕开关 */
+    danmuSwitch (flag) {
+      // console.log(flag)
+      this.needDanmuPlay = flag
+      this.danmuList = []
+    },
+    /* 发送并提交弹幕 */
+    danmuSubmit (type, color) {
       const danmu = this.danmuText.trim()
       if (danmu) {
         // axios()
-        this.arr.push({ type: 'top', text: danmu, style: { color: 'tomato' }, isCurr: true })
+        // { type: 'roll' | 'top' | 'bottom', text: danmuText, style: {}, s_time: Date.now(), v_time: currentTime }
+        this.danmuList.push({ type, text: this.danmuText, style: { color }, isCurr: true })
         this.danmuText = ''
       }
     },
+    /* 设置音量 */
     setVolume (val) {
       if (val === 0) {
         this.$refs.video.muted = true
@@ -133,7 +178,25 @@ export default {
       }
       this.volume = val
     },
-    // 暂停/播放
+    /* 键盘上下键微调音量 */
+    setVolumeByKey (arrow) {
+      let volume = this.volume * 100
+      if (arrow === 'up') {
+        volume += 10
+      } else {
+        volume -= 10
+      }
+      volume = volume > 100 ? 100 : volume
+      volume = volume < 0 ? 0 : volume
+      this.setVolume(volume / 100)
+
+      this.showVolumeInfo = true
+      clearTimeout(this.volumeInfoTimer)
+      this.volumeInfoTimer = setTimeout(() => {
+        this.showVolumeInfo = false
+      }, 1000)
+    },
+    /* 视频暂停和播放 */
     playOrPause () {
       if (this.isPlaying) {
         this.$refs.video.pause()
@@ -142,49 +205,65 @@ export default {
       }
       this.isPlaying = !this.isPlaying
     },
-    // 设置视频时间
+    /* 动态设置视频时间 */
     setCurrentTime (percent, flag) {
+      // flag = false 更新进度条，但不设置视频时间
+      // flag = true 更新进度条并立即设置视频时间
       this.percent = percent
       this.isDrag = true
       if (flag) {
+        // 当前时间 = 视频持续时间 * 进度百分比
         this.$refs.video.currentTime = this.duration * (percent / 100)
-        this.isDrag = false
+        // 强制播放
         this.$refs.video.play()
         this.isPlaying = true
+        this.isDrag = false
       }
     },
-    // 进度条跟随
+    /* 键盘左右方向键微调时间 */
+    setCurrentTimeByKey (arrow) {
+      if (arrow === 'left') {
+        this.$refs.video.currentTime -= 5
+      } else {
+        this.$refs.video.currentTime += 5
+      }
+      this.$refs.video.play()
+      this.isPlaying = true
+    },
+    /* 非拖拽中，进度条自动跟随 */
     updateProgress () {
       if (!this.isDrag) {
         this.currentTime = this.$refs.video.currentTime
-        this.percent = (100 * this.currentTime) / this.duration
+        // 进度值 = 100 * 当前时间（s）/ 视频持续时间（s）
+        this.percent = 100 * (this.currentTime / this.duration)
       }
+      this.getBuffered()
     },
-    // 获取视频时长
+    /* 获取视频时长 */
     getDurdation () {
       this.duration = this.$refs.video.duration
     },
-    // 视频缓存
+    /* 获取视频缓存 */
     getBuffered () {
-      const video = this.$refs.video;
+      const video = this.$refs.video
+      const buffered = video.buffered
 
-      let buffered = video.buffered
       if (buffered.length) {
         // 渲染缓冲条的样式
 
-        for (var i = 0; i < buffered.length; i++) {
-          // 寻找当前时间之后最近的点
+        for (let i = 0; i < buffered.length; i++) {
+          // 寻找当前时间前最近的缓冲段
+          //    从缓冲区的最后找起，缓冲开始时间 < 视频当前时间 的第一个缓冲段就是
+          //    获取这一段的 end
           if (buffered.start(buffered.length - 1 - i) < video.currentTime) {
-            let bufferedLength = (buffered.end(buffered.length - 1 - i) / video.duration) * 100
-            this.buffer = bufferedLength
+            // console.log(buffered.end(buffered.length - 1 - i))
+            this.buffer = (buffered.end(buffered.length - 1 - i) / video.duration) * 100
             break
           }
         }
       }
-
-      setTimeout(this.getBuffered, 100);
     },
-    // 全屏事件
+    /* 全屏事件 */
     fullScreen () {
       let isFull = !!(
         document.fullscreen ||
@@ -218,10 +297,11 @@ export default {
         }
       }
     },
-    // 全屏自定义事件
+    /* 全屏自定义事件 */
     fullScreenChange () {
       this.modeChange(3)
     },
+    /* 浏览器 resize 事件 */
     windowResize () {
       if (this.mode === 2 || this.mode === 3) {
         const body = document.documentElement || document.body
@@ -231,11 +311,14 @@ export default {
       }
       this.playerHeight = this.$refs.player.clientWidth * 0.5625
     },
+    /* 控制 控制器的显示和隐藏 */
     controllerShow (flag) {
+      // flag = true 控制器一直显示
+      // flag = false 控制器显示 800ms 后消失
       this.showControl = true
-      clearTimeout(this.timer)
+      clearTimeout(this.controlTimer)
       if (!flag) {
-        this.timer = setTimeout(() => {
+        this.controlTimer = setTimeout(() => {
           this.showControl = false
         }, 800)
       }
@@ -256,6 +339,7 @@ export default {
     }
   },
   computed: {
+    /* 网页全屏和显示器全屏下样式 */
     classList () {
       if (this.mode === 2) {
         return 'full-webpage'
@@ -267,27 +351,33 @@ export default {
     }
   },
   mounted () {
+    // 获取并设置 localStorage 中的音量
     const localVol = getLocal('sptv-volume')
     this.setVolume(this.volume = localVol ? localVol : 1)
 
-    this.$refs.video.addEventListener("canplaythrough", this.getDurdation)
-    this.$refs.video.addEventListener("timeupdate", this.updateProgress)
+    const video = this.$refs.video
+    // 视频已准备好开始播放
+    video.addEventListener("canplay", this.getDurdation)
+    // 监听视频播放位置的改变
+    video.addEventListener("timeupdate", this.updateProgress)
+      // 监听视频下载
+      // video.addEventListener('progress', this.getBuffered)
+
+      // 监听全屏事件
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
         document.addEventListener(item, this.fullScreenChange)
       })
-    this.windowResize()
+
+    // 监听浏览器大小变化
+    this.windowResize() // 初始化
     window.addEventListener('resize', this.windowResize)
-    setTimeout(() => {
-      this.arr.push({ type: 'roll', text: '我开始变色了5', style: { 'color': '#ffffff' } },
-        { type: 'roll', text: '我开始变色了6', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了7', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了8', style: { 'color': '#FFD302' } },
-        { type: 'roll', text: '我开始变色了9', style: { 'color': '#FFD302' } })
-    }, 10000);
   },
   beforeDestroy () {
-    this.$refs.video.removeEventListener("canplaythrough", this.getDurdation)
-    this.$refs.video.removeEventListener("timeupdate", this.updateProgress)
+    // 注销所有 dom 监听事件
+    const video = this.$refs.video
+    video.removeEventListener("canplay", this.getDurdation)
+    video.removeEventListener("timeupdate", this.updateProgress)
+      // video.removeEventListener('progress', this.getBuffered)
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
         document.removeEventListener(item, this.fullScreenChange)
       })
@@ -297,7 +387,7 @@ export default {
     ProgressBar,
     ControlBox,
     DanmuBox,
-    DanmuPool
+    DanmuPool: () => import('./DanmuPool')
   }
 }
 </script>
@@ -314,6 +404,7 @@ export default {
   user-select: none;
 
   .player-main-content {
+    position: relative;
     width: 100%;
     height: calc(100% - 45px);
     background-color: #000000;
@@ -331,7 +422,7 @@ export default {
     flex-direction: column;
     position: absolute;
     left: 0;
-    bottom: 45px;
+    bottom: 0;
     width: 100%;
     height: 45px;
     background: linear-gradient(
@@ -374,6 +465,40 @@ export default {
 
   .show {
     opacity: 1;
+  }
+
+  .volume-info {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90px;
+    height: 50px;
+    padding: 0 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #000000;
+    transform: translate(-50%, -50%);
+
+    .icon {
+      font-size: 32px;
+      padding-right: 5px;
+    }
+    span {
+      flex: 1;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    &.transparent {
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    &.fade-out {
+      opacity: 1;
+    }
   }
 }
 

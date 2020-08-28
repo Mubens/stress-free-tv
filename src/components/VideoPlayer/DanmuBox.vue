@@ -6,7 +6,7 @@
         class="danmu-input"
         :value="danmu"
         @input="$emit('input-danmu', $event.target.value)"
-        @keydown.enter="danmuSubmit"
+        @keydown.enter="danmuSubmit(danmuType, danmuColor)"
         placeholder="发送弹幕"
       />
       <div class="icon icon-settimg danmu-type">
@@ -16,8 +16,8 @@
             <div class="danmu-mode">
               <div
                 class="danmu-mode-type"
-                :class="danmuType === 0 ? 'selected' : ''"
-                @click="changeDanmuType(0)"
+                :class="danmuType === 'roll' ? 'selected' : ''"
+                @click="changeDanmuType('roll')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -28,8 +28,8 @@
               </div>
               <div
                 class="danmu-mode-type"
-                :class="danmuType === 1 ? 'selected' : ''"
-                @click="changeDanmuType(1)"
+                :class="danmuType === 'top' ? 'selected' : ''"
+                @click="changeDanmuType('top')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -40,8 +40,8 @@
               </div>
               <div
                 class="danmu-mode-type"
-                :class="danmuType === 2 ? 'selected' : ''"
-                @click="changeDanmuType(2)"
+                :class="danmuType === 'bottom' ? 'selected' : ''"
+                @click="changeDanmuType('bottom')"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -71,7 +71,12 @@
       请先
       <a href="#">登录</a>
     </span>
-    <input type="button" class="danmu-submit" value="发送" @click="danmuSubmit" />
+    <input
+      type="button"
+      class="danmu-submit"
+      value="发送"
+      @click="danmuSubmit(danmuType, danmuColor)"
+    />
   </div>
 </template>
 
@@ -89,7 +94,7 @@ export default {
   data () {
     return {
       isLogin: true,
-      danmuType: 0,
+      danmuType: 'roll',
       danmuColor: '#FFFFFF',
       colorList: ['#FE0302', '#FF7204', '#FFAA02', '#FFD302', '#FFFF00', '#A0EE00', '#00CD00', '#019899', '#4266BE', '#89D5FF', '#CC0273', '#222222', '#9B9B9B', '#FFFFFF']
     }
@@ -116,6 +121,7 @@ export default {
     .danmu-input {
       background-color: rgba(255, 255, 255, 0.4);
       color: #ffffff;
+      border: none;
 
       &::-webkit-input-placeholder {
         color: #ffffff;
@@ -132,6 +138,10 @@ export default {
         /* Internet Explorer 10-11 */
         color: #ffffff;
       }
+    }
+
+    .danmu-type {
+      left: 0;
     }
   }
 
@@ -243,7 +253,7 @@ export default {
   }
 
   .icon {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 
   .danmu-submit {
