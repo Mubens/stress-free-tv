@@ -4,12 +4,14 @@
       <input
         type="text"
         class="danmu-input"
-        :value="danmu"
+        :value="danmuText"
         @input="$emit('input-danmu', $event.target.value)"
         @keydown.enter="danmuSubmit(danmuType, danmuColor)"
+        @keydown.left.stop
+        @keydown.right.stop
         placeholder="发送弹幕"
       />
-      <div class="icon icon-settimg danmu-type">
+      <div class="icon icon-setting danmu-type">
         <div class="danmu-type-box">
           <div class="selection-box">
             <span>模式</span>
@@ -17,7 +19,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'roll' ? 'selected' : ''"
-                @click="changeDanmuType('roll')"
+                @click="changeDanmu('roll', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -29,7 +31,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'top' ? 'selected' : ''"
-                @click="changeDanmuType('top')"
+                @click="changeDanmu('top', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -41,7 +43,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'bottom' ? 'selected' : ''"
-                @click="changeDanmuType('bottom')"
+                @click="changeDanmu('bottom', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -59,7 +61,7 @@
                 v-for="color in colorList"
                 :style="{ 'background-color': color }"
                 :class="danmuColor === color ? 'selected' : ''"
-                @click="changeDanmuColor(color)"
+                @click="changeDanmu(danmuType, color)"
                 :key="color"
               ></span>
             </div>
@@ -71,40 +73,34 @@
       请先
       <a href="#">登录</a>
     </span>
-    <input
-      type="button"
-      class="danmu-submit"
-      value="发送"
-      @click="danmuSubmit(danmuType, danmuColor)"
-    />
+    <input type="button" class="danmu-submit" value="发送" @click="danmuSubmit" />
   </div>
 </template>
 
 <script>
 export default {
   model: {
-    prop: 'danmu',
+    prop: 'danmuText',
     event: 'input-danmu'
   },
   props: {
     css: { type: String, default: '' },
-    danmu: { type: String, default: '' },
-    danmuSubmit: { type: Function, default: () => { } }
+    danmuText: { type: String, default: '' },
+    danmuType: { type: String, default: 'roll' },
+    danmuColor: { type: String, default: '#FFFFFF' }
   },
   data () {
     return {
       isLogin: true,
-      danmuType: 'roll',
-      danmuColor: '#FFFFFF',
       colorList: ['#FE0302', '#FF7204', '#FFAA02', '#FFD302', '#FFFF00', '#A0EE00', '#00CD00', '#019899', '#4266BE', '#89D5FF', '#CC0273', '#222222', '#9B9B9B', '#FFFFFF']
     }
   },
   methods: {
-    changeDanmuType (type) {
-      this.danmuType = type
+    changeDanmu (type, color) {
+      this.$emit('changeDanmu', type, color)
     },
-    changeDanmuColor (color) {
-      this.danmuColor = color
+    danmuSubmit () {
+      this.$emit('danmuSubmit')
     }
   }
 }

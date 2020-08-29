@@ -20,6 +20,8 @@ export default {
       rollDomPool: [],
       topDomPool: [],
       bottomDomPool: [],
+      // 每个轨道的上一条弹幕
+      lastDom: [],
       // 定时器
       timer: null,
       // 取弹幕的时间间隔 ms
@@ -123,7 +125,10 @@ export default {
       // 设置当前通道状态为非空闲
       this.freeRollTrack[track] = false
       // 设置当前 dom 为非空闲
+
+      // console.log(JSON.stringify(domItem))
       domItem.isFree = false
+      // console.log(domItem.isFree)
 
       const span = domItem.el
       // 如果该 dom 还没有添加到视图容器中，把它添加到容器
@@ -137,28 +142,30 @@ export default {
       // animation-duration 时间，把容器宽度分为 150 份
       domItem.duration = this.container.clientWidth / 150
       domItem.speed = (this.container.clientWidth + span.clientWidth) / domItem.duration
+      // 延迟时间
+      let delay = 0
 
-      // 每个 dompool 通道的第 MAX_COUNT_INLINE 个用来存放最后一条弹幕的信息，用于和新弹幕的比较
-      const lastDom = this.rollDomPool[track][this.MAX_COUNT_INLINE]
+      // 每个 lastDom 通道用来存放最后一条弹幕的信息，用于和新弹幕的比较
+      const lastDom = this.lastDom[track]
       // 如果上一个 dom 为非空闲（在动画中），要看看新弹幕会不会追上旧弹幕：
       //    新弹幕的右侧会不会追上上一条弹幕的右侧
-      //    追及时间 = 路程差 - 速度差 > 0
       if (lastDom && !lastDom.isFree) {
-        // 上一条弹幕的剩余路程 = 弹幕的右侧 - 容器的左侧
+        // 上一条弹幕的 剩余路程 = 弹幕的右侧 - 容器的左侧
         const restDistance = lastDom.el.getBoundingClientRect().right - this.container.getBoundingClientRect().left
+        // 剩余时间 = 剩余路程 / 上一条弹幕的速度
         const restTime = restDistance / lastDom.speed
-
+        // 新弹幕能跑的路程 = 新弹幕的速度 * 剩余时间
         const catchDistance = domItem.speed * restTime
-        // const newTime = (span.clientWidth + this.container.clientWidth) / domItem.speed
-        // console.log(catchDistance, this.container.clientWidth)
+        // 如果这段时间够新弹幕跑完，说明会追上
         const willCatch = catchDistance - this.container.clientWidth
         if (willCatch > 0) {
           // 延迟播放
-          span.style.animationDelay = `${willCatch / domItem.speed}s`
+          delay = willCatch / domItem.speed
+          span.style.animationDelay = `${delay}s`
         }
       }
       // 存放这条弹幕的信息
-      this.rollDomPool[track][this.MAX_COUNT_INLINE] = domItem
+      this.lastDom[track] = domItem
 
       // 添加自定义样式
       if (danmu.style) {
@@ -180,14 +187,13 @@ export default {
       span.style.animationName = 'danmu-roll'
       // 起始从屏幕右侧切入
       span.style.transform = `translateX(${this.container.clientWidth}px)`
-      // 
       span.style.animationDuration = `${domItem.duration}s`
 
       // 弹幕右侧完全进入容器后，才能开始放下一条
       // t(s) = 弹幕的宽度 / 弹幕的移速
       setTimeout(() => {
         this.freeRollTrack[track] = true
-      }, (span.clientWidth / domItem.speed) * 1000)
+      }, (span.clientWidth / domItem.speed + delay) * 1000)
     },
     /* 发送顶部/底部弹幕 */
     shootFixedDanmu (type, danmu, track) {
@@ -277,10 +283,12 @@ export default {
             const rollTrack = this.getTrack(danmuType)
             if (rollTrack > -1) {
               const dom = this.findFreeRollDom(rollTrack)
-              this.shootRollDanmu(dom, danmu, rollTrack)
-            } else {
-              this.danmu.push(danmu)
+              if (dom != null) {
+                this.shootRollDanmu(dom, danmu, rollTrack)
+                return
+              }
             }
+            this.danmu.push(danmu)
           } else if (danmuType === 'top' || danmuType === 'bottom') {
             // 获取空闲通道
             const track = this.getTrack(danmuType)

@@ -9,9 +9,9 @@
     tabindex="1"
   >
     <div
-      class="player-main-content"
+      class="video-main-wrapper"
       :class="classList"
-      :style="{height: (mode === 2 ) ? '100vh' : playerHeight + 'px'}"
+      :style="{ height: mode === 2 ? '100vh' : playerHeight + 'px' }"
       @mouseleave="showControl = false"
       ref="player"
     >
@@ -29,14 +29,16 @@
         @mousemove="controllerShow(false)"
         @mouseleave="controllerShow(true)"
       >
-        <!-- src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4" -->
-        <video src="http://localhost:3000/video" ref="video" />
+        <video
+          src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4"
+          ref="video"
+        />
         <!-- 弹幕池 -->
         <DanmuPool v-if="needDanmuPlay" :danmu="danmuList" :isPlaying="isPlaying" />
       </div>
       <!-- 控制器 -->
       <div
-        class="player-controller"
+        class="video-controller"
         :class="showControl ? 'show' : ''"
         @mouseover="showControl = true"
       >
@@ -55,34 +57,54 @@
           :volume="volume"
           :setVolume="setVolume"
         >
-          <!-- 发送弹幕的 表单 -->
-          <DanmuBox
-            v-if="(mode === 2 || mode === 3) && showInnerDanmu"
-            slot="danmu"
-            css="transparent"
-            v-model="danmuText"
-            :danmuSubmit="danmuSubmit"
-          />
+          <!-- 中间控制器 -->
+          <CenterControl v-show="mode === 2 || mode === 3" slot="danmu">
+            <div class="center-btn">
+              <input
+                type="checkbox"
+                class="danmu-switch-btn btn"
+                :checked="needDanmuPlay"
+                @click="danmuSwitch($event.target.checked)"
+              />
+            </div>
+            <!-- 发送弹幕的 表单 -->
+            <DanmuBox
+              css="transparent"
+              v-model="danmuText"
+              v-show="showInnerDanmu"
+              :danmuType="danmuType"
+              :danmuColor="danmuColor"
+              @danmuSubmit="danmuSubmit"
+              @changeDanmu="changeDanmu"
+            />
+          </CenterControl>
         </ControlBox>
       </div>
-      <div class="volume-info" :class="showVolumeInfo ? 'fade-out' : 'transparent'">
+      <!-- 方向键控制音量显示提示 -->
+      <div class="volume-tip" :class="showVolumeTip ? 'fade-out' : 'transparent'">
         <i class="icon" :class="volume === 0 ? 'icon-mute' : 'icon-volume'"></i>
         <span>{{ volume === 0 ? '静音' : `${parseInt(volume * 100)}%` }}</span>
       </div>
     </div>
-    <!-- 弹幕盒子 -->
-    <div class="danmu-box">
-      <div class="danmu-left-box">
-        <span class="danmu-msg">{{ 1 }}人正在观看，{{ 0 }}条弹幕</span>
+    <!-- 弹幕 send 盒子 -->
+    <div class="danmu-sendbar">
+      <div class="danmu-sendbar-left">
+        <span>{{ 1 }}人正在观看，{{ 0 }}条弹幕</span>
         <input
           type="checkbox"
-          class="checke"
+          class="danmu-switch-btn"
           :checked="needDanmuPlay"
           @click="danmuSwitch($event.target.checked)"
         />
       </div>
-      <div class="danmu-right-box">
-        <DanmuBox v-model="danmuText" :danmuSubmit="danmuSubmit" />
+      <div class="danmu-sendbar-right">
+        <DanmuBox
+          v-model="danmuText"
+          :danmuType="danmuType"
+          :danmuColor="danmuColor"
+          @danmuSubmit="danmuSubmit"
+          @changeDanmu="changeDanmu"
+        />
       </div>
     </div>
   </div>
@@ -91,6 +113,7 @@
 <script>
 import ProgressBar from './ProgressBar'
 import ControlBox from './ControlBox'
+import CenterControl from './CenterControl'
 import DanmuBox from './DanmuBox'
 
 import { getLocal } from '../../assets/js/storage'
@@ -120,6 +143,8 @@ export default {
       volume: 1,
       // 要发送的弹幕
       danmuText: '',
+      danmuType: 'roll',
+      danmuColor: '#FFFFFF',
       showInnerDanmu: true,
       // 是否显示控制器和标题
       showControl: false,
@@ -127,7 +152,7 @@ export default {
       controlTimer: null,
       // 音量 info 定时器
       volumeInfoTimer: null,
-      showVolumeInfo: false,
+      showVolumeTip: false,
       // 要发送的弹幕数组
       danmuList: [
         { type: 'roll', text: '我开始变色了1', style: { 'color': '#ffffff' } },
@@ -152,6 +177,10 @@ export default {
     }
   },
   methods: {
+    changeDanmu (type, color) {
+      this.danmuType = type
+      this.danmuColor = color
+    },
     /* 弹幕开关 */
     danmuSwitch (flag) {
       // console.log(flag)
@@ -159,12 +188,17 @@ export default {
       this.danmuList = []
     },
     /* 发送并提交弹幕 */
-    danmuSubmit (type, color) {
+    danmuSubmit () {
       const danmu = this.danmuText.trim()
       if (danmu) {
         // axios()
         // { type: 'roll' | 'top' | 'bottom', text: danmuText, style: {}, s_time: Date.now(), v_time: currentTime }
-        this.danmuList.push({ type, text: this.danmuText, style: { color }, isCurr: true })
+        this.danmuList.push({
+          type: this.danmuType,
+          text: this.danmuText,
+          style: { color: this.danmuColor },
+          isCurr: true
+        })
         this.danmuText = ''
       }
     },
@@ -190,10 +224,10 @@ export default {
       volume = volume < 0 ? 0 : volume
       this.setVolume(volume / 100)
 
-      this.showVolumeInfo = true
+      this.showVolumeTip = true
       clearTimeout(this.volumeInfoTimer)
       this.volumeInfoTimer = setTimeout(() => {
-        this.showVolumeInfo = false
+        this.showVolumeTip = false
       }, 1000)
     },
     /* 视频暂停和播放 */
@@ -303,12 +337,8 @@ export default {
     },
     /* 浏览器 resize 事件 */
     windowResize () {
-      if (this.mode === 2 || this.mode === 3) {
-        const body = document.documentElement || document.body
-        this.showInnerDanmu = body.offsetWidth > 1024
-      } else {
-        this.showInnerDanmu = false
-      }
+      const body = document.documentElement || document.body
+      this.showInnerDanmu = body.offsetWidth > 1024
       this.playerHeight = this.$refs.player.clientWidth * 0.5625
     },
     /* 控制 控制器的显示和隐藏 */
@@ -325,7 +355,7 @@ export default {
     }
   },
   filters: {
-    // 格式化时间
+    /* 格式化时间 */
     timeFormat (seconds) {
       let minite = Math.floor(seconds / 60);
       if (minite < 10) {
@@ -353,15 +383,13 @@ export default {
   mounted () {
     // 获取并设置 localStorage 中的音量
     const localVol = getLocal('sptv-volume')
-    this.setVolume(this.volume = localVol ? localVol : 1)
+    this.setVolume(this.volume = localVol != null ? localVol : 1)
 
     const video = this.$refs.video
     // 视频已准备好开始播放
     video.addEventListener("canplay", this.getDurdation)
     // 监听视频播放位置的改变
     video.addEventListener("timeupdate", this.updateProgress)
-      // 监听视频下载
-      // video.addEventListener('progress', this.getBuffered)
 
       // 监听全屏事件
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
@@ -377,7 +405,6 @@ export default {
     const video = this.$refs.video
     video.removeEventListener("canplay", this.getDurdation)
     video.removeEventListener("timeupdate", this.updateProgress)
-      // video.removeEventListener('progress', this.getBuffered)
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(item => {
         document.removeEventListener(item, this.fullScreenChange)
       })
@@ -387,7 +414,8 @@ export default {
     ProgressBar,
     ControlBox,
     DanmuBox,
-    DanmuPool: () => import('./DanmuPool')
+    DanmuPool: () => import('./DanmuPool'),
+    CenterControl: () => import('./CenterControl')
   }
 }
 </script>
@@ -397,19 +425,39 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  margin: 10px 0;
+  // margin: 10px 0;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  z-index: 999;
 
-  .player-main-content {
+  .video-main-wrapper {
     position: relative;
     width: 100%;
     height: calc(100% - 45px);
     background-color: #000000;
+
+    // 网页全屏
+    &.full-webpage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9876;
+
+      .video-controller {
+        bottom: 0;
+        height: 60px;
+        .icon {
+          font-size: 26px;
+        }
+      }
+    }
   }
 
+  // 核心视频区
   .video-content {
     position: relative;
     width: 100%;
@@ -417,7 +465,8 @@ export default {
     cursor: pointer;
   }
 
-  .player-controller {
+  // 视频控制器
+  .video-controller {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -433,9 +482,9 @@ export default {
     );
     transition: opacity ease 0.4s;
     opacity: 0;
-    // z-index: 999;
   }
 
+  // 视频标题
   .video-title {
     position: absolute;
     top: 0;
@@ -463,11 +512,23 @@ export default {
     }
   }
 
+  // 显示
   .show {
     opacity: 1;
   }
 
-  .volume-info {
+  // 中间控制器按钮
+  .center-btn {
+    display: flex;
+    align-items: center;
+
+    .btn {
+      margin-right: 10px;
+    }
+  }
+
+  // 方向键控制音量显示提示
+  .volume-tip {
     display: flex;
     align-items: center;
     position: absolute;
@@ -485,6 +546,7 @@ export default {
       font-size: 32px;
       padding-right: 5px;
     }
+
     span {
       flex: 1;
       text-align: center;
@@ -502,17 +564,27 @@ export default {
   }
 }
 
-// 网页全屏
-.video-player .full-webpage {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9876;
+// 动态样式
+.video-main-wrapper {
+  // 网页全屏
+  &.full-webpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9876;
 
-  .player-controller {
-    bottom: 0;
+    .video-controller {
+      height: 60px;
+      .icon {
+        font-size: 26px;
+      }
+    }
+  }
+
+  // 全屏
+  &.full-window .video-controller {
     height: 60px;
     .icon {
       font-size: 26px;
@@ -520,15 +592,8 @@ export default {
   }
 }
 
-.video-player .full-window .player-controller {
-  bottom: 0;
-  height: 60px;
-  .icon {
-    font-size: 26px;
-  }
-}
-
-.danmu-box {
+// 视频下方，发送弹幕的盒子
+.danmu-sendbar {
   display: flex;
   align-items: center;
   width: 100%;
@@ -539,7 +604,7 @@ export default {
   border-radius: 2px;
   box-sizing: border-box;
 
-  .danmu-left-box {
+  .danmu-sendbar-left {
     box-sizing: border-box;
     width: 300px;
     display: flex;
@@ -547,18 +612,25 @@ export default {
     padding-right: 15px;
   }
 
-  .checke {
-    position: relative;
-    width: 30px;
-    height: 19px;
-    margin-left: 10px;
-    background: #757575;
-    border-radius: 30px;
-    vertical-align: -4px;
-    cursor: pointer;
-    -webkit-appearance: none;
+  .danmu-sendbar-right {
+    flex: 1;
+    display: flex;
   }
-  .checke:before {
+}
+
+// 弹幕切换开关
+.danmu-switch-btn {
+  position: relative;
+  width: 30px;
+  height: 19px;
+  margin-left: 10px;
+  background: #757575;
+  border-radius: 30px;
+  vertical-align: -4px;
+  cursor: pointer;
+  -webkit-appearance: none;
+
+  &:before {
     content: "弹";
     position: absolute;
     left: 2px;
@@ -573,29 +645,15 @@ export default {
     box-shadow: 0px 0px 4px #ff8484;
     transition: all 0.2s linear;
   }
-  .checke:checked {
+
+  &:checked {
     background: #ff6b6b;
   }
-  .checke:checked:before {
+
+  &:checked:before {
     left: 12px;
     color: #ff6b6b;
     transition: all 0.2s linear;
-  }
-
-  .danmu-right-box {
-    flex: 1;
-    display: flex;
-  }
-}
-
-@media screen and(max-width: 1756px) {
-  .wide-screen .video-player {
-    height: 814px;
-  }
-}
-@media screen and(max-width: 1650px) {
-  .wide-screen .video-player {
-    height: 667px;
   }
 }
 </style>

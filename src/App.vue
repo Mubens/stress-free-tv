@@ -134,6 +134,17 @@ input[type="button"] {
   font-weight: 700;
 }
 
+.clearfix:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.clearfix {
+  *zoom: 1;
+}
+
 @media screen and(max-width: 1756px) {
   .wrapper {
     width: 1360px;

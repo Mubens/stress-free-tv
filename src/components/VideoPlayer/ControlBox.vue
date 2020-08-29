@@ -9,9 +9,9 @@
       :percent="percent"
       :setCurrentTime="setCurrentTime"
     />
-    <div class="center-box">
-      <slot name="danmu" />
-    </div>
+    <!-- <div class="center-box"> -->
+    <slot name="danmu" />
+    <!-- </div> -->
     <!-- 右控制器 -->
     <RightControl
       :volume="volume"
