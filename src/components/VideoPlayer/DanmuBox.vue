@@ -9,6 +9,8 @@
         @keydown.enter="danmuSubmit(danmuType, danmuColor)"
         @keydown.left.stop
         @keydown.right.stop
+        @keydown.up.stop
+        @keydown.down.stop
         placeholder="发送弹幕"
       />
       <div class="icon icon-setting danmu-type">
@@ -69,7 +71,7 @@
         </div>
       </div>
     </div>
-    <span class="danmu-input" v-else>
+    <span class="danmu-input to-login" v-else>
       请先
       <a href="#">登录</a>
     </span>
@@ -91,7 +93,6 @@ export default {
   },
   data () {
     return {
-      isLogin: true,
       colorList: ['#FE0302', '#FF7204', '#FFAA02', '#FFD302', '#FFFF00', '#A0EE00', '#00CD00', '#019899', '#4266BE', '#89D5FF', '#CC0273', '#222222', '#9B9B9B', '#FFFFFF']
     }
   },
@@ -101,6 +102,11 @@ export default {
     },
     danmuSubmit () {
       this.$emit('danmuSubmit')
+    }
+  },
+  computed: {
+    isLogin () {
+      return this.$store.state.isLogin
     }
   }
 }
@@ -158,6 +164,11 @@ export default {
     // font-size: 14px;
     a {
       color: #ff6b6b;
+    }
+
+    &.to-login {
+      padding: 0;
+      padding-left: 15px;
     }
   }
 

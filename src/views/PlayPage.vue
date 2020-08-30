@@ -1,24 +1,42 @@
 <template>
   <div class="play-wrapper clearfix">
-    <div class="play-wrapper-left" ref="left">
+    <div class="play-wrapper-left">
       <div class="margin">123</div>
       <div class="player-box margin" :style="{ 'height': `${containerHeight + 10}px` }">
-        <div class="player-container margin" :class="mode === 1 ? 'wide-size' : ''" ref="container">
+        <div class="player-container margin" :class="{ 'wide-size': mode === 1 }" ref="container">
           <VideoPlayer :mode="mode" :modeChange="modeChange" />
         </div>
       </div>
-      <div class="margin">1</div>
+      <div class="comment-wrapper margin">
+        <!-- 上分页 -->
+        <PagingCom
+          type="mini"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @changeCurPage="changeCurPage"
+        />
+        <!-- 上 input -->
+        <CommentInput v-model="commentText" :borderb="true" />
+        <!-- 评论 -->
+        <MainComment :commentData="commentData" />
+        <!-- 下 input  -->
+        <CommentInput v-model="commentText" />
+        <!-- 下分页 -->
+        <PagingCom
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @changeCurPage="changeCurPage"
+        />
+      </div>
     </div>
-    <div class="play-wrapper-right" ref="right">
+    <div class="play-wrapper-right">
       <div class="margin">456</div>
       <div
         class="left-box"
         :style="{ 'margin-top': `${ mode === 1 ? containerHeight + 20 : 10 }px` }"
       >
-        <div class="box">
-          <DanmuList />
-          <EpisodeList />
-        </div>
+        <DanmuList />
+        <EpisodeList />
       </div>
     </div>
   </div>
@@ -34,9 +52,36 @@ export default {
     return {
       mode: 0,  // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
       lastMode: 0,
-      container: null,
       containerHeight: 0,
-      wrapperHeight: 0
+      currentPage: 1,
+      totalPages: 9,
+      commentData: [
+        {
+          id: 1,
+          u_name: 'Muben',
+          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
+          comment: '66 6啊\n999卧槽',
+          s_time: Date.now(),
+          like: 66
+        },
+        {
+          id: 2,
+          u_name: 'Muben',
+          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
+          comment: '66 6啊\n999卧槽',
+          s_time: Date.now(),
+          like: 66
+        },
+        {
+          id: 3,
+          u_name: 'Muben',
+          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
+          comment: '66 6啊\n999卧槽',
+          s_time: Date.now(),
+          like: 66
+        }
+      ],
+      commentText: ''
     }
   },
   methods: {
@@ -53,13 +98,13 @@ export default {
     },
     /* 获取播放器高度 */
     watchContainer () {
-      // setTimeout(() => {
       if (this.mode === 1 || this.mode === 0) {
         const container = this.$refs.container.getBoundingClientRect()
         this.containerHeight = container.height
-
       }
-      // })
+    },
+    changeCurPage (page) {
+      this.currentPage = page
     }
   },
   watch: {
@@ -78,7 +123,6 @@ export default {
     }
   },
   mounted () {
-    this.container = this.$refs.container
     setTimeout(() => {
       this.watchContainer()
     })
@@ -87,7 +131,14 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.watchContainer)
   },
-  components: { VideoPlayer, DanmuList, EpisodeList }
+  components: {
+    VideoPlayer,
+    PagingCom: () => import('../components/Pagination/PagingCom'),
+    MainComment: () => import('../components/PlayPage/MainComment'),
+    CommentInput: () => import('../components/PlayPage/CommentInput'),
+    DanmuList,
+    EpisodeList
+  }
 }
 </script>
 

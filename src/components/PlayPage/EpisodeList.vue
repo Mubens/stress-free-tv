@@ -2,31 +2,25 @@
   <div class="episode-list-wrapper">
     <div class="episode-list-title">
       <span class="title">选集</span>
-      <i
-        class="icon"
-        :class="blocklist ? 'icon-grid' : 'icon-item'"
-        @click="blocklist = !blocklist"
-      ></i>
+      <i class="icon" :class="isGridLayout ? 'icon-grid' : 'icon-item'" @click="switchLayout"></i>
     </div>
     <div class="episode-list-content">
-      <div v-if="blocklist" class="grid-layout">
+      <div class="grid-layout" v-if="isGridLayout">
         <a
-          v-for="item in episodes"
-          :key="item.ep"
+          v-for="item in epData"
           :class="current === item.ep ? 'current' : ''"
           :href="item.url"
-          @click="episodeClick(item.ep)"
+          :key="item.ep"
         >
           <span>{{ item.ep }}</span>
         </a>
       </div>
-      <div v-else class="list-layout">
+      <div class="list-layout" v-else>
         <a
-          v-for="item in episodes"
-          :key="item.ep"
+          v-for="item in epData"
           :class="current === item.ep ? 'current' : ''"
           :href="item.url"
-          @click="episodeClick(item.ep)"
+          :key="item.ep"
         >
           <span>第 {{ item.ep }} 话&nbsp;</span>
           <span>{{ item.title }}</span>
@@ -37,12 +31,12 @@
 </template>
 
 <script>
+import { setLocal, getLocal } from '../../assets/js/storage'
+
 export default {
-  data () {
-    return {
-      current: 36,
-      blocklist: true,
-      episodes: [
+  props: {
+    epData: {
+      type: Array, default: () => [
         { ep: 1, title: '来访者1', url: 'http://localhost:8080/play/123456' },
         { ep: 2, title: '来访者2', url: 'http://localhost:8080/play/123456' },
         { ep: 3, title: '来访者3', url: 'http://localhost:8080/play/123456' },
@@ -61,10 +55,21 @@ export default {
       ]
     }
   },
-  methods: {
-    episodeClick (n) {
-      this.current = n
+  data () {
+    return {
+      current: 36,
+      isGridLayout: true
     }
+  },
+  methods: {
+    switchLayout () {
+      this.isGridLayout = !this.isGridLayout
+      setLocal('sftv-eptype', this.isGridLayout)
+    }
+  },
+  mounted () {
+    const isGridLayout = getLocal('sftv-eptype')
+    this.isGridLayout = isGridLayout != null ? isGridLayout : true
   }
 }
 </script>
@@ -156,76 +161,5 @@ export default {
       }
     }
   }
-
-  // div {
-  //   height: 356px;
-  //   overflow-y: auto;
-  //   overflow-x: hidden;
-  // }
-  // .title {
-  //   position: relative;
-  //   padding-bottom: 10px;
-  // }
-  // .list {
-  //   position: absolute;
-  //   top: 2px;
-  //   cursor: pointer;
-  // }
-  // .grid-list {
-  //   margin-left: 3px;
-  // }
-  // .item-list {
-  //   margin-left: 4px;
-  // }
-  // .list:hover path {
-  //   fill: #ff6b6b;
-  // }
-
-  // .list-wrapper .block {
-  //   display: grid;
-  //   grid-template-columns: repeat(4, 1fr);
-  //   justify-items: center;
-  //   .episode {
-  //     position: relative;
-  //     top: 0;
-  //     left: 0;
-  //     width: 66px;
-  //     height: 36px;
-  //     margin-bottom: 5px;
-  //     border: 1px solid #e5e9ef;
-  //     border-radius: 2px;
-  //     background-color: #fff;
-  //     cursor: pointer;
-  //   }
-  //   .episode > span {
-  //     position: absolute;
-  //     top: 50%;
-  //     left: 50%;
-  //     font-size: 12px;
-  //     transform: translate(-50%, -50%);
-  //   }
-  //   .episode:hover {
-  //     color: #ff6b6b;
-  //     border-color: #ff6b6b;
-  //   }
-  //   .current {
-  //     color: #ffffff !important;
-  //     border-color: #ff6b6b;
-  //     background-color: #ff6b6b;
-  //   }
-  // }
-  // .list-wrapper .item {
-  //   a {
-  //     font-size: 14px;
-  //     margin: 5px -5px;
-  //     padding: 5px 0 5px 5px;
-  //     border-radius: 4px;
-  //     color: #222222;
-  //     cursor: pointer;
-  //   }
-  //   a:hover {
-  //     background-color: #ffffff;
-  //   }
-  // }
 }
 </style>

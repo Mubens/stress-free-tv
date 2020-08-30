@@ -10,7 +10,9 @@ export default new Vuex.Store({
     // 左侧边栏是否要缩略
     narrowNav: getLocal('narrow-icon') || false,
     // 是否完全隐藏左侧边栏
-    hideNav: false
+    hideNav: false,
+    // 登录状态
+    isLogin: true
   },
   mutations: {
     toggleNavNarrow(state, val) {
