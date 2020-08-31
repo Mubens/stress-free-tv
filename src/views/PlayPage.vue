@@ -7,27 +7,8 @@
           <VideoPlayer :mode="mode" :modeChange="modeChange" />
         </div>
       </div>
-      <div class="comment-wrapper margin">
-        <!-- 上分页 -->
-        <PagingCom
-          type="mini"
-          :currentPage="currentPage"
-          :totalPages="totalPages"
-          @changeCurPage="changeCurPage"
-        />
-        <!-- 上 input -->
-        <CommentInput v-model="commentText" :borderb="true" />
-        <!-- 评论 -->
-        <MainComment :commentData="commentData" />
-        <!-- 下 input  -->
-        <CommentInput v-model="commentText" />
-        <!-- 下分页 -->
-        <PagingCom
-          :currentPage="currentPage"
-          :totalPages="totalPages"
-          @changeCurPage="changeCurPage"
-        />
-      </div>
+      <!-- 评论 -->
+      <CommentList />
     </div>
     <div class="play-wrapper-right">
       <div class="margin">456</div>
@@ -35,7 +16,9 @@
         class="left-box"
         :style="{ 'margin-top': `${ mode === 1 ? containerHeight + 20 : 10 }px` }"
       >
+        <!-- 弹幕 -->
         <DanmuList />
+        <!-- 选集 -->
         <EpisodeList />
       </div>
     </div>
@@ -52,36 +35,7 @@ export default {
     return {
       mode: 0,  // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
       lastMode: 0,
-      containerHeight: 0,
-      currentPage: 1,
-      totalPages: 9,
-      commentData: [
-        {
-          id: 1,
-          u_name: 'Muben',
-          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
-          comment: '66 6啊\n999卧槽',
-          s_time: Date.now(),
-          like: 66
-        },
-        {
-          id: 2,
-          u_name: 'Muben',
-          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
-          comment: '66 6啊\n999卧槽',
-          s_time: Date.now(),
-          like: 66
-        },
-        {
-          id: 3,
-          u_name: 'Muben',
-          u_head: require('../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
-          comment: '66 6啊\n999卧槽',
-          s_time: Date.now(),
-          like: 66
-        }
-      ],
-      commentText: ''
+      containerHeight: 0
     }
   },
   methods: {
@@ -102,9 +56,6 @@ export default {
         const container = this.$refs.container.getBoundingClientRect()
         this.containerHeight = container.height
       }
-    },
-    changeCurPage (page) {
-      this.currentPage = page
     }
   },
   watch: {
@@ -114,7 +65,7 @@ export default {
       if (this.mode === 2) {
         doc.style.overflow = 'hidden'
       } else {
-        doc.style.overflow = ''
+        doc.style.overflow = 'auto'
       }
 
       setTimeout(() => {
@@ -133,9 +84,7 @@ export default {
   },
   components: {
     VideoPlayer,
-    PagingCom: () => import('../components/Pagination/PagingCom'),
-    MainComment: () => import('../components/PlayPage/MainComment'),
-    CommentInput: () => import('../components/PlayPage/CommentInput'),
+    CommentList: () => import('../components/PlayPage/CommentList'),
     DanmuList,
     EpisodeList
   }

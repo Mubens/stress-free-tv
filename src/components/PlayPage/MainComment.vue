@@ -1,18 +1,18 @@
 <template>
-  <div class="comment-items">
-    <div class="comment-item" v-for="item in commentData" :key="item.id">
+  <div class="comment-items" ref="comment">
+    <div class="comment-item" v-for="item in commentData.data.comments" :key="item.comment.id">
       <div>
         <a href="#" class="user-head">
-          <img :src="item.u_head" />
+          <img :src="item.user.face" />
         </a>
       </div>
       <div class="user-comment">
         <span class="user-name">
-          <a href="#">{{ item.u_name }}</a>
+          <a href="#">{{ item.user.name }}</a>
         </span>
-        <div class="comment" v-html="textToHtml(item.comment)"></div>
+        <div class="comment" v-html="textToHtml(item.comment.content)"></div>
         <div class="info">
-          <span class="time">{{ '2020-01-02 11:00' }}</span>
+          <span class="time">{{ item.comment.time | timeFormat }}</span>
           <span class="like">
             <svg
               t="1598795452303"
@@ -30,7 +30,7 @@
                 p-id="1725"
               />
             </svg>
-            {{ 66 }}
+            {{ item.comment.like }}
           </span>
           <span class="hate">
             <svg
@@ -50,9 +50,19 @@
               />
             </svg>
           </span>
-          <span class="reply">回复</span>
+          <span
+            class="reply"
+            @click="reply(item.comment.id, [ item.comment.id, item.user.id, item.user.name ])"
+          >回复</span>
         </div>
-        <SubComment :subCommentData="commentData" :textToHtml="textToHtml" />
+        <SubComment
+          :subCommentData="item.children"
+          :textToHtml="textToHtml"
+          :mainCId="item.comment.id"
+          :getSubComment="getSubComment"
+          :reply="reply"
+        />
+        <CommentInput v-if="inputId === item.comment.id" v-model="subCommentText" ref="input" />
       </div>
     </div>
   </div>
@@ -61,15 +71,63 @@
 <script>
 export default {
   props: {
-    commentData: { type: Array, default: () => [] }
+    commentData: { type: Object, default: () => { } },
+    watchCommentHeight: { type: Function },
+    getSubComment: { type: Function }
+  },
+  data () {
+    return {
+      inputId: 0,
+      subCommentText: '',
+    }
   },
   methods: {
     textToHtml (text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
+    },
+    reply (mainCId, [cId, uId, uNm]) {
+      this.inputId = mainCId
+      this.subCommentText = ''
+
+      setTimeout(() => {
+        this.$refs.input[0].inputFoucs(uNm)
+      })
+    },
+    watchComment () {
+      const docHeight = (document.documentElement || document.body).clientHeight
+      const flag = this.$refs.comment.clientHeight > docHeight ? true : false
+      this.$emit('watchCommentHeight', flag)
     }
   },
+  filters: {
+    timeFormat (time) {
+      const date = new Date(time)
+      const Y = date.getFullYear()
+      const M = add0(date.getMonth() + 1)
+      const D = add0(date.getDate())
+      const h = add0(date.getHours())
+      const m = add0(date.getMinutes())
+
+      return `${Y}-${M}-${D} ${h}:${m}`
+
+      function add0 (val) {
+        return val < 10 ? '0' + val : val
+      }
+    }
+  },
+  mounted () {
+    // this.watchComment()
+    window.addEventListener('resize', this.watchComment)
+  },
+  updated () {
+    this.watchComment()
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.watchComment)
+  },
   components: {
-    SubComment: () => import('./SubComment')
+    SubComment: () => import('./SubComment'),
+    CommentInput: () => import('./CommentInput')
   }
 }
 </script>
@@ -78,7 +136,7 @@ export default {
 .comment-items {
   .comment-item {
     display: flex;
-    padding: 15px 0;
+    padding-top: 15px;
 
     .user-head {
       display: block;
@@ -99,7 +157,6 @@ export default {
       flex-direction: column;
       width: 100%;
       margin-left: 25px;
-      padding-right: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid #e5e9ef;
     }
@@ -116,6 +173,7 @@ export default {
 
     .comment {
       line-height: 18px;
+      padding-right: 15px;
     }
   }
 }

@@ -37,7 +37,7 @@ export default {
   props: {
     currentPage: { type: Number, default: 1 },
     totalPages: { type: Number, default: 1 },
-    changeCurPage: { type: Function },
+    getMainComment: { type: Function },
     type: { type: String, default: '' }
   },
   methods: {
@@ -45,7 +45,7 @@ export default {
       if (page !== this.currentPage) {
         if (page < 1) page = 1
         if (page > this.totalPages) page = this.totalPages
-        this.$emit('changeCurPage', page)
+        this.$emit('getMainComment', page)
       }
     },
     showOrHide (page) {

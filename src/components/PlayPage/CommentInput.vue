@@ -7,9 +7,10 @@
       <textarea
         class="textarea real"
         v-if="isLogin"
-        placeholder="请输入你要发表的评论"
+        :placeholder="placeholder"
         :value="commentText"
         @input="$emit('text-input', $event.target.value)"
+        ref="input"
       ></textarea>
       <div class="textarea to-login" v-else>
         请先
@@ -28,11 +29,18 @@ export default {
   },
   props: {
     borderb: { type: Boolean, default: false },
-    commentText: { type: String, default: '' },
+    commentText: { type: String, default: '' }
   },
   data () {
     return {
-      face: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp')
+      face: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
+      placeholder: '请输入你要发表的评论'
+    }
+  },
+  methods: {
+    inputFoucs (placeholder) {
+      this.placeholder = `回复@${placeholder}:`
+      this.$refs.input.focus()
     }
   },
   computed: {
@@ -108,9 +116,10 @@ export default {
     border-radius: 4px;
     background-color: #ff6b6b;
     color: #ffffff;
+    transition: all 0.2s;
 
     &:hover {
-      background-color: #ff6b6b;
+      background-color: #ff8080;
     }
   }
 }

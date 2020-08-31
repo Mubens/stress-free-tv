@@ -1,18 +1,18 @@
 <template>
   <div class="comment-items">
-    <div class="comment-item" v-for="item in subCommentData" :key="item.id">
+    <div class="comment-item" v-for="item in subCommentData.data.comments" :key="item.id">
       <div class="user-head">
         <a href="#">
-          <img :src="item.u_head" />
+          <img :src="item.user.face" />
         </a>
       </div>
       <div class="user-comment">
         <span class="user-name">
-          <a href="#">Muben</a>
+          <a href="#">{{ item.user.name }}</a>
         </span>
-        <span class="comment" v-html="textToHtml(item.comment)"></span>
+        <span class="comment" v-html="textToHtml(item.comment.content)"></span>
         <div class="info">
-          <span class="time">{{ '2020-01-02 11:00' }}</span>
+          <span class="time">{{ item.comment.time | timeFormat }}</span>
           <span class="like">
             <svg
               t="1598795452303"
@@ -30,7 +30,7 @@
                 p-id="1725"
               />
             </svg>
-            {{ 66 }}
+            {{ item.comment.like }}
           </span>
           <span class="hate">
             <svg
@@ -50,20 +50,70 @@
               />
             </svg>
           </span>
-          <span class="reply">回复</span>
+          <span
+            class="reply"
+            @click="reply(mainCId, [ item.comment.id, item.user.id, item.user.name ])"
+          >回复</span>
         </div>
       </div>
     </div>
     <!-- 分页 -->
-    <PagingCom type="mini" />
+    <div class="see-more" v-if="subCommentData.data.limit === 3 && subCommentData.data.total > 3">
+      共{{ subCommentData.data.total }}条回复，
+      <span
+        class="more-btn"
+        @click="getSubComment(mainCId, 1)"
+      >点击查看</span>
+    </div>
+    <PagingCom
+      v-else-if="subCommentData.data.total > subCommentData.data.limit"
+      type="mini"
+      :currentPage="currentPage"
+      :totalPages="Math.floor(subCommentData.data.total / subCommentData.data.limit + 1)"
+      @getMainComment="getMainComment"
+    />
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    subCommentData: { type: Array, default: () => [] },
-    textToHtml: { type: Function }
+    subCommentData: { type: Object, default: () => { } },
+    textToHtml: { type: Function },
+    mainCId: { type: Number },
+    getSubComment: { type: Function },
+    reply: { type: Function }
+  },
+  data () {
+    return {
+      currentPage: 1,
+      showAllComment: false
+    }
+  },
+  methods: {
+    getMainComment (page) {
+      this.currentPage = page
+      this.getSubComment(this.mainCId, page)
+    },
+    seeMore () {
+
+    }
+  },
+  filters: {
+    timeFormat (time) {
+      const date = new Date(time)
+      const Y = date.getFullYear()
+      const M = add0(date.getMonth() + 1)
+      const D = add0(date.getDate())
+      const h = add0(date.getHours())
+      const m = add0(date.getMinutes())
+
+      return `${Y}-${M}-${D} ${h}:${m}`
+
+      function add0 (val) {
+        return val < 10 ? '0' + val : val
+      }
+    }
   },
   components: {
     PagingCom: () => import('../Pagination/PagingCom')
@@ -104,6 +154,15 @@ export default {
     }
     .up {
       color: #ff6b6b;
+    }
+  }
+
+  .see-more {
+    padding: 4px 0;
+    font-size: 12px;
+    .more-btn {
+      color: #ff6b6b;
+      cursor: pointer;
     }
   }
 }
