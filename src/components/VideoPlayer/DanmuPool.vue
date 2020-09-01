@@ -8,7 +8,7 @@ export default {
     danmu: { type: Array, default: () => [] },
     isPlaying: { type: Boolean }
   },
-  data () {
+  data() {
     return {
       // 每行最大弹幕数
       MAX_COUNT_INLINE: 8,
@@ -37,7 +37,7 @@ export default {
     }
   },
   watch: {
-    isPlaying (flag) {
+    isPlaying(flag) {
       // console.log(flag)
       if (flag) {
         this.danmuPlay()
@@ -48,7 +48,8 @@ export default {
   },
   methods: {
     /* 初始化 */
-    init () {
+    init() {
+      this.$refs.container.innerHTML = ''
       // 初始化 rollDomPool
       for (let row = 0; row < this.TRACK_COUNT; row++) {
         const doms = []
@@ -66,7 +67,7 @@ export default {
             span.style.border = 'none'
 
             // 清空自定义样式
-            this.cssLsit.forEach(key => {
+            this.cssLsit.forEach((key) => {
               span.style[key] = null
             })
 
@@ -96,11 +97,11 @@ export default {
       }
     },
     /* 获取可以发送滚动弹幕的 dom */
-    findFreeRollDom (track) {
-      return this.rollDomPool[track].find(item => item.isFree)
+    findFreeRollDom(track) {
+      return this.rollDomPool[track].find((item) => item.isFree)
     },
     /* 获取可以发射弹幕的通道 */
-    getTrack (type) {
+    getTrack(type) {
       let trackType = null
       if (type === 'roll') {
         trackType = this.freeRollTrack
@@ -120,7 +121,7 @@ export default {
       return -1
     },
     /* 发送滚动弹幕 */
-    shootRollDanmu (domItem, danmu, track) {
+    shootRollDanmu(domItem, danmu, track) {
       // console.log(domItem, danmu, track)
       // 设置当前通道状态为非空闲
       this.freeRollTrack[track] = false
@@ -138,7 +139,7 @@ export default {
       }
 
       // 添加弹幕内容，可以获取弹幕元素的宽高
-      span.innerText = danmu.text
+      span.innerText = danmu.content
       // animation-duration 时间，把容器宽度分为 150 份
       domItem.duration = this.container.clientWidth / 150
       domItem.speed = (this.container.clientWidth + span.clientWidth) / domItem.duration
@@ -170,7 +171,7 @@ export default {
       // 添加自定义样式
       if (danmu.style) {
         const keys = Object.keys(danmu.style)
-        keys.forEach(key => {
+        keys.forEach((key) => {
           // 检查样式合法性
           if (this.cssLsit.includes(key)) {
             span.style[key] = danmu.style[key]
@@ -196,7 +197,7 @@ export default {
       }, (span.clientWidth / domItem.speed + delay) * 1000)
     },
     /* 发送顶部/底部弹幕 */
-    shootFixedDanmu (type, danmu, track) {
+    shootFixedDanmu(type, danmu, track) {
       let domPoll = null
       if (type === 'top') {
         domPoll = this.topDomPool
@@ -233,7 +234,7 @@ export default {
         span.style.visibility = 'hidden'
 
         // 清空自定义样式
-        this.cssLsit.forEach(key => {
+        this.cssLsit.forEach((key) => {
           span.style[key] = null
         })
 
@@ -242,7 +243,7 @@ export default {
       })
 
       span.style.visibility = 'visible'
-      span.innerText = danmu.text
+      span.innerText = danmu.content
 
       // 刚刚发的弹幕
       if (danmu.isCurr) {
@@ -252,7 +253,7 @@ export default {
       // 添加自定义样式
       if (danmu.style) {
         const keys = Object.keys(danmu.style)
-        keys.forEach(key => {
+        keys.forEach((key) => {
           // 检查样式合法性
           if (this.cssLsit.includes(key)) {
             span.style[key] = danmu.style[key]
@@ -261,7 +262,7 @@ export default {
       }
     },
     /* 播放弹幕动画 */
-    danmuPlay () {
+    danmuPlay() {
       // 开始播放
       for (let row = 0; row < this.TRACK_COUNT; row++) {
         for (let col = 0; col < this.MAX_COUNT_INLINE; col++) {
@@ -280,6 +281,7 @@ export default {
           const danmuType = danmu.type
           if (danmuType === 'roll') {
             // 获取空闲通道
+            // console.log('danmu', danmu)
             const rollTrack = this.getTrack(danmuType)
             if (rollTrack > -1) {
               const dom = this.findFreeRollDom(rollTrack)
@@ -302,7 +304,7 @@ export default {
       }, this.interval)
     },
     /* 停止播放弹幕 */
-    danmuPause () {
+    danmuPause() {
       clearInterval(this.timer)
       for (let row = 0; row < this.TRACK_COUNT; row++) {
         for (let col = 0; col < this.MAX_COUNT_INLINE; col++) {
@@ -313,14 +315,14 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     this.container = this.$refs.container
     this.init()
     if (this.isPlaying) {
       this.danmuPlay()
     }
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.danmuPause()
   }
 }

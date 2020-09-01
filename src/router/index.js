@@ -48,6 +48,8 @@ const MAIN_ROUTE = [
   }
 ]
 
+import Play from '../views/PlayPage'
+
 const routes = [
   {
     path: '/',
@@ -56,7 +58,8 @@ const routes = [
   ...MAIN_ROUTE,
   {
     path: '/play/:id',
-    component: () => import('../views/PlayPage')
+    name: 'Play',
+    component: Play
   },
   {
     path: '*',

@@ -50,15 +50,16 @@
               />
             </svg>
           </span>
-          <span
-            class="reply"
-            @click="reply(item.comment.id, [ item.comment.id, item.user.id, item.user.name ])"
-          >回复</span>
+          <span class="reply" @click="reply(item.comment.id, [item.comment.id, item.user.id, item.user.name])"
+            >回复</span
+          >
         </div>
         <SubComment
+          v-if="JSON.stringify(item.children) !== '{}'"
           :subCommentData="item.children"
           :textToHtml="textToHtml"
           :mainCId="item.comment.id"
+          :mainUser="item.user"
           :getSubComment="getSubComment"
           :reply="reply"
         />
@@ -71,21 +72,21 @@
 <script>
 export default {
   props: {
-    commentData: { type: Object, default: () => { } },
+    commentData: { type: Object, default: () => {} },
     watchCommentHeight: { type: Function },
     getSubComment: { type: Function }
   },
-  data () {
+  data() {
     return {
       inputId: 0,
-      subCommentText: '',
+      subCommentText: ''
     }
   },
   methods: {
-    textToHtml (text) {
+    textToHtml(text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
     },
-    reply (mainCId, [cId, uId, uNm]) {
+    reply(mainCId, [cId, uId, uNm]) {
       this.inputId = mainCId
       this.subCommentText = ''
 
@@ -93,14 +94,17 @@ export default {
         this.$refs.input[0].inputFoucs(uNm)
       })
     },
-    watchComment () {
+    watchComment() {
       const docHeight = (document.documentElement || document.body).clientHeight
       const flag = this.$refs.comment.clientHeight > docHeight ? true : false
       this.$emit('watchCommentHeight', flag)
+    },
+    clearInputId() {
+      this.inputId = 0
     }
   },
   filters: {
-    timeFormat (time) {
+    timeFormat(time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -110,19 +114,19 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0 (val) {
+      function add0(val) {
         return val < 10 ? '0' + val : val
       }
     }
   },
-  mounted () {
+  mounted() {
     // this.watchComment()
     window.addEventListener('resize', this.watchComment)
   },
-  updated () {
+  updated() {
     this.watchComment()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('resize', this.watchComment)
   },
   components: {
@@ -167,6 +171,9 @@ export default {
         color: #6d758f;
       }
       .vip {
+        color: #ff6b6b;
+      }
+      a:hover {
         color: #ff6b6b;
       }
     }

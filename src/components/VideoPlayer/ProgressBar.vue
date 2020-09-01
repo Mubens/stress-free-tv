@@ -12,16 +12,16 @@ export default {
   props: {
     buffer: { type: Number, default: 0 },
     percent: { type: Number, default: 0 },
-    setCurrentTime: Function,
+    setCurrentTime: Function
   },
-  data () {
+  data() {
     return {
       dragFlag: false, //拖拽状态标志
-      dragPercent: 0,
+      dragPercent: 0
     }
   },
   computed: {
-    progress () {
+    progress() {
       if (!this.dragFlag) {
         return this.percent
       } else {
@@ -30,7 +30,7 @@ export default {
     }
   },
   methods: {
-    mouseDown (event) {
+    mouseDown(event) {
       if (!this.dragFlag) {
         const e = event || window.event
         this.dragPercent = (e.offsetX / this.$refs.progress.offsetWidth) * 100
@@ -38,11 +38,11 @@ export default {
         this.dragFlag = true
       }
     },
-    mouseMove (event) {
+    mouseMove(event) {
       if (this.dragFlag) {
         const e = event || window.event
         const progress = this.$refs.progress
-        let width = e.clientX - document.querySelector('#play-page').offsetLeft
+        let width = e.clientX - progress.getBoundingClientRect().left
 
         if (width < 0) {
           width = 0
@@ -57,19 +57,19 @@ export default {
         window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty()
       }
     },
-    mouseUp () {
+    mouseUp() {
       if (this.dragFlag) {
         this.setCurrentTime(this.dragPercent, true)
         this.dragFlag = false
       }
     }
   },
-  mounted () {
+  mounted() {
     this.$refs.progress.addEventListener('mousedown', this.mouseDown)
     document.addEventListener('mousemove', this.mouseMove)
     document.addEventListener('mouseup', this.mouseUp)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.$refs.progress.removeEventListener('mousedown', this.mouseDown)
     document.removeEventListener('mousemove', this.mouseMove)
     document.removeEventListener('mouseup', this.mouseUp)

@@ -22,7 +22,7 @@ import { mapMutations } from 'vuex'
 
 export default {
   computed: {
-    classList () {
+    classList() {
       if (this.$store.state.hideNav) {
         return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
       } else {
@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleNavNarrow', 'toggleNavHide']),
-    toggleNavNarrow () {
+    toggleNavNarrow() {
       if (this.$store.state.hideNav) {
         this.$store.commit('toggleNavNarrow', true)
       }
@@ -45,7 +45,6 @@ export default {
   }
 }
 </script>
-
 
 <style lang="less">
 // initial css
@@ -63,8 +62,8 @@ body,
 }
 
 html {
-  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial,
-    PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, sans-serif;
   color: #505050;
   -webkit-font-smoothing: antialiased;
 }
@@ -97,7 +96,7 @@ textarea {
 }
 
 button,
-input[type="button"] {
+input[type='button'] {
   cursor: pointer;
 }
 
@@ -135,7 +134,7 @@ input[type="button"] {
 }
 
 .clearfix:after {
-  content: "";
+  content: '';
   display: block;
   height: 0;
   clear: both;
@@ -156,7 +155,6 @@ input[type="button"] {
   }
 }
 </style>
-
 
 <style lang="less">
 // css in App.vue

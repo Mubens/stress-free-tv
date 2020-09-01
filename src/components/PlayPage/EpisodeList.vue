@@ -6,22 +6,12 @@
     </div>
     <div class="episode-list-content">
       <div class="grid-layout" v-if="isGridLayout">
-        <a
-          v-for="item in epData"
-          :class="current === item.ep ? 'current' : ''"
-          :href="item.url"
-          :key="item.ep"
-        >
+        <a v-for="item in epData" :class="current === item.ep ? 'current' : ''" :href="item.url" :key="item.ep">
           <span>{{ item.ep }}</span>
         </a>
       </div>
       <div class="list-layout" v-else>
-        <a
-          v-for="item in epData"
-          :class="current === item.ep ? 'current' : ''"
-          :href="item.url"
-          :key="item.ep"
-        >
+        <a v-for="item in epData" :class="current === item.ep ? 'current' : ''" :href="item.url" :key="item.ep">
           <span>第 {{ item.ep }} 话&nbsp;</span>
           <span>{{ item.title }}</span>
         </a>
@@ -36,38 +26,39 @@ import { setLocal, getLocal } from '../../assets/js/storage'
 export default {
   props: {
     epData: {
-      type: Array, default: () => [
-        { ep: 1, title: '来访者1', url: 'http://localhost:8080/play/123456' },
-        { ep: 2, title: '来访者2', url: 'http://localhost:8080/play/123456' },
-        { ep: 3, title: '来访者3', url: 'http://localhost:8080/play/123456' },
-        { ep: 4, title: '来访者4', url: 'http://localhost:8080/play/123456' },
-        { ep: 5, title: '来访者5', url: 'http://localhost:8080/play/123456' },
-        { ep: 6, title: '来访者6', url: 'http://localhost:8080/play/123456' },
-        { ep: 7, title: '来访者7', url: 'http://localhost:8080/play/123456' },
-        { ep: 8, title: '来访者8', url: 'http://localhost:8080/play/123456' },
-        { ep: 9, title: '来访者9', url: 'http://localhost:8080/play/123456' },
-        { ep: 10, title: '来访者10', url: 'http://localhost:8080/play/123456' },
-        { ep: 25, title: '来访者10', url: 'http://localhost:8080/play/123456' },
-        { ep: 36, title: '来访者10', url: 'http://localhost:8080/play/123456' },
-        { ep: 37, title: '来访者10', url: 'http://localhost:8080/play/123456' },
-        { ep: 38, title: '来访者10', url: 'http://localhost:8080/play/123456' },
-        { ep: 39, title: '来访者10', url: 'http://localhost:8080/play/123456' }
+      type: Array,
+      default: () => [
+        { ep: 1, title: '来访者1', url: 'http://localhost:8080/play/123456?ep=1' },
+        { ep: 2, title: '来访者2', url: 'http://localhost:8080/play/123456?ep=2' },
+        { ep: 3, title: '来访者3', url: 'http://localhost:8080/play/123456?ep=3' },
+        { ep: 4, title: '来访者4', url: 'http://localhost:8080/play/123456?ep=4' },
+        { ep: 5, title: '来访者5', url: 'http://localhost:8080/play/123456?ep=5' },
+        { ep: 6, title: '来访者6', url: 'http://localhost:8080/play/123456?ep=6' },
+        { ep: 7, title: '来访者7', url: 'http://localhost:8080/play/123456?ep=7' },
+        { ep: 8, title: '来访者8', url: 'http://localhost:8080/play/123456?ep=8' },
+        { ep: 9, title: '来访者9', url: 'http://localhost:8080/play/123456?ep=9' },
+        { ep: 10, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=10' },
+        { ep: 25, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=25' },
+        { ep: 36, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=36' },
+        { ep: 37, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=37' },
+        { ep: 38, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=38' },
+        { ep: 39, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=39' }
       ]
     }
   },
-  data () {
+  data() {
     return {
       current: 36,
       isGridLayout: true
     }
   },
   methods: {
-    switchLayout () {
+    switchLayout() {
       this.isGridLayout = !this.isGridLayout
       setLocal('sftv-eptype', this.isGridLayout)
     }
   },
-  mounted () {
+  mounted() {
     const isGridLayout = getLocal('sftv-eptype')
     this.isGridLayout = isGridLayout != null ? isGridLayout : true
   }

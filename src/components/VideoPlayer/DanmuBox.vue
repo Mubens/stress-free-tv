@@ -11,6 +11,7 @@
         @keydown.right.stop
         @keydown.up.stop
         @keydown.down.stop
+        @keydown.space.stop
         placeholder="发送弹幕"
       />
       <div class="icon icon-setting danmu-type">
@@ -91,21 +92,36 @@ export default {
     danmuType: { type: String, default: 'roll' },
     danmuColor: { type: String, default: '#FFFFFF' }
   },
-  data () {
+  data() {
     return {
-      colorList: ['#FE0302', '#FF7204', '#FFAA02', '#FFD302', '#FFFF00', '#A0EE00', '#00CD00', '#019899', '#4266BE', '#89D5FF', '#CC0273', '#222222', '#9B9B9B', '#FFFFFF']
+      colorList: [
+        '#FE0302',
+        '#FF7204',
+        '#FFAA02',
+        '#FFD302',
+        '#FFFF00',
+        '#A0EE00',
+        '#00CD00',
+        '#019899',
+        '#4266BE',
+        '#89D5FF',
+        '#CC0273',
+        '#222222',
+        '#9B9B9B',
+        '#FFFFFF'
+      ]
     }
   },
   methods: {
-    changeDanmu (type, color) {
+    changeDanmu(type, color) {
       this.$emit('changeDanmu', type, color)
     },
-    danmuSubmit () {
+    danmuSubmit() {
       this.$emit('danmuSubmit')
     }
   },
   computed: {
-    isLogin () {
+    isLogin() {
       return this.$store.state.isLogin
     }
   }
@@ -249,7 +265,7 @@ export default {
         box-shadow: 0.5px 0.5px 0px 1.5px #ffffff;
         &::before {
           position: absolute;
-          content: "";
+          content: '';
           width: calc(100% - 1px);
           height: calc(100% - 1px);
           border: 1px solid #000000;

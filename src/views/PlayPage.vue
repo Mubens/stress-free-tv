@@ -1,23 +1,19 @@
 <template>
   <div class="play-wrapper clearfix">
     <div class="play-wrapper-left">
-      <div class="margin">123</div>
-      <div class="player-box margin" :style="{ 'height': `${containerHeight + 10}px` }">
-        <div class="player-container margin" :class="{ 'wide-size': mode === 1 }" ref="container">
-          <VideoPlayer :mode="mode" :modeChange="modeChange" />
-        </div>
+      <!-- <div class="player-box margin" :style="{ height: `${containerHeight + 10}px` }"> -->
+      <div class="player-container margin" :class="{ 'wide-size': mode === 1 }" ref="container">
+        <VideoPlayer :mode="mode" :modeChange="modeChange" :danmuList="danmuList" />
       </div>
+      <!-- </div> -->
+      <div class="video-info"></div>
       <!-- 评论 -->
       <CommentList />
     </div>
     <div class="play-wrapper-right">
-      <div class="margin">456</div>
-      <div
-        class="left-box"
-        :style="{ 'margin-top': `${ mode === 1 ? containerHeight + 20 : 10 }px` }"
-      >
+      <div class="left-box" :style="{ 'margin-top': `${mode === 1 ? containerHeight + 15 : 5}px` }">
         <!-- 弹幕 -->
-        <DanmuList />
+        <DanmuList :danmuList="danmuList" />
         <!-- 选集 -->
         <EpisodeList />
       </div>
@@ -29,17 +25,21 @@
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
 import DanmuList from '../components/PlayPage/DanmuList'
 import EpisodeList from '../components/PlayPage/EpisodeList'
+import CommentList from '../components/PlayPage/CommentList'
+
+import axios from 'axios'
 
 export default {
-  data () {
+  data() {
     return {
-      mode: 0,  // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
+      mode: 0, // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
       lastMode: 0,
-      containerHeight: 0
+      containerHeight: 0,
+      danmuList: []
     }
   },
   methods: {
-    modeChange (type) {
+    modeChange(type) {
       if (this.mode !== type) {
         // 全屏不记录 lastMode
         if (!(this.mode === 2 && type === 3)) {
@@ -51,7 +51,7 @@ export default {
       }
     },
     /* 获取播放器高度 */
-    watchContainer () {
+    watchContainer() {
       if (this.mode === 1 || this.mode === 0) {
         const container = this.$refs.container.getBoundingClientRect()
         this.containerHeight = container.height
@@ -60,7 +60,7 @@ export default {
   },
   watch: {
     // 监听 mode 变化，网页全屏（mode = 2）需要隐藏滚动条
-    mode () {
+    mode() {
       const doc = document.documentElement || document.body
       if (this.mode === 2) {
         doc.style.overflow = 'hidden'
@@ -73,18 +73,26 @@ export default {
       })
     }
   },
-  mounted () {
+  mounted() {
     setTimeout(() => {
       this.watchContainer()
     })
     window.addEventListener('resize', this.watchContainer)
+    axios.get(`http://localhost:3000/api/danmaku?vId=${23}&ep=${1}`).then((res) => {
+      if (res.data) {
+        this.danmuList = res.data.data
+      }
+      // console.log(res)
+    })
+
+    // console.log(this.$route)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('resize', this.watchContainer)
   },
   components: {
     VideoPlayer,
-    CommentList: () => import('../components/PlayPage/CommentList'),
+    CommentList,
     DanmuList,
     EpisodeList
   }
@@ -93,6 +101,7 @@ export default {
 
 <style lang="less">
 .play-wrapper {
+  display: flex;
   position: relative;
   top: 0;
   left: 0;
@@ -102,12 +111,15 @@ export default {
   margin: 10px auto;
 
   .play-wrapper-left {
-    float: left;
-    width: calc(100% - 350px);
+    flex: 1;
+    // float: left;
+    // width: calc(100% - 350px);
   }
   .play-wrapper-right {
-    float: right;
-    width: 320px;
+    flex: 0 0 320px;
+    padding-left: 30px;
+    // float: right;
+    // width: 320px;
   }
 
   .player-box {
@@ -118,7 +130,7 @@ export default {
   }
 
   .player-container {
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -130,5 +142,10 @@ export default {
   .margin {
     margin: 5px 0;
   }
+}
+
+.video-info {
+  width: 100%;
+  height: 200px;
 }
 </style>

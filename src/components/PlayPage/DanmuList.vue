@@ -13,9 +13,9 @@
       </div>
       <ul class="content">
         <li v-for="(danmu, i) in danmuList" :key="i">
-          <span>{{ danmu.v_time | v_timeFormat }}</span>
+          <span>{{ danmu.vtime | v_timeFormat }}</span>
           <span :title="danmu.content">{{ danmu.content }}</span>
-          <span>{{ danmu.s_time | s_timeFormat }}</span>
+          <span>{{ danmu.stime | s_timeFormat }}</span>
         </li>
       </ul>
     </div>
@@ -25,42 +25,27 @@
 <script>
 export default {
   props: {
-    danmuList: {
-      type: Array, default: () => [
-        {
-          id: 1,
-          v_time: 60,
-          content: '这个视频很不错哦',
-          s_time: Date.now()
-        },
-        {
-          id: 2,
-          v_time: 9200,
-          content: '这个视频很不错哦这个视频很不错哦',
-          s_time: Date.now()
-        }
-      ]
-    }
+    danmuList: { type: Array, default: () => [] }
   },
-  data () {
+  data() {
     return {
       isShow: false
     }
   },
   filters: {
     // 格式化时间
-    v_timeFormat (seconds) {
-      var minite = Math.floor(seconds / 60);
+    v_timeFormat(seconds) {
+      var minite = Math.floor(seconds / 60)
       if (minite < 10) {
-        minite = "0" + minite;
+        minite = '0' + minite
       }
-      var second = Math.floor(seconds % 60);
+      var second = Math.floor(seconds % 60)
       if (second < 10) {
-        second = "0" + second;
+        second = '0' + second
       }
-      return minite + ":" + second;
+      return minite + ':' + second
     },
-    s_timeFormat (time) {
+    s_timeFormat(time) {
       const date = new Date(time)
       let M = add0(date.getMonth() + 1)
       let D = add0(date.getDate())
@@ -69,7 +54,7 @@ export default {
 
       return `${M}-${D} ${h}:${m}`
 
-      function add0 (num) {
+      function add0(num) {
         return num < 10 ? '0' + num : num
       }
     }
