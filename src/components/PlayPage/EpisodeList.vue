@@ -1,17 +1,29 @@
 <template>
-  <div class="episode-list-wrapper">
+  <div class="episode-list-wrapper" v-if="episodeData.length > 1">
     <div class="episode-list-title">
       <span class="title">选集</span>
       <i class="icon" :class="isGridLayout ? 'icon-grid' : 'icon-item'" @click="switchLayout"></i>
     </div>
     <div class="episode-list-content">
       <div class="grid-layout" v-if="isGridLayout">
-        <a v-for="item in epData" :class="current === item.ep ? 'current' : ''" :href="item.url" :key="item.ep">
+        <a
+          v-for="(item, index) in episodeData"
+          :class="currentEp === item.ep ? 'current' : ''"
+          :href="`${$route.path}?ep=${item.ep}`"
+          @click.prevent="routerPush(item.ep, index)"
+          :key="item.ep"
+        >
           <span>{{ item.ep }}</span>
         </a>
       </div>
       <div class="list-layout" v-else>
-        <a v-for="item in epData" :class="current === item.ep ? 'current' : ''" :href="item.url" :key="item.ep">
+        <a
+          v-for="(item, index) in episodeData"
+          :class="currentEp === item.ep ? 'current' : ''"
+          :href="`${$route.path}?ep=${item.ep}`"
+          @click.prevent="routerPush(item.ep, index)"
+          :key="item.ep"
+        >
           <span>第 {{ item.ep }} 话&nbsp;</span>
           <span>{{ item.title }}</span>
         </a>
@@ -25,42 +37,42 @@ import { setLocal, getLocal } from '../../assets/js/storage'
 
 export default {
   props: {
-    epData: {
-      type: Array,
-      default: () => [
-        { ep: 1, title: '来访者1', url: 'http://localhost:8080/play/123456?ep=1' },
-        { ep: 2, title: '来访者2', url: 'http://localhost:8080/play/123456?ep=2' },
-        { ep: 3, title: '来访者3', url: 'http://localhost:8080/play/123456?ep=3' },
-        { ep: 4, title: '来访者4', url: 'http://localhost:8080/play/123456?ep=4' },
-        { ep: 5, title: '来访者5', url: 'http://localhost:8080/play/123456?ep=5' },
-        { ep: 6, title: '来访者6', url: 'http://localhost:8080/play/123456?ep=6' },
-        { ep: 7, title: '来访者7', url: 'http://localhost:8080/play/123456?ep=7' },
-        { ep: 8, title: '来访者8', url: 'http://localhost:8080/play/123456?ep=8' },
-        { ep: 9, title: '来访者9', url: 'http://localhost:8080/play/123456?ep=9' },
-        { ep: 10, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=10' },
-        { ep: 25, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=25' },
-        { ep: 36, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=36' },
-        { ep: 37, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=37' },
-        { ep: 38, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=38' },
-        { ep: 39, title: '来访者10', url: 'http://localhost:8080/play/123456?ep=39' }
-      ]
-    }
+    currentEp: { type: Number },
+    episodeData: { type: Array },
+    setEpisode: { type: Function }
   },
-  data() {
+  data () {
     return {
-      current: 36,
       isGridLayout: true
     }
   },
+  watch: {
+  },
   methods: {
-    switchLayout() {
+    /* localStorage 获取布局类型 */
+    getLayout () {
+      const isGridLayout = getLocal('sftv-eptype')
+      this.isGridLayout = isGridLayout != null ? isGridLayout : true
+    },
+    /* 切换布局 */
+    switchLayout () {
       this.isGridLayout = !this.isGridLayout
+    },
+    /* 保存布局 */
+    setLayout () {
       setLocal('sftv-eptype', this.isGridLayout)
+    },
+    /* 路由传参 */
+    routerPush (ep) {
+      if (ep === this.currentEp) return
+      this.$emit('setEpisode', { path: this.$route.params.id, query: { ep } })
     }
   },
-  mounted() {
-    const isGridLayout = getLocal('sftv-eptype')
-    this.isGridLayout = isGridLayout != null ? isGridLayout : true
+  mounted () {
+    this.getLayout()
+  },
+  beforeDestroy () {
+    this.setLayout()
   }
 }
 </script>
@@ -132,9 +144,11 @@ export default {
     .list-layout {
       display: flex;
       flex-direction: column;
+      white-space: nowrap;
+      text-overflow: ellipsis;
 
       a {
-        font-size: 14px;
+        font-size: 13px;
         width: 280px;
         margin: 3px -3px;
         padding: 5px 0 5px 5px;

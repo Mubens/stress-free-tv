@@ -14,13 +14,11 @@
       :class="classList"
       :style="{ height: mode === 2 ? '100vh' : playerHeight + 'px' }"
       @mouseleave="showControl = false"
-      ref="player"
+      ref="wrapper"
     >
       <!-- 视频标题 -->
       <div class="video-title" :class="showControl ? 'show' : ''">
-        <span class="title" @mouseover="showControl = true">{{
-          '在党的领导下，共青团紧跟时代步伐，引领广大青年与祖国共同奋斗。作为共青团一份子，我们要始终坚定地跟着党走，听从团中央的指挥，高举习近平新时代中国特色社会主义思想伟大旗帜，奋发激情、增长才干，树立高尚情操。'
-        }}</span>
+        <span class="title" @mouseover="showControl = true">{{ videoTitle }}</span>
       </div>
       <!-- 视频和弹幕 -->
       <div
@@ -28,16 +26,18 @@
         @click="playOrPause"
         @mousemove="controllerShow(false)"
         @mouseleave="controllerShow(true)"
+        ref="player"
       >
-        <video
-          src="https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/60_ee514e1fabd7e5f5aa7eddb432ca2aaa.mp4"
-          ref="video"
-        />
+        <video preload="auto" :src="videoSrc" ref="video" />
         <!-- 弹幕池 -->
         <DanmuPool v-if="needDanmuPlay" :danmu="proxyDanmu" :isPlaying="isPlaying" ref="danmupool" />
       </div>
       <!-- 控制器 -->
-      <div class="video-controller" :class="showControl ? 'show' : ''" @mouseover="showControl = true">
+      <div
+        class="video-controller"
+        :class="showControl ? 'show' : ''"
+        @mouseover="showControl = true"
+      >
         <!-- 进度条 -->
         <ProgressBar :percent="percent" :buffer="buffer" :setCurrentTime="setCurrentTime" />
         <!-- 其他功能 -->
@@ -118,9 +118,11 @@ export default {
   props: {
     mode: { type: Number, default: 0 },
     modeChange: Function,
+    videoSrc: String,
+    videoTitle: String,
     danmuList: { type: Array, default: () => [] }
   },
-  data() {
+  data () {
     return {
       // video 的高度
       playerHeight: 0,
@@ -158,32 +160,42 @@ export default {
     }
   },
   watch: {
-    mode() {
+    mode () {
       if (this.mode === 0 || this.mode === 1) {
         this.$nextTick(() => {
-          this.playerHeight = this.$refs.player.clientWidth * 0.5625
+          this.playerHeight = this.$refs.wrapper.clientWidth * 0.5625
         })
       }
     },
     isPlaying: {
-      handler(val) {
+      handler (val) {
         this.pushDanmu()
+      }
+    },
+    $route: {
+      handler (to, from = { query: { ep: undefined } }) {
+        if (to.query.ep !== from.query.ep) {
+          this.$nextTick(() => {
+            this.$refs.video.play()
+            this.isPlaying = true
+          })
+        }
       }
     }
   },
   methods: {
-    changeDanmu(type, color) {
+    changeDanmu (type, color) {
       this.danmuType = type
       this.danmuColor = color
     },
     /* 弹幕开关 */
-    danmuSwitch(flag) {
+    danmuSwitch (flag) {
       // console.log(flag)
       this.needDanmuPlay = flag
       this.proxyDanmu = []
     },
     /* 发送并提交弹幕 */
-    danmuSubmit() {
+    danmuSubmit () {
       const danmu = this.danmuText.trim()
       if (danmu) {
         // axios()
@@ -199,7 +211,7 @@ export default {
       }
     },
     /* 设置音量 */
-    setVolume(val) {
+    setVolume (val) {
       if (val === 0) {
         this.$refs.video.muted = true
       } else {
@@ -209,7 +221,7 @@ export default {
       this.volume = val
     },
     /* 键盘上下键微调音量 */
-    setVolumeByKey(arrow) {
+    setVolumeByKey (arrow) {
       let volume = this.volume * 100
       if (arrow === 'up') {
         volume += 10
@@ -227,7 +239,7 @@ export default {
       }, 1000)
     },
     /* 视频暂停和播放 */
-    playOrPause() {
+    playOrPause () {
       if (this.isPlaying) {
         this.$refs.video.pause()
       } else {
@@ -236,7 +248,7 @@ export default {
       this.isPlaying = !this.isPlaying
     },
     /* 动态设置视频时间 */
-    setCurrentTime(percent, flag) {
+    setCurrentTime (percent, flag) {
       // flag = false 更新进度条，但不设置视频时间
       // flag = true 更新进度条并立即设置视频时间
       this.percent = percent
@@ -252,7 +264,7 @@ export default {
       this.$refs.danmupool.init()
     },
     /* 键盘左右方向键微调时间 */
-    setCurrentTimeByKey(arrow) {
+    setCurrentTimeByKey (arrow) {
       if (arrow === 'left') {
         this.$refs.video.currentTime -= 5
       } else {
@@ -263,7 +275,7 @@ export default {
       this.$refs.danmupool.init()
     },
     /* 非拖拽中，进度条自动跟随 */
-    updateProgress() {
+    updateProgress () {
       if (!this.isDrag) {
         this.currentTime = this.$refs.video.currentTime
         // 进度值 = 100 * 当前时间（s）/ 视频持续时间（s）
@@ -272,11 +284,11 @@ export default {
       this.getBuffered()
     },
     /* 获取视频时长 */
-    getDurdation() {
+    getDurdation () {
       this.duration = this.$refs.video.duration
     },
     /* 获取视频缓存 */
-    getBuffered() {
+    getBuffered () {
       const video = this.$refs.video
       const buffered = video.buffered
 
@@ -296,7 +308,7 @@ export default {
       }
     },
     /* 全屏事件 */
-    fullScreen() {
+    fullScreen () {
       let isFull = !!(
         document.fullscreen ||
         document.mozFullScreen ||
@@ -317,7 +329,7 @@ export default {
         }
       } else {
         // console.log('全屏')
-        const player = this.$refs.player
+        const player = this.$refs.wrapper
         if (player.requestFullscreen) {
           player.requestFullscreen()
         } else if (player.msRequestFullscreen) {
@@ -330,17 +342,17 @@ export default {
       }
     },
     /* 全屏自定义事件 */
-    fullScreenChange() {
+    fullScreenChange () {
       this.modeChange(3)
     },
     /* 浏览器 resize 事件 */
-    windowResize() {
+    windowResize () {
       const body = document.documentElement || document.body
       this.showInnerDanmu = body.offsetWidth > 1024
-      this.playerHeight = this.$refs.player.clientWidth * 0.5625
+      this.playerHeight = this.$refs.wrapper.clientWidth * 0.5625
     },
     /* 控制 控制器的显示和隐藏 */
-    controllerShow(flag) {
+    controllerShow (flag) {
       // flag = true 控制器一直显示
       // flag = false 控制器显示 800ms 后消失
       this.showControl = true
@@ -351,7 +363,7 @@ export default {
         }, 800)
       }
     },
-    pushDanmu() {
+    pushDanmu () {
       clearInterval(this.danmuTimer)
       if (this.needDanmuPlay) {
         this.danmuTimer = setInterval(() => {
@@ -369,7 +381,7 @@ export default {
   },
   filters: {
     /* 格式化时间 */
-    timeFormat(seconds) {
+    timeFormat (seconds) {
       let minite = Math.floor(seconds / 60)
       if (minite < 10) {
         minite = '0' + minite
@@ -383,7 +395,7 @@ export default {
   },
   computed: {
     /* 网页全屏和显示器全屏下样式 */
-    classList() {
+    classList () {
       if (this.mode === 2) {
         return 'full-webpage'
       }
@@ -393,7 +405,7 @@ export default {
       return ''
     }
   },
-  mounted() {
+  mounted () {
     // 获取并设置 localStorage 中的音量
     const localVol = getLocal('sptv-volume')
     this.setVolume((this.volume = localVol != null ? localVol : 1))
@@ -405,24 +417,22 @@ export default {
     video.addEventListener('timeupdate', this.updateProgress)
 
     this.pushDanmu()
-
-    // 监听全屏事件
-    ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
-      document.addEventListener(item, this.fullScreenChange)
-    })
-
+      // 监听全屏事件
+      ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
+        document.addEventListener(item, this.fullScreenChange)
+      })
     // 监听浏览器大小变化
     this.windowResize() // 初始化
     window.addEventListener('resize', this.windowResize)
   },
-  beforeDestroy() {
+  beforeDestroy () {
     // 注销所有 dom 监听事件
     const video = this.$refs.video
     video.removeEventListener('canplay', this.getDurdation)
     video.removeEventListener('timeupdate', this.updateProgress)
-    ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
-      document.removeEventListener(item, this.fullScreenChange)
-    })
+      ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
+        document.removeEventListener(item, this.fullScreenChange)
+      })
     window.removeEventListener('resize', this.windowResize)
   },
   components: {
@@ -489,7 +499,12 @@ export default {
     bottom: 0;
     width: 100%;
     height: 45px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.8),
+      rgba(0, 0, 0, 0.4),
+      rgba(0, 0, 0, 0)
+    );
     transition: opacity ease 0.4s;
     opacity: 0;
   }
@@ -501,7 +516,11 @@ export default {
     left: 0;
     width: 100%;
     color: #fff;
-    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0));
+    background: linear-gradient(
+      rgba(0, 0, 0, 0.35),
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0)
+    );
     transition: all ease 0.4s;
     z-index: 99;
     opacity: 0;
@@ -637,7 +656,7 @@ export default {
   -webkit-appearance: none;
 
   &:before {
-    content: '弹';
+    content: "弹";
     position: absolute;
     left: 2px;
     top: 2px;

@@ -63,6 +63,7 @@ const routes = [
   },
   {
     path: '*',
+    name: '404',
     component: () => import('../components/NotFound')
   }
 ]

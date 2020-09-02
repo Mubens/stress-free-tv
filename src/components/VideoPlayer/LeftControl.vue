@@ -12,9 +12,9 @@
         ref="input"
       />
       <div class="time-text" v-else @click="inputFocus">
-        <span>{{ currentTime | timeFormat }}</span>
+        <span>{{ currentTime || '0' | timeFormat }}</span>
         <span class="split">/</span>
-        <span>{{ duration | timeFormat }}</span>
+        <span>{{ duration || '0' | timeFormat }}</span>
       </div>
     </div>
     <!-- <slot name="danmu" /> -->

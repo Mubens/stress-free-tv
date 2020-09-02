@@ -1,6 +1,8 @@
 <template>
   <div class="comment-wrapper margin">
-    <h3 class="title">{{ commentData && commentData.data.all_total ? commentData.data.all_total : 0 }} 评论</h3>
+    <h3
+      class="title"
+    >{{ commentData && commentData.data.all_total ? commentData.data.all_total : 0 }} 评论</h3>
     <!-- 上分页 -->
     <PagingCom
       v-if="commentData && commentData.data.total > commentData.data.limit"
@@ -36,7 +38,7 @@
 import axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       currentPage: 1,
       commentData: null,
@@ -44,31 +46,34 @@ export default {
       showDownInput: false
     }
   },
+  watch: {
+    $route () {
+      this.getMainComment(1)
+    }
+  },
   methods: {
     /* 获取一级评论 */
-    getMainComment(page) {
+    getMainComment (page) {
       this.currentPage = page
-      axios.get(`http://localhost:3000/api/comment/main?vId=${23}&page=${page}`).then((res) => {
-        this.$refs.comment.clearInputId()
+      // console.log(this.$route.params.id)
+      axios.get(`http://localhost:3000/api/comment/main?vId=${this.$route.params.id}&page=${page}`).then((res) => {
+        this.$refs.comment && this.$refs.comment.clearInputId()
         this.commentData = res.data
       })
     },
     /* 获取二级评论 */
-    getSubComment(cId, page) {
+    getSubComment (cId, page) {
       // console.log(cId, page)
-      axios.get(`http://localhost:3000/api/comment/sub?cId=${23}&page=${page}`).then((res) => {
+      axios.get(`http://localhost:3000/api/comment/sub?cId=${this.$route.params.id}&page=${page}`).then((res) => {
         this.commentData.data.comments.find((item) => item.comment.id === cId).children = res.data
       })
     },
-    watchCommentHeight(flag) {
+    watchCommentHeight (flag) {
       this.showDownInput = flag
     }
   },
-  mounted() {
-    axios.get(`http://localhost:3000/api/comment/main?vId=${23}&page=${this.currentPage}`).then((res) => {
-      // console.log(res.data)
-      this.commentData = res.data
-    })
+  mounted () {
+    this.getMainComment(1)
   },
   components: {
     PagingCom: () => import('../Pagination/PagingCom'),
