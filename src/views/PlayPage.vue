@@ -5,10 +5,12 @@
         <!-- 播放器组件 -->
         <VideoPlayer
           :mode="mode"
-          :modeChange="modeChange"
-          :videoSrc="videoSrc"
-          :videoTitle="videoTitle"
-          :danmuList="danmuList"
+          :setScreenMode="setScreenMode"
+          :videoSource="videoSource"
+          :current="getEpIndex"
+          :total="episodeData.length - 1"
+          @setEpisode="setEpisode"
+          :danmuData="danmuData"
         />
       </div>
       <!-- 视频简介组件 -->
@@ -19,9 +21,13 @@
     <div class="play-wrapper-right">
       <div class="left-box" :style="{ 'margin-top': `${mode === 1 ? containerHeight + 15 : 5}px` }">
         <!-- 弹幕组件 -->
-        <DanmuList :danmuList="danmuList" />
+        <DanmuList :danmuData="danmuData" />
         <!-- 选集组件 -->
-        <EpisodeList :currentEp="currentEp" :episodeData="episodeData" @setEpisode="setEpisode" />
+        <EpisodeList
+          :currentEp="videoSource.ep"
+          :episodeData="episodeData"
+          @setEpisode="setEpisode"
+        />
       </div>
     </div>
   </div>
@@ -41,16 +47,14 @@ export default {
       mode: 0, // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
       lastMode: 0,
       containerHeight: 0,
-      danmuList: [],
-      currentEp: 1,
-      videoSrc: '',
-      videoTitle: '',
+      danmuData: [],
+      videoSource: {},
       episodeData: []
     }
   },
   methods: {
     /* 屏幕大小模式切换 */
-    modeChange (type) {
+    setScreenMode (type) {
       if (this.mode !== type) {
         // 网页全屏 -> 全屏 不记录 lastMode
         if (!(this.mode === 2 && type === 3)) {
@@ -63,7 +67,7 @@ export default {
       }
     },
     /* 监听播放器高度 */
-    watchContainerHeight () {
+    getContainerHeight () {
       // 默认和宽屏才记录
       if (this.mode === 1 || this.mode === 0) {
         const container = this.$refs.container.getBoundingClientRect()
@@ -75,35 +79,39 @@ export default {
       axios.get(`http://localhost:3000/api/play?vId=${this.$route.params.id}`).then(res => {
         if (!res.data.errno) {
           this.episodeData = res.data.data
-          this.epRedirect()
+          this.redirect()
           this.getDanmaku()
         } else {
+          // 没有该视频资源返回 404 页面 
           this.$router.push({ name: '404' })
         }
       })
     },
     /* 选集重定向 */
-    epRedirect () {
+    redirect () {
       if (this.episodeData.length) {
+        // 有没有 query 中打那一集
         const exit = this.episodeData.find(item => item.ep === +this.$route.query.ep)
         // console.log(exit)
+        /* 如果没有重定向到第一集 */
         if (exit == null) {
           const params = { query: { ep: this.episodeData[0].ep } }
           this.$router.push(params)
         } else {
-          // this.$router.push({ query: { ep: exit.ep } })
-          this.currentEp = exit.ep
-          this.videoSrc = exit.video
-          this.videoTitle = exit.title
+          this.videoSource = exit
         }
       }
     },
     /* 选集 */
-    setEpisode (params) {
-      const episode = this.episodeData.find(item => item.ep === params.query.ep)
-      this.videoSrc = episode.video
-      this.videoTitle = episode.title
-      this.$router.push(params)
+    setEpisode (ep, isNext) {
+      if (!isNext) {
+        this.videoSource = this.episodeData.find(item => item.ep === ep)
+      } else {
+        const episode = this.episodeData[this.getEpIndex + 1]
+        this.videoSource = episode
+        ep = episode.ep
+      }
+      this.$router.push({ query: { ep } })
     },
     /* 获取弹幕 */
     getDanmaku () {
@@ -111,9 +119,21 @@ export default {
       // console.log(route.params.id, route.query.ep)
       axios.get(`http://localhost:3000/api/danmaku?vId=${route.params.id}&ep=${route.query.ep}`).then((res) => {
         if (res.data) {
-          this.danmuList = res.data.data
+          this.danmuData = res.data.data
         }
       })
+    }
+  },
+  computed: {
+    /* 获取当前集的索引 */
+    getEpIndex () {
+      let index = this.episodeData.length
+      if (index) {
+        while (index--) {
+          if (this.episodeData[index].ep === this.videoSource.ep) return index
+        }
+      }
+      return -1
     }
   },
   watch: {
@@ -126,30 +146,24 @@ export default {
         doc.style.overflow = 'auto'
       }
 
+      // 获取播放器高度
       setTimeout(() => {
-        this.watchContainerHeight()
+        this.getContainerHeight()
       })
-    },
-    '$route': {
-      handler (to, from) {
-        // console.log(to)
-        this.currentEp = +to.query.ep
-        const episode = this.episodeData.find(item => item.ep === +to.query.ep)
-        this.videoSrc = episode.video
-        this.videoTitle = episode.title
-      }
     }
   },
   mounted () {
+    // 获取视频集数
     this.getEpisodeData()
-    setTimeout(() => {
-      this.watchContainerHeight()
-    })
-    window.addEventListener('resize', this.watchContainerHeight)
 
+    // 获取播放器高度
+    setTimeout(() => {
+      this.getContainerHeight()
+    })
+    window.addEventListener('resize', this.getContainerHeight)
   },
   beforeDestroy () {
-    window.removeEventListener('resize', this.watchContainerHeight)
+    window.removeEventListener('resize', this.getContainerHeight)
   },
   components: {
     VideoPlayer: () => import('../components/VideoPlayer/VideoPlayer'),

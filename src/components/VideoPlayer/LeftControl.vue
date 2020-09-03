@@ -1,7 +1,7 @@
 <template>
   <div class="control left-control">
     <span class="icon" :class="isPlaying ? 'icon-pause' : 'icon-play'" @click="playOrPause"></span>
-    <span class="icon icon-play-next"></span>
+    <slot name="play-next" />
     <div class="time-box">
       <input
         class="time-input"
@@ -29,7 +29,7 @@ export default {
     playOrPause: Function,
     duration: Number,
     percent: Number,
-    setCurrentTime: Function
+    setVTime: Function
   },
   data () {
     return {
@@ -68,7 +68,7 @@ export default {
       }
 
       if (Math.ceil(this.time) < Math.round(time) || Math.floor(this.time) > Math.round(time)) {
-        this.setCurrentTime((time / this.duration) * 100, true)
+        this.setVTime((time / this.duration) * 100, true)
       }
     }
   },
@@ -87,7 +87,7 @@ export default {
     }
   },
   components: {
-    DanmuBox: () => import('./DanmuBox')
+    DanmuInput: () => import('./DanmuInput')
   }
 }
 </script>

@@ -65,7 +65,7 @@ export default {
     /* 路由传参 */
     routerPush (ep) {
       if (ep === this.currentEp) return
-      this.$emit('setEpisode', { path: this.$route.params.id, query: { ep } })
+      this.$emit('setEpisode', ep)
     }
   },
   mounted () {

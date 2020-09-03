@@ -8,11 +8,11 @@
     <div class="v-barrage-list" :style="isShow ? '' : 'height:0'">
       <div class="title">
         <span>时间</span>
-        <span>弹幕内容({{ danmuList.length }})</span>
+        <span>弹幕内容({{ danmuData.length }})</span>
         <span>发送时间</span>
       </div>
       <ul class="content">
-        <li v-for="(danmu, i) in danmuList" :key="i">
+        <li v-for="(danmu, i) in danmuData" :key="i">
           <span>{{ danmu.vtime | v_timeFormat }}</span>
           <span :title="danmu.content">{{ danmu.content }}</span>
           <span>{{ danmu.stime | s_timeFormat }}</span>
@@ -25,16 +25,16 @@
 <script>
 export default {
   props: {
-    danmuList: { type: Array, default: () => [] }
+    danmuData: { type: Array, default: () => [] }
   },
-  data() {
+  data () {
     return {
       isShow: false
     }
   },
   filters: {
     // 格式化时间
-    v_timeFormat(seconds) {
+    v_timeFormat (seconds) {
       var minite = Math.floor(seconds / 60)
       if (minite < 10) {
         minite = '0' + minite
@@ -45,7 +45,7 @@ export default {
       }
       return minite + ':' + second
     },
-    s_timeFormat(time) {
+    s_timeFormat (time) {
       const date = new Date(time)
       let M = add0(date.getMonth() + 1)
       let D = add0(date.getDate())
@@ -54,7 +54,7 @@ export default {
 
       return `${M}-${D} ${h}:${m}`
 
-      function add0(num) {
+      function add0 (num) {
         return num < 10 ? '0' + num : num
       }
     }

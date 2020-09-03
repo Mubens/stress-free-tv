@@ -2,57 +2,73 @@
   <div
     class="video-player"
     @keydown.prevent.space="playOrPause"
-    @keydown.prevent.right="setCurrentTimeByKey('right')"
-    @keydown.prevent.left="setCurrentTimeByKey('left')"
-    @keydown.prevent.up="setVolumeByKey('up')"
-    @keydown.prevent.down="setVolumeByKey('down')"
-    @keydown.prevent.esc="modeChange(0)"
+    @keydown.prevent.right="setVTimeByArrowKey('right')"
+    @keydown.prevent.left="setVTimeByArrowKey('left')"
+    @keydown.prevent.up="setVVolumeByArrowKey('up')"
+    @keydown.prevent.down="setVVolumeByArrowKey('down')"
+    @keydown.prevent.esc="setScreenMode(0)"
     tabindex="1"
   >
     <div
       class="video-main-wrapper"
       :class="classList"
-      :style="{ height: mode === 2 ? '100vh' : playerHeight + 'px' }"
-      @mouseleave="showControl = false"
+      :style="{ 'height': mode === 2 ? '100vh' : playerHeight + 'px' }"
+      @mouseleave="controllerIsShow = false"
       ref="wrapper"
     >
       <!-- 视频标题 -->
-      <div class="video-title" :class="showControl ? 'show' : ''">
-        <span class="title" @mouseover="showControl = true">{{ videoTitle }}</span>
+      <div class="video-title" :class="{ 'show': controllerIsShow }">
+        <span class="title" @mouseover="controllerIsShow = true">{{ videoSource.title }}</span>
       </div>
       <!-- 视频和弹幕 -->
       <div
         class="video-content"
         @click="playOrPause"
-        @mousemove="controllerShow(false)"
-        @mouseleave="controllerShow(true)"
+        @mousemove="showController(false)"
+        @mouseleave="showController(true)"
         ref="player"
       >
-        <video preload="auto" :src="videoSrc" ref="video" />
+        <video preload="auto" :src="videoSource.video" ref="video" />
         <!-- 弹幕池 -->
-        <DanmuPool v-if="needDanmuPlay" :danmu="proxyDanmu" :isPlaying="isPlaying" ref="danmupool" />
+        <DanmuPool v-if="needDanmuPlay" :danmu="danmuPool" :isPlaying="isPlaying" ref="danmupool" />
+        <!-- 方向键控制音量显示提示 -->
+        <div class="volume-tip" :class="showVolumeTip ? 'fade-out' : 'transparent'">
+          <i class="icon" :class="volume === 0 ? 'icon-mute' : 'icon-volume'"></i>
+          <span>{{ volume === 0 ? '静音' : `${parseInt(volume * 100)}%` }}</span>
+        </div>
+        <!-- 视频暂停提示 -->
+        <div class="pause-tip" v-if="!isPlaying">
+          <i class="icon icon-to-play"></i>
+        </div>
       </div>
       <!-- 控制器 -->
       <div
         class="video-controller"
-        :class="showControl ? 'show' : ''"
-        @mouseover="showControl = true"
+        :class="{ 'show': controllerIsShow }"
+        @mouseover="controllerIsShow = true"
       >
         <!-- 进度条 -->
-        <ProgressBar :percent="percent" :buffer="buffer" :setCurrentTime="setCurrentTime" />
+        <ProgressBar :percent="percent" :buffer="buffer" :setVTime="setVTime" />
         <!-- 其他功能 -->
         <ControlBox
           :mode="mode"
-          :modeChange="modeChange"
+          :setScreenMode="setScreenMode"
           :fullScreen="fullScreen"
           :isPlaying="isPlaying"
           :playOrPause="playOrPause"
           :duration="duration"
           :percent="percent"
-          :setCurrentTime="setCurrentTime"
+          :setVTime="setVTime"
           :volume="volume"
-          :setVolume="setVolume"
+          :setVVolume="setVVolume"
         >
+          <!-- 播放下一集 -->
+          <span
+            class="icon icon-play-next"
+            v-show="current < total"
+            @click="palyNextEp"
+            slot="play-next"
+          ></span>
           <!-- 中间控制器 -->
           <CenterControl v-show="mode === 2 || mode === 3" slot="danmu">
             <div class="center-btn">
@@ -64,28 +80,23 @@
               />
             </div>
             <!-- 发送弹幕的 表单 -->
-            <DanmuBox
+            <DanmuInput
               css="transparent"
               v-model="danmuText"
               v-show="showInnerDanmu"
               :danmuType="danmuType"
               :danmuColor="danmuColor"
-              @danmuSubmit="danmuSubmit"
-              @changeDanmu="changeDanmu"
+              @shootDanmu="shootDanmu"
+              @setDanmuType="setDanmuType"
             />
           </CenterControl>
         </ControlBox>
-      </div>
-      <!-- 方向键控制音量显示提示 -->
-      <div class="volume-tip" :class="showVolumeTip ? 'fade-out' : 'transparent'">
-        <i class="icon" :class="volume === 0 ? 'icon-mute' : 'icon-volume'"></i>
-        <span>{{ volume === 0 ? '静音' : `${parseInt(volume * 100)}%` }}</span>
       </div>
     </div>
     <!-- 弹幕 send 盒子 -->
     <div class="danmu-sendbar">
       <div class="danmu-sendbar-left">
-        <span>{{ 1 }}人正在观看，{{ danmuList.length }}条弹幕</span>
+        <span>{{ 1 }}人正在观看，{{ danmuData.length }}条弹幕</span>
         <input
           type="checkbox"
           class="danmu-switch-btn"
@@ -94,12 +105,12 @@
         />
       </div>
       <div class="danmu-sendbar-right">
-        <DanmuBox
+        <DanmuInput
           v-model="danmuText"
           :danmuType="danmuType"
           :danmuColor="danmuColor"
-          @danmuSubmit="danmuSubmit"
-          @changeDanmu="changeDanmu"
+          @shootDanmu="shootDanmu"
+          @setDanmuType="setDanmuType"
         />
       </div>
     </div>
@@ -110,17 +121,19 @@
 import ProgressBar from './ProgressBar'
 import ControlBox from './ControlBox'
 import CenterControl from './CenterControl'
-import DanmuBox from './DanmuBox'
+import DanmuInput from './DanmuInput'
 
 import { getLocal } from '../../assets/js/storage'
 
 export default {
   props: {
     mode: { type: Number, default: 0 },
-    modeChange: Function,
-    videoSrc: String,
-    videoTitle: String,
-    danmuList: { type: Array, default: () => [] }
+    setScreenMode: Function,
+    videoSource: Object,
+    current: Number,
+    total: Number,
+    setEpisode: Function,
+    danmuData: { type: Array, default: () => [] }
   },
   data () {
     return {
@@ -128,6 +141,7 @@ export default {
       playerHeight: 0,
       // 视频是否在播放
       isPlaying: false,
+      canPlay: false,
       // 视频持续时间
       duration: 0,
       // 当前视频时间
@@ -146,14 +160,14 @@ export default {
       danmuColor: '#FFFFFF',
       showInnerDanmu: true,
       // 是否显示控制器和标题
-      showControl: false,
+      controllerIsShow: false,
       // 控制器 hover 定时器
       controlTimer: null,
       // 音量 info 定时器
       volumeInfoTimer: null,
       showVolumeTip: false,
       // 要发送的弹幕数组
-      proxyDanmu: [],
+      danmuPool: [],
       // 定时弹幕
       danmuTimer: null,
       needDanmuPlay: true
@@ -169,7 +183,7 @@ export default {
     },
     isPlaying: {
       handler (val) {
-        this.pushDanmu()
+        this.addToDanmuPool()
       }
     },
     $route: {
@@ -184,7 +198,8 @@ export default {
     }
   },
   methods: {
-    changeDanmu (type, color) {
+    /* 设置弹幕类型 */
+    setDanmuType (type, color) {
       this.danmuType = type
       this.danmuColor = color
     },
@@ -192,16 +207,16 @@ export default {
     danmuSwitch (flag) {
       // console.log(flag)
       this.needDanmuPlay = flag
-      this.proxyDanmu = []
+      this.danmuPool = []
     },
-    /* 发送并提交弹幕 */
-    danmuSubmit () {
+    /* 发送弹幕 */
+    shootDanmu () {
       const danmu = this.danmuText.trim()
       if (danmu) {
         // axios()
         // { type: 'roll' | 'top' | 'bottom', content: danmuText, style: {}, stime: Date.now(), vtime: currentTime }
 
-        this.proxyDanmu.push({
+        this.danmuPool.push({
           type: this.danmuType,
           content: this.danmuText,
           style: { color: this.danmuColor },
@@ -211,7 +226,7 @@ export default {
       }
     },
     /* 设置音量 */
-    setVolume (val) {
+    setVVolume (val) {
       if (val === 0) {
         this.$refs.video.muted = true
       } else {
@@ -221,7 +236,7 @@ export default {
       this.volume = val
     },
     /* 键盘上下键微调音量 */
-    setVolumeByKey (arrow) {
+    setVVolumeByArrowKey (arrow) {
       let volume = this.volume * 100
       if (arrow === 'up') {
         volume += 10
@@ -230,7 +245,7 @@ export default {
       }
       volume = volume > 100 ? 100 : volume
       volume = volume < 0 ? 0 : volume
-      this.setVolume(volume / 100)
+      this.setVVolume(volume / 100)
 
       this.showVolumeTip = true
       clearTimeout(this.volumeInfoTimer)
@@ -248,7 +263,7 @@ export default {
       this.isPlaying = !this.isPlaying
     },
     /* 动态设置视频时间 */
-    setCurrentTime (percent, flag) {
+    setVTime (percent, flag) {
       // flag = false 更新进度条，但不设置视频时间
       // flag = true 更新进度条并立即设置视频时间
       this.percent = percent
@@ -264,7 +279,7 @@ export default {
       this.$refs.danmupool.init()
     },
     /* 键盘左右方向键微调时间 */
-    setCurrentTimeByKey (arrow) {
+    setVTimeByArrowKey (arrow) {
       if (arrow === 'left') {
         this.$refs.video.currentTime -= 5
       } else {
@@ -275,20 +290,21 @@ export default {
       this.$refs.danmupool.init()
     },
     /* 非拖拽中，进度条自动跟随 */
-    updateProgress () {
+    updateProgressBar () {
       if (!this.isDrag) {
         this.currentTime = this.$refs.video.currentTime
         // 进度值 = 100 * 当前时间（s）/ 视频持续时间（s）
         this.percent = 100 * (this.currentTime / this.duration)
       }
-      this.getBuffered()
+      this.getVBuffer()
     },
     /* 获取视频时长 */
-    getDurdation () {
+    getVDurdation () {
       this.duration = this.$refs.video.duration
+      this.canPlay = true
     },
     /* 获取视频缓存 */
-    getBuffered () {
+    getVBuffer () {
       const video = this.$refs.video
       const buffered = video.buffered
 
@@ -307,9 +323,13 @@ export default {
         }
       }
     },
+    /* 播放下一集 */
+    palyNextEp () {
+      this.$emit('setEpisode', {}, true)
+    },
     /* 全屏事件 */
     fullScreen () {
-      let isFull = !!(
+      const isFull = !!(
         document.fullscreen ||
         document.mozFullScreen ||
         document.webkitIsFullScreen ||
@@ -343,35 +363,40 @@ export default {
     },
     /* 全屏自定义事件 */
     fullScreenChange () {
-      this.modeChange(3)
+      this.$emit('setScreenMode', 3)
     },
     /* 浏览器 resize 事件 */
     windowResize () {
-      const body = document.documentElement || document.body
-      this.showInnerDanmu = body.offsetWidth > 1024
+      if (this.mode === 2) {
+        const body = document.documentElement || document.body
+        this.showInnerDanmu = body.offsetWidth > 1024
+      }
+      // 播放器高度
       this.playerHeight = this.$refs.wrapper.clientWidth * 0.5625
     },
-    /* 控制 控制器的显示和隐藏 */
-    controllerShow (flag) {
+    /* 控制器的显示和隐藏 */
+    showController (flag) {
+      if (!this.canPlay) return
       // flag = true 控制器一直显示
       // flag = false 控制器显示 800ms 后消失
-      this.showControl = true
+      this.controllerIsShow = true
       clearTimeout(this.controlTimer)
       if (!flag) {
         this.controlTimer = setTimeout(() => {
-          this.showControl = false
+          this.controllerIsShow = false
         }, 800)
       }
     },
-    pushDanmu () {
+    /* 追加到弹幕池 */
+    addToDanmuPool () {
       clearInterval(this.danmuTimer)
       if (this.needDanmuPlay) {
         this.danmuTimer = setInterval(() => {
           if (this.isPlaying) {
             const time = Math.floor(this.currentTime)
-            const danmus = this.danmuList.filter((danmu) => Math.floor(danmu.vtime) === time)
+            const danmus = this.danmuData.filter((danmu) => Math.floor(danmu.vtime) === time)
             if (danmus.length > 0) {
-              this.proxyDanmu.push(...danmus)
+              this.danmuPool.push(...danmus)
               // console.log(danmus)
             }
           }
@@ -408,15 +433,15 @@ export default {
   mounted () {
     // 获取并设置 localStorage 中的音量
     const localVol = getLocal('sptv-volume')
-    this.setVolume((this.volume = localVol != null ? localVol : 1))
+    this.setVVolume((this.volume = localVol != null ? localVol : 1))
 
     const video = this.$refs.video
     // 视频已准备好开始播放
-    video.addEventListener('canplay', this.getDurdation)
+    video.addEventListener('canplay', this.getVDurdation)
     // 监听视频播放位置的改变
-    video.addEventListener('timeupdate', this.updateProgress)
+    video.addEventListener('timeupdate', this.updateProgressBar)
 
-    this.pushDanmu()
+    this.addToDanmuPool()
       // 监听全屏事件
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
         document.addEventListener(item, this.fullScreenChange)
@@ -428,8 +453,8 @@ export default {
   beforeDestroy () {
     // 注销所有 dom 监听事件
     const video = this.$refs.video
-    video.removeEventListener('canplay', this.getDurdation)
-    video.removeEventListener('timeupdate', this.updateProgress)
+    video.removeEventListener('canplay', this.getVDurdation)
+    video.removeEventListener('timeupdate', this.updateProgressBar)
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
         document.removeEventListener(item, this.fullScreenChange)
       })
@@ -438,7 +463,7 @@ export default {
   components: {
     ProgressBar,
     ControlBox,
-    DanmuBox,
+    DanmuInput,
     DanmuPool: () => import('./DanmuPool'),
     CenterControl: () => import('./CenterControl')
   }
@@ -586,6 +611,15 @@ export default {
     &.fade-out {
       opacity: 1;
     }
+  }
+
+  .pause-tip {
+    position: absolute;
+    bottom: 40px;
+    right: 30px;
+    font-size: 64px;
+    color: #e2d7e0;
+    z-index: 9;
   }
 }
 

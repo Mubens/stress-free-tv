@@ -6,7 +6,7 @@
         class="danmu-input"
         :value="danmuText"
         @input="$emit('input-danmu', $event.target.value)"
-        @keydown.enter="danmuSubmit(danmuType, danmuColor)"
+        @keydown.enter="shootDanmu(danmuType, danmuColor)"
         @keydown.left.stop
         @keydown.right.stop
         @keydown.up.stop
@@ -22,7 +22,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'roll' ? 'selected' : ''"
-                @click="changeDanmu('roll', danmuColor)"
+                @click="setDanmuType('roll', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -34,7 +34,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'top' ? 'selected' : ''"
-                @click="changeDanmu('top', danmuColor)"
+                @click="setDanmuType('top', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -46,7 +46,7 @@
               <div
                 class="danmu-mode-type"
                 :class="danmuType === 'bottom' ? 'selected' : ''"
-                @click="changeDanmu('bottom', danmuColor)"
+                @click="setDanmuType('bottom', danmuColor)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
                   <path
@@ -64,7 +64,7 @@
                 v-for="color in colorList"
                 :style="{ 'background-color': color }"
                 :class="danmuColor === color ? 'selected' : ''"
-                @click="changeDanmu(danmuType, color)"
+                @click="setDanmuType(danmuType, color)"
                 :key="color"
               ></span>
             </div>
@@ -76,7 +76,7 @@
       请先
       <a href="#">登录</a>
     </span>
-    <input type="button" class="danmu-submit" value="发送" @click="danmuSubmit" />
+    <input type="button" class="danmu-submit" value="发送" @click="shootDanmu" />
   </div>
 </template>
 
@@ -92,7 +92,7 @@ export default {
     danmuType: { type: String, default: 'roll' },
     danmuColor: { type: String, default: '#FFFFFF' }
   },
-  data() {
+  data () {
     return {
       colorList: [
         '#FE0302',
@@ -113,15 +113,15 @@ export default {
     }
   },
   methods: {
-    changeDanmu(type, color) {
-      this.$emit('changeDanmu', type, color)
+    setDanmuType (type, color) {
+      this.$emit('setDanmuType', type, color)
     },
-    danmuSubmit() {
-      this.$emit('danmuSubmit')
+    shootDanmu () {
+      this.$emit('shootDanmu')
     }
   },
   computed: {
-    isLogin() {
+    isLogin () {
       return this.$store.state.isLogin
     }
   }
@@ -265,7 +265,7 @@ export default {
         box-shadow: 0.5px 0.5px 0px 1.5px #ffffff;
         &::before {
           position: absolute;
-          content: '';
+          content: "";
           width: calc(100% - 1px);
           height: calc(100% - 1px);
           border: 1px solid #000000;

@@ -23,13 +23,13 @@
       <span
         class="icon"
         :class="mode === 1 ? 'icon-wide-off' : 'icon-wide-on'"
-        @click="modeChange(1)"
+        @click="setScreenMode(1)"
       ></span>
       <!-- 网页全屏 -->
       <span
         class="icon"
         :class="mode === 2 ? 'icon-webfull-off' : 'icon-webfull-on'"
-        @click="modeChange(2)"
+        @click="setScreenMode(2)"
       ></span>
     </template>
     <!-- 全屏 -->
@@ -43,11 +43,11 @@ import { setLocal } from '../../assets/js/storage'
 export default {
   props: {
     mode: Number,
-    modeChange: Function,
+    setScreenMode: Function,
     fullScreen: Function,
     volume: Number,
     setMute: Function,
-    setVolume: Function
+    setVVolume: Function
   },
   data () {
     return {
@@ -65,7 +65,7 @@ export default {
         volume = 1
       }
       // this.volume = (1 - volume) * 100
-      this.setVolume(1 - volume)
+      this.setVVolume(1 - volume)
       this.dragFlag = true
     },
     mouseMove (event) {

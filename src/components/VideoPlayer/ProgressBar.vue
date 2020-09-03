@@ -12,16 +12,16 @@ export default {
   props: {
     buffer: { type: Number, default: 0 },
     percent: { type: Number, default: 0 },
-    setCurrentTime: Function
+    setVTime: Function
   },
-  data() {
+  data () {
     return {
       dragFlag: false, //拖拽状态标志
       dragPercent: 0
     }
   },
   computed: {
-    progress() {
+    progress () {
       if (!this.dragFlag) {
         return this.percent
       } else {
@@ -30,15 +30,15 @@ export default {
     }
   },
   methods: {
-    mouseDown(event) {
+    mouseDown (event) {
       if (!this.dragFlag) {
         const e = event || window.event
         this.dragPercent = (e.offsetX / this.$refs.progress.offsetWidth) * 100
-        this.setCurrentTime(this.dragPercent)
+        this.setVTime(this.dragPercent)
         this.dragFlag = true
       }
     },
-    mouseMove(event) {
+    mouseMove (event) {
       if (this.dragFlag) {
         const e = event || window.event
         const progress = this.$refs.progress
@@ -51,25 +51,25 @@ export default {
           width = progress.offsetWidth
         }
         this.dragPercent = (width / progress.offsetWidth) * 100
-        this.setCurrentTime(this.dragPercent)
+        this.setVTime(this.dragPercent)
 
         // 解决拖动时选中页面中的文本
         window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty()
       }
     },
-    mouseUp() {
+    mouseUp () {
       if (this.dragFlag) {
-        this.setCurrentTime(this.dragPercent, true)
+        this.setVTime(this.dragPercent, true)
         this.dragFlag = false
       }
     }
   },
-  mounted() {
+  mounted () {
     this.$refs.progress.addEventListener('mousedown', this.mouseDown)
     document.addEventListener('mousemove', this.mouseMove)
     document.addEventListener('mouseup', this.mouseUp)
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$refs.progress.removeEventListener('mousedown', this.mouseDown)
     document.removeEventListener('mousemove', this.mouseMove)
     document.removeEventListener('mouseup', this.mouseUp)

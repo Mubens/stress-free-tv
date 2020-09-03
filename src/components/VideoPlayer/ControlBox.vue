@@ -7,8 +7,10 @@
       :playOrPause="playOrPause"
       :duration="duration"
       :percent="percent"
-      :setCurrentTime="setCurrentTime"
-    />
+      :setVTime="setVTime"
+    >
+      <slot name="play-next" slot="play-next" />
+    </LeftControl>
     <!-- <div class="center-box"> -->
     <slot name="danmu" />
     <!-- </div> -->
@@ -17,9 +19,9 @@
       :volume="volume"
       :setMute="setMute"
       :mode="mode"
-      :modeChange="modeChange"
+      :setScreenMode="setScreenMode"
       :fullScreen="fullScreen"
-      :setVolume="setVolume"
+      :setVVolume="setVVolume"
     />
   </div>
 </template>
@@ -33,12 +35,12 @@ export default {
     mode: Number,
     isPlaying: Boolean,
     playOrPause: Function,
-    modeChange: Function,
+    setScreenMode: Function,
     fullScreen: Function,
     duration: Number,
     percent: Number,
-    setCurrentTime: Function,
-    setVolume: Function,
+    setVTime: Function,
+    setVVolume: Function,
     volume: Number
   },
   data () {
@@ -50,9 +52,9 @@ export default {
     setMute () {
       if (this.volume !== 0) {
         this.lastVolume = this.volume
-        this.setVolume(0)
+        this.setVVolume(0)
       } else {
-        this.setVolume(this.lastVolume)
+        this.setVVolume(this.lastVolume)
       }
     }
   },
