@@ -146,6 +146,7 @@ export default {
     border-radius: 2px;
     transition: all ease 0.3s;
     cursor: default;
+    z-index: 99;
 
     .volume-num {
       width: 100%;

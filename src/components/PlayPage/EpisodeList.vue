@@ -4,28 +4,17 @@
       <span class="title">选集</span>
       <i class="icon" :class="isGridLayout ? 'icon-grid' : 'icon-item'" @click="switchLayout"></i>
     </div>
-    <div class="episode-list-content">
-      <div class="grid-layout" v-if="isGridLayout">
+    <div class="episode-list-content" ref="scroll">
+      <div :class=" isGridLayout ? 'grid-layout' : 'list-layout' ">
         <a
           v-for="(item, index) in episodeData"
           :class="currentEp === item.ep ? 'current' : ''"
           :href="`${$route.path}?ep=${item.ep}`"
-          @click.prevent="routerPush(item.ep, index)"
+          @click.prevent="episodeClick(item.ep, index)"
           :key="item.ep"
         >
-          <span>{{ item.ep }}</span>
-        </a>
-      </div>
-      <div class="list-layout" v-else>
-        <a
-          v-for="(item, index) in episodeData"
-          :class="currentEp === item.ep ? 'current' : ''"
-          :href="`${$route.path}?ep=${item.ep}`"
-          @click.prevent="routerPush(item.ep, index)"
-          :key="item.ep"
-        >
-          <span>第 {{ item.ep }} 话&nbsp;</span>
-          <span>{{ item.title }}</span>
+          <span v-if="isGridLayout">{{ item.ep }}</span>
+          <span v-else>第 {{ item.ep }} 话 {{ item.title }}</span>
         </a>
       </div>
     </div>
@@ -63,9 +52,15 @@ export default {
       setLocal('sftv-eptype', this.isGridLayout)
     },
     /* 路由传参 */
-    routerPush (ep) {
+    episodeClick (ep, index) {
       if (ep === this.currentEp) return
       this.$emit('setEpisode', ep)
+      this.scrollToY(index)
+    },
+    scrollToY (index) {
+      this.$nextTick(() => {
+        this.$refs.scroll.scrollTo(0, (index - 5) * 30)
+      })
     }
   },
   mounted () {

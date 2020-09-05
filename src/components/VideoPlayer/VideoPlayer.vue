@@ -6,7 +6,7 @@
     @keydown.prevent.left="setVTimeByArrowKey('left')"
     @keydown.prevent.up="setVVolumeByArrowKey('up')"
     @keydown.prevent.down="setVVolumeByArrowKey('down')"
-    @keydown.prevent.esc="setScreenMode(0)"
+    @keydown.prevent.esc="setScreenMode(mode)"
     tabindex="1"
   >
     <div
@@ -39,6 +39,19 @@
         <!-- 视频暂停提示 -->
         <div class="pause-tip" v-if="!isPlaying">
           <i class="icon icon-to-play"></i>
+        </div>
+        <!-- 视频缓冲提示 -->
+        <div class="waiting-tip" v-if="isWaiting">
+          <svg class="loading is-loading" viewBox="0 0 128 100">
+            <path
+              class="border"
+              d="M40,10 L64,25 93,25 Q108,25 108,45 L108,65 Q108,85 93,85 L35,85 Q20,85 20,65 L20,45 Q20,25 35,25 L64,25 88,10"
+            />
+            <circle class="dot dot1" cx="46" cy="55" r="6" />
+            <circle class="dot dot2" cx="64" cy="55" r="6" />
+            <circle class="dot dot3" cx="82" cy="55" r="6" />
+          </svg>
+          <span>视频缓冲中...</span>
         </div>
       </div>
       <!-- 控制器 -->
@@ -142,6 +155,8 @@ export default {
       // 视频是否在播放
       isPlaying: false,
       canPlay: false,
+      // 视频是否在等待缓冲
+      isWaiting: true,
       // 视频持续时间
       duration: 0,
       // 当前视频时间
@@ -302,6 +317,7 @@ export default {
     getVDurdation () {
       this.duration = this.$refs.video.duration
       this.canPlay = true
+      this.isWaiting = false
     },
     /* 获取视频缓存 */
     getVBuffer () {
@@ -322,6 +338,9 @@ export default {
           }
         }
       }
+    },
+    waitingBuffer () {
+      this.isWaiting = true
     },
     /* 播放下一集 */
     palyNextEp () {
@@ -363,7 +382,7 @@ export default {
     },
     /* 全屏自定义事件 */
     fullScreenChange () {
-      this.$emit('setScreenMode', 3)
+      this.setScreenMode(3)
     },
     /* 浏览器 resize 事件 */
     windowResize () {
@@ -440,6 +459,8 @@ export default {
     video.addEventListener('canplay', this.getVDurdation)
     // 监听视频播放位置的改变
     video.addEventListener('timeupdate', this.updateProgressBar)
+    // 监听视频加载
+    video.addEventListener('waiting', this.waitingBuffer)
 
     this.addToDanmuPool()
       // 监听全屏事件
@@ -455,6 +476,7 @@ export default {
     const video = this.$refs.video
     video.removeEventListener('canplay', this.getVDurdation)
     video.removeEventListener('timeupdate', this.updateProgressBar)
+    video.removeEventListener('waiting', this.waitingBuffer)
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
         document.removeEventListener(item, this.fullScreenChange)
       })
@@ -621,12 +643,119 @@ export default {
     color: #e2d7e0;
     z-index: 9;
   }
+
+  .waiting-tip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+
+    .loading {
+      width: 32px;
+    }
+    span {
+      padding: 4px 8px;
+      font-size: 13px;
+    }
+
+    .border {
+      stroke-linecap: round;
+      stroke-width: 6px;
+      stroke: #ff6b6b;
+      fill: none;
+      stroke-linejoin: round;
+      stroke-dasharray: 0 600;
+      stroke-dashoffset: 10;
+      transition: 1s all linear;
+    }
+
+    .is-loading .border {
+      animation: border 1.5s linear forwards;
+    }
+
+    @keyframes border {
+      0% {
+        stroke-dasharray: 0 600;
+        stroke-dashoffset: 10;
+      }
+      100% {
+        stroke-dasharray: 600 600;
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .dot {
+      fill: #ff6b6b;
+      opacity: 0;
+    }
+
+    .is-loading .dot1 {
+      animation: dot1 2s linear 0.5s infinite;
+    }
+    @keyframes dot1 {
+      0% {
+        opacity: 0;
+      }
+      33.33% {
+        opacity: 1;
+      }
+      66.66% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .is-loading .dot2 {
+      animation: dot2 2s linear 0.5s infinite;
+    }
+
+    @keyframes dot2 {
+      0% {
+        opacity: 0;
+      }
+      33.33% {
+        opacity: 0;
+      }
+      66.66% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .is-loading .dot3 {
+      animation: dot3 2s linear 0.5s infinite;
+    }
+
+    @keyframes dot3 {
+      0% {
+        opacity: 0;
+      }
+      33.33% {
+        opacity: 0;
+      }
+      66.66% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
 }
 
 // 动态样式
 .video-main-wrapper {
-  // 网页全屏
-  &.full-webpage {
+  // 全屏
+  &.full-webpage,
+  &.full-window {
     position: fixed;
     top: 0;
     left: 0;
@@ -640,13 +769,9 @@ export default {
         font-size: 26px;
       }
     }
-  }
 
-  // 全屏
-  &.full-window .video-controller {
-    height: 60px;
-    .icon {
-      font-size: 26px;
+    .pause-tip {
+      bottom: 60px;
     }
   }
 }

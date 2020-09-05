@@ -51,7 +51,7 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(mainCId, [item.comment.id, item.user.id, item.user.name])">回复</span>
+          <span class="reply" @click="reply(mainCId, item.user)">回复</span>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
       v-else-if="subCommentData.data.total > subCommentData.data.limit"
       type="mini"
       :currentPage="currentPage"
-      :totalPages="Math.floor(subCommentData.data.total / subCommentData.data.limit + 1)"
+      :totalPage="Math.floor(subCommentData.data.total / subCommentData.data.limit + 1)"
       @getMainComment="getMainComment"
     />
   </div>

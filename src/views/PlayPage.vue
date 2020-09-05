@@ -27,6 +27,7 @@
           :currentEp="videoSource.ep"
           :episodeData="episodeData"
           @setEpisode="setEpisode"
+          ref="epComp"
         />
       </div>
     </div>
@@ -60,6 +61,7 @@ export default {
         if (!(this.mode === 2 && type === 3)) {
           this.lastMode = this.mode
         }
+        // console.log(type)
         this.mode = type
       } else {
         // 如果是 宽屏 -> 宽屏 => 默认
@@ -100,6 +102,7 @@ export default {
         } else {
           this.videoSource = exit
         }
+        this.$refs.epComp.scrollToY(this.getEpIndex)
       }
     },
     /* 选集 */

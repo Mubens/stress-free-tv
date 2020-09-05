@@ -50,9 +50,7 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(item.comment.id, [item.comment.id, item.user.id, item.user.name])"
-            >回复</span
-          >
+          <span class="reply" @click="reply(item.comment.id, item.user)">回复</span>
         </div>
         <SubComment
           v-if="JSON.stringify(item.children) !== '{}'"
@@ -63,7 +61,12 @@
           :getSubComment="getSubComment"
           :reply="reply"
         />
-        <CommentInput v-if="inputId === item.comment.id" v-model="subCommentText" ref="input" />
+        <CommentInput
+          v-if="inputId === item.comment.id"
+          v-model="subCommentText"
+          :submitComment="makeSubComment"
+          ref="input"
+        />
       </div>
     </div>
   </div>
@@ -74,25 +77,37 @@ export default {
   props: {
     commentData: { type: Object, default: () => {} },
     watchCommentHeight: { type: Function },
+    submitComment: { type: Function, default: () => {} },
     getSubComment: { type: Function }
   },
   data() {
     return {
-      inputId: 0,
+      inputId: undefined,
+      replyUId: undefined,
       subCommentText: ''
     }
   },
   methods: {
+    /* text 转 html */
     textToHtml(text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
     },
-    reply(mainCId, [cId, uId, uNm]) {
+    /* 回复 */
+    reply(mainCId, reply_user) {
       this.inputId = mainCId
+      this.replyUId = reply_user.id
       this.subCommentText = ''
 
       setTimeout(() => {
-        this.$refs.input[0].inputFoucs(uNm)
+        this.$refs.input[0].inputFoucs(reply_user.name)
       })
+    },
+    /* 发表二级评论 */
+    makeSubComment() {
+      if (this.subCommentText.trim()) {
+        this.$emit('submitComment', this.subCommentText, { rCId: this.inputId, rUId: this.replyUId })
+        this.subCommentText = ''
+      }
     },
     watchComment() {
       const docHeight = (document.documentElement || document.body).clientHeight
@@ -100,7 +115,7 @@ export default {
       this.$emit('watchCommentHeight', flag)
     },
     clearInputId() {
-      this.inputId = 0
+      this.inputId = undefined
     }
   },
   filters: {

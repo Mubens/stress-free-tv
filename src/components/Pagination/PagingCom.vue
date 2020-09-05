@@ -1,55 +1,80 @@
 <template>
-  <ul :class="{ 'mini-paging': type === 'mini', 'btn-paging': type === 'btn' || type === ''  }">
-    <li v-if="type === 'mini'">共{{ totalPages }}页</li>
-    <li v-show="currentPage !== 1" @click="changePage(currentPage - 1)">
-      <a href="javascript:;">上一页</a>
-    </li>
-    <!-- 页数少于 10 -->
-    <template v-if="totalPages < 10">
-      <li v-for="page in totalPages" @click="changePage(page)" :key="page">
-        <a href="javascript:;" :class="{ 'current': currentPage === page }">{{ page }}</a>
+  <div class="paging-wrapper">
+    <ul :class="{ 'mini-paging': type === 'mini', 'btn-paging': type === 'btn' || type === ''  }">
+      <li v-if="type === 'mini'">共{{ totalPage }}页</li>
+      <li v-show="currentPage !== 1" @click="changePage(currentPage - 1)">
+        <a href="javascript:;">上一页</a>
       </li>
-    </template>
-    <!-- 页数多于 10 -->
-    <template v-else>
-      <template v-for="page in totalPages">
-        <li
-          v-if="showOrHide(page)"
-          :class="{ 'after': page === 1 && currentPage >= 5, 'before' : page === totalPages && currentPage <= totalPages - 3 }"
-          :key="page"
-        >
-          <a
-            href="javascript:;"
-            :class="{ 'current': currentPage === page }"
-            @click="changePage(page)"
-          >{{ page }}</a>
+      <!-- 页数少于 10 -->
+      <template v-if="totalPage < 10">
+        <li v-for="page in totalPage" @click="changePage(page)" :key="page">
+          <a href="javascript:;" :class="{ 'current': currentPage === page }">{{ page }}</a>
         </li>
       </template>
-    </template>
-    <li v-show="currentPage !== totalPages" @click="changePage(currentPage + 1)">
-      <a href="javascript:;">下一页</a>
-    </li>
-  </ul>
+      <!-- 页数多于 10 -->
+      <template v-else>
+        <template v-for="page in totalPage">
+          <li
+            v-if="showThis(page)"
+            :class="{ 'after': page === 1 && currentPage >= 5, 'before' : page === totalPage && currentPage <= totalPage - 3 }"
+            :key="page"
+          >
+            <a
+              href="javascript:;"
+              :class="{ 'current': currentPage === page }"
+              @click="changePage(page)"
+            >{{ page }}</a>
+          </li>
+        </template>
+      </template>
+      <li v-show="currentPage !== totalPage" @click="changePage(currentPage + 1)">
+        <a href="javascript:;">下一页</a>
+      </li>
+    </ul>
+    <div class="page-input" v-if="type !== 'mini'">
+      <span>共{{ totalPage }}页，跳至</span>
+      <input type="text" v-model="inputPage" @keydown.enter="toInputPage" />
+      <span>页</span>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   props: {
     currentPage: { type: Number, default: 1 },
-    totalPages: { type: Number, default: 1 },
+    totalPage: { type: Number, default: 1 },
     getMainComment: { type: Function },
     type: { type: String, default: '' }
   },
+  data () {
+    return {
+      inputPage: ''
+    }
+  },
   methods: {
+    /* 换页 */
     changePage (page) {
       if (page !== this.currentPage) {
         if (page < 1) page = 1
-        if (page > this.totalPages) page = this.totalPages
+        if (page > this.totalPage) page = this.totalPage
         this.$emit('getMainComment', page)
       }
     },
-    showOrHide (page) {
-      return page === 1 || page === this.totalPages || (page < this.currentPage + 3 && page > this.currentPage - 3)
+    /* 显示这页的按钮 */
+    showThis (page) {
+      // 第一页 | 最后一页 | 当前页的前两页到后两页
+      return page === 1 || page === this.totalPage || (page < this.currentPage + 3 && page > this.currentPage - 3)
+    },
+    /* input 输入 */
+    toInputPage () {
+      let page = Number(this.inputPage)
+      // console.log(page)
+      this.inputPage = ''
+      if (isNaN(page)) return
+      if (page < 1) page = 1
+      if (page > this.totalPage) page = this.totalPage
+      this.changePage(page)
     }
   }
 }
@@ -58,6 +83,11 @@ export default {
 <style lang="less" scoped>
 .magin-tb() {
   margin: 10px 0;
+}
+
+.paging-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
 
 .mini-paging {
@@ -130,6 +160,23 @@ export default {
       .ellipsis();
       margin-left: 4px;
       margin-right: 10px;
+    }
+  }
+}
+
+.page-input {
+  .magin-tb();
+
+  input {
+    width: 46px;
+    height: 26px;
+    margin: 0 4px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    text-align: center;
+
+    &:focus {
+      border-color: #ff6b6b;
     }
   }
 }
