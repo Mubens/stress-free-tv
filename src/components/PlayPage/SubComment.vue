@@ -1,6 +1,6 @@
 <template>
   <div class="comment-items">
-    <div class="comment-item" v-for="item in subCommentData.data.comments" :key="item.id">
+    <div class="comment-item" v-for="item in subCommentData.comments" :key="item.id">
       <div class="user-head">
         <a href="#">
           <img :src="item.user.face" />
@@ -9,7 +9,11 @@
       <div class="user-comment">
         <span class="user-name">
           <a class="name" href="#">{{ item.user.name }}</a>
-          <a class="at" href="#" v-if="mainUser.id !== item.reply_user.id">@{{ mainUser.name }}</a>
+          <a
+            class="at"
+            href="#"
+            v-if="mainUser.id !== item.reply_user.id"
+          >@{{ item.reply_user.name }}</a>
         </span>
         <span class="comment" v-html="textToHtml(item.comment.content)"></span>
         <div class="info">
@@ -56,15 +60,15 @@
       </div>
     </div>
     <!-- 分页 -->
-    <div class="see-more" v-if="subCommentData.data.limit === 3 && subCommentData.data.total > 3">
-      共{{ subCommentData.data.total }}条回复，
+    <div class="see-more" v-if="subCommentData.limit === 3 && subCommentData.total > 3">
+      共{{ subCommentData.total }}条回复，
       <span class="more-btn" @click="getSubComment(mainCId, 1)">点击查看</span>
     </div>
     <PagingCom
-      v-else-if="subCommentData.data.total > subCommentData.data.limit"
+      v-else-if="subCommentData.total > subCommentData.limit"
       type="mini"
       :currentPage="currentPage"
-      :totalPage="Math.floor(subCommentData.data.total / subCommentData.data.limit + 1)"
+      :totalPage="Math.floor(subCommentData.total / subCommentData.limit + 1)"
       @getMainComment="getMainComment"
     />
   </div>
@@ -73,28 +77,28 @@
 <script>
 export default {
   props: {
-    subCommentData: { type: Object, default: () => {} },
+    subCommentData: { type: Object, default: () => { } },
     textToHtml: { type: Function },
     mainCId: { type: Number },
     mainUser: { type: Object },
     getSubComment: { type: Function },
     reply: { type: Function }
   },
-  data() {
+  data () {
     return {
       currentPage: 1,
       showAllComment: false
     }
   },
   methods: {
-    getMainComment(page) {
+    getMainComment (page) {
       this.currentPage = page
       this.getSubComment(this.mainCId, page)
     },
-    seeMore() {}
+    seeMore () { }
   },
   filters: {
-    timeFormat(time) {
+    timeFormat (time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -104,7 +108,7 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0(val) {
+      function add0 (val) {
         return val < 10 ? '0' + val : val
       }
     }

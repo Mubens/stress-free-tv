@@ -78,7 +78,7 @@ export default {
     },
     /* 获取视频集数 */
     getEpisodeData () {
-      axios.get(`http://localhost:3000/api/play?vId=${this.$route.params.id}`).then(res => {
+      axios.get(`http://localhost:3000/api/play/list?pId=${this.$route.params.id}`).then(res => {
         if (!res.data.errno) {
           this.episodeData = res.data.data
           this.redirect()
@@ -99,6 +99,7 @@ export default {
         if (exit == null) {
           const params = { query: { ep: this.episodeData[0].ep } }
           this.$router.push(params)
+          this.videoSource = this.episodeData[0]
         } else {
           this.videoSource = exit
         }
@@ -115,6 +116,7 @@ export default {
         ep = episode.ep
       }
       this.$router.push({ query: { ep } })
+      this.$refs.epComp.scrollToY(this.getEpIndex)
     },
     /* 获取弹幕 */
     getDanmaku () {

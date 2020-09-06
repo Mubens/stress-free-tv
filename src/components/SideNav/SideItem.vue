@@ -68,11 +68,11 @@ export default {
 //   background-color: #f9f9f9;
 // }
 .side-box {
-  position: fixed;
-  width: 220px;
-  height: calc(100% - 56px);
-  z-index: 99;
-  overflow-y: auto;
+  // position: fixed;
+  // width: 220px;
+  // height: calc(100% - 56px);
+  // z-index: 9999;
+  // overflow-y: auto;
 
   &.narrow {
     width: 80px;

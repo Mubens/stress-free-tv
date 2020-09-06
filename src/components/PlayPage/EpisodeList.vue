@@ -32,7 +32,8 @@ export default {
   },
   data () {
     return {
-      isGridLayout: true
+      isGridLayout: true,
+      index: 0
     }
   },
   watch: {
@@ -46,6 +47,7 @@ export default {
     /* 切换布局 */
     switchLayout () {
       this.isGridLayout = !this.isGridLayout
+      this.scrollToY(this.index)
     },
     /* 保存布局 */
     setLayout () {
@@ -55,11 +57,12 @@ export default {
     episodeClick (ep, index) {
       if (ep === this.currentEp) return
       this.$emit('setEpisode', ep)
-      this.scrollToY(index)
     },
     scrollToY (index) {
+      this.index = index
       this.$nextTick(() => {
-        this.$refs.scroll.scrollTo(0, (index - 5) * 30)
+        const scrollY = this.isGridLayout ? (parseInt(index / 4) - 4) * 38 : (index - 4) * 26
+        this.$refs.scroll.scrollTo(0, scrollY)
       })
     }
   },

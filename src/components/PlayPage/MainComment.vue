@@ -1,6 +1,6 @@
 <template>
   <div class="comment-items" ref="comment">
-    <div class="comment-item" v-for="item in commentData.data.comments" :key="item.comment.id">
+    <div class="comment-item" v-for="item in commentData" :key="item.comment.id">
       <div>
         <a href="#" class="user-head">
           <img :src="item.user.face" />
@@ -75,12 +75,12 @@
 <script>
 export default {
   props: {
-    commentData: { type: Object, default: () => {} },
+    commentData: { type: Array, default: () => [] },
     watchCommentHeight: { type: Function },
-    submitComment: { type: Function, default: () => {} },
+    submitComment: { type: Function, default: () => { } },
     getSubComment: { type: Function }
   },
-  data() {
+  data () {
     return {
       inputId: undefined,
       replyUId: undefined,
@@ -89,11 +89,11 @@ export default {
   },
   methods: {
     /* text 转 html */
-    textToHtml(text) {
+    textToHtml (text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
     },
     /* 回复 */
-    reply(mainCId, reply_user) {
+    reply (mainCId, reply_user) {
       this.inputId = mainCId
       this.replyUId = reply_user.id
       this.subCommentText = ''
@@ -103,23 +103,23 @@ export default {
       })
     },
     /* 发表二级评论 */
-    makeSubComment() {
+    makeSubComment () {
       if (this.subCommentText.trim()) {
         this.$emit('submitComment', this.subCommentText, { rCId: this.inputId, rUId: this.replyUId })
         this.subCommentText = ''
       }
     },
-    watchComment() {
+    watchComment () {
       const docHeight = (document.documentElement || document.body).clientHeight
       const flag = this.$refs.comment.clientHeight > docHeight ? true : false
       this.$emit('watchCommentHeight', flag)
     },
-    clearInputId() {
+    clearInputId () {
       this.inputId = undefined
     }
   },
   filters: {
-    timeFormat(time) {
+    timeFormat (time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -129,19 +129,19 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0(val) {
+      function add0 (val) {
         return val < 10 ? '0' + val : val
       }
     }
   },
-  mounted() {
+  mounted () {
     // this.watchComment()
     window.addEventListener('resize', this.watchComment)
   },
-  updated() {
+  updated () {
     this.watchComment()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.removeEventListener('resize', this.watchComment)
   },
   components: {

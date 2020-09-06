@@ -640,7 +640,7 @@ export default {
     bottom: 40px;
     right: 30px;
     font-size: 64px;
-    color: #e2d7e0;
+    color: #f7f4f4;
     z-index: 9;
   }
 

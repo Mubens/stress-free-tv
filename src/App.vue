@@ -169,11 +169,9 @@ input[type="button"] {
 .side-box {
   position: fixed;
   width: 220px;
-  // height: calc(100% - 56px);
   height: 100%;
   overflow-y: auto;
-  // box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.08);
-  z-index: 999;
+  z-index: 9999;
 
   &.narrow {
     width: 80px;
@@ -201,6 +199,7 @@ input[type="button"] {
   transform: translateX(-100%);
 }
 .side-box.hide-side {
+  box-shadow: -5px 0 10px 5px #00000055;
   transform: translateX(0);
   transition: transform 0.2s;
 }
