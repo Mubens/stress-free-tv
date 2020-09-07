@@ -10,6 +10,7 @@
           :current="getEpIndex"
           :total="episodeData.length - 1"
           @setEpisode="setEpisode"
+          @sendDanmuku="sendDanmuku"
           :danmuData="danmuData"
         />
       </div>
@@ -82,7 +83,6 @@ export default {
         if (!res.data.errno) {
           this.episodeData = res.data.data
           this.redirect()
-          this.getDanmaku()
         } else {
           // 没有该视频资源返回 404 页面 
           this.$router.push({ name: '404' })
@@ -103,6 +103,7 @@ export default {
         } else {
           this.videoSource = exit
         }
+        this.getDanmaku(this.videoSource.id)
         this.$refs.epComp.scrollToY(this.getEpIndex)
       }
     },
@@ -116,15 +117,33 @@ export default {
         ep = episode.ep
       }
       this.$router.push({ query: { ep } })
+      this.getDanmaku(this.videoSource.id)
       this.$refs.epComp.scrollToY(this.getEpIndex)
     },
     /* 获取弹幕 */
-    getDanmaku () {
+    getDanmaku (vId) {
       const route = this.$route
       // console.log(route.params.id, route.query.ep)
-      axios.get(`http://localhost:3000/api/danmaku?vId=${route.params.id}&ep=${route.query.ep}`).then((res) => {
+      axios.get(`http://localhost:3000/api/danmaku/list?vId=${vId}`).then((res) => {
         if (res.data) {
           this.danmuData = res.data.data
+        }
+      })
+    },
+    /* 发送弹幕 */
+    sendDanmuku (type, style, content, vtime) {
+      axios.post('http://localhost:3000/api/danmaku/new', {
+        type,
+        style,
+        content,
+        vtime,
+        uId: 1, // session
+        vId: this.videoSource.id
+      }).then(res => {
+        if (res.status === 200 && !res.data.errno) {
+          const data = res.data.data[0]
+          data.isCurr = true
+          this.danmuData.push(data)
         }
       })
     }

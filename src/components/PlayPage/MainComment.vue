@@ -1,18 +1,18 @@
 <template>
-  <div class="comment-items" ref="comment">
-    <div class="comment-item" v-for="item in commentData" :key="item.comment.id">
+  <div class="comment-items" ref="comment-items">
+    <div class="comment-item" v-for="item in commentData" :key="item.id">
       <div>
         <a href="#" class="user-head">
-          <img :src="item.user.face" />
+          <img :src="item.uFace" />
         </a>
       </div>
       <div class="user-comment">
         <span class="user-name">
-          <a href="#">{{ item.user.name }}</a>
+          <a href="#">{{ item.uName }}</a>
         </span>
-        <div class="comment" v-html="textToHtml(item.comment.content)"></div>
+        <div class="comment" v-html="textToHtml(item.content)"></div>
         <div class="info">
-          <span class="time">{{ item.comment.time | timeFormat }}</span>
+          <span class="time">{{ item.time | timeFormat }}</span>
           <span class="like">
             <svg
               t="1598795452303"
@@ -30,7 +30,7 @@
                 p-id="1725"
               />
             </svg>
-            {{ item.comment.like }}
+            {{ item.like }}
           </span>
           <span class="hate">
             <svg
@@ -50,19 +50,19 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(item.comment.id, item.user)">回复</span>
+          <span class="reply" @click="reply(item.id, { id: item.uId, name: item.uName })">回复</span>
         </div>
         <SubComment
           v-if="JSON.stringify(item.children) !== '{}'"
           :subCommentData="item.children"
           :textToHtml="textToHtml"
-          :mainCId="item.comment.id"
-          :mainUser="item.user"
+          :mainCId="item.id"
+          :mainUser="item.uId"
           :getSubComment="getSubComment"
           :reply="reply"
         />
         <CommentInput
-          v-if="inputId === item.comment.id"
+          v-if="inputId === item.id"
           v-model="subCommentText"
           :submitComment="makeSubComment"
           ref="input"
@@ -87,14 +87,26 @@ export default {
       subCommentText: ''
     }
   },
+  watch: {
+    commentData: {
+      immediate: true,
+      deep: true,
+      handler () {
+        this.$nextTick(() => {
+          this.watchComment()
+        })
+      }
+    }
+  },
   methods: {
     /* text 转 html */
     textToHtml (text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
     },
     /* 回复 */
-    reply (mainCId, reply_user) {
-      this.inputId = mainCId
+    reply (mainCommentId, reply_user) {
+      // console.log('mainCommentId', mainCommentId)
+      this.inputId = mainCommentId
       this.replyUId = reply_user.id
       this.subCommentText = ''
 
@@ -105,13 +117,14 @@ export default {
     /* 发表二级评论 */
     makeSubComment () {
       if (this.subCommentText.trim()) {
-        this.$emit('submitComment', this.subCommentText, { rCId: this.inputId, rUId: this.replyUId })
+        this.$emit('submitComment', this.subCommentText, this.replyUId, this.inputId)
         this.subCommentText = ''
       }
     },
     watchComment () {
       const docHeight = (document.documentElement || document.body).clientHeight
-      const flag = this.$refs.comment.clientHeight > docHeight ? true : false
+      // console.log(docHeight, this.$refs.clientHeight)
+      const flag = this.$refs['comment-items'].clientHeight > docHeight ? true : false
       this.$emit('watchCommentHeight', flag)
     },
     clearInputId () {
@@ -135,11 +148,7 @@ export default {
     }
   },
   mounted () {
-    // this.watchComment()
     window.addEventListener('resize', this.watchComment)
-  },
-  updated () {
-    this.watchComment()
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.watchComment)
@@ -194,7 +203,7 @@ export default {
     }
 
     .comment {
-      line-height: 18px;
+      line-height: 22px;
       padding-right: 15px;
     }
   }

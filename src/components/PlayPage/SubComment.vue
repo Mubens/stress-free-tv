@@ -3,21 +3,17 @@
     <div class="comment-item" v-for="item in subCommentData.comments" :key="item.id">
       <div class="user-head">
         <a href="#">
-          <img :src="item.user.face" />
+          <img :src="item.uFace" />
         </a>
       </div>
       <div class="user-comment">
         <span class="user-name">
-          <a class="name" href="#">{{ item.user.name }}</a>
-          <a
-            class="at"
-            href="#"
-            v-if="mainUser.id !== item.reply_user.id"
-          >@{{ item.reply_user.name }}</a>
+          <a class="name" href="#">{{ item.uName }}</a>
+          <a class="at" href="#" v-if="mainUser !== item.ruId">@{{ item.ruName }}</a>
         </span>
-        <span class="comment" v-html="textToHtml(item.comment.content)"></span>
+        <span class="comment" v-html="textToHtml(item.content)"></span>
         <div class="info">
-          <span class="time">{{ item.comment.time | timeFormat }}</span>
+          <span class="time">{{ item.time | timeFormat }}</span>
           <span class="like">
             <svg
               t="1598795452303"
@@ -35,7 +31,7 @@
                 p-id="1725"
               />
             </svg>
-            {{ item.comment.like }}
+            {{ item.like }}
           </span>
           <span class="hate">
             <svg
@@ -55,7 +51,7 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(mainCId, item.user)">回复</span>
+          <span class="reply" @click="reply(mainCId, { id: item.uId, name: item.uName})">回复</span>
         </div>
       </div>
     </div>
@@ -80,7 +76,7 @@ export default {
     subCommentData: { type: Object, default: () => { } },
     textToHtml: { type: Function },
     mainCId: { type: Number },
-    mainUser: { type: Object },
+    mainUser: { type: Number },
     getSubComment: { type: Function },
     reply: { type: Function }
   },

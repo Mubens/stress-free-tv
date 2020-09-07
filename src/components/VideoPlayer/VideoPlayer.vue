@@ -137,6 +137,7 @@ import CenterControl from './CenterControl'
 import DanmuInput from './DanmuInput'
 
 import { getLocal } from '../../assets/js/storage'
+import axios from 'axios'
 
 export default {
   props: {
@@ -146,6 +147,7 @@ export default {
     current: Number,
     total: Number,
     setEpisode: Function,
+    sendDanmuku: Function,
     danmuData: { type: Array, default: () => [] }
   },
   data () {
@@ -227,16 +229,9 @@ export default {
     /* 发送弹幕 */
     shootDanmu () {
       const danmu = this.danmuText.trim()
-      if (danmu) {
-        // axios()
-        // { type: 'roll' | 'top' | 'bottom', content: danmuText, style: {}, stime: Date.now(), vtime: currentTime }
-
-        this.danmuPool.push({
-          type: this.danmuType,
-          content: this.danmuText,
-          style: { color: this.danmuColor },
-          isCurr: true
-        })
+      if (danmu && this.needDanmuPlay) {
+        // type, style, content, vtime
+        this.$emit('sendDanmuku', this.danmuType, { color: this.danmuColor }, this.danmuText, this.currentTime)
         this.danmuText = ''
       }
     },
