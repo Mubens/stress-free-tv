@@ -21,19 +21,27 @@
     <template v-if="mode !== 3">
       <!-- 宽屏 -->
       <span
-        class="icon"
+        class="icon top-toast"
+        v-top-toast="'video-player'"
         :class="mode === 1 ? 'icon-wide-off' : 'icon-wide-on'"
         @click="setScreenMode(1)"
-      ></span>
+      >
+        <span class="toast">{{ mode !== 1 ? '宽屏模式' : '退出宽屏'}}</span>
+      </span>
       <!-- 网页全屏 -->
       <span
-        class="icon"
+        class="icon top-toast"
+        v-top-toast="'video-player'"
         :class="mode === 2 ? 'icon-webfull-off' : 'icon-webfull-on'"
         @click="setScreenMode(2)"
-      ></span>
+      >
+        <span class="toast">{{ mode !== 2 ? '网页全屏' : '退出网页全屏'}}</span>
+      </span>
     </template>
     <!-- 全屏 -->
-    <span class="icon icon-full-screen" @click="fullScreen"></span>
+    <span class="icon icon-full-screen top-toast" v-top-toast="'video-player'" @click="fullScreen">
+      <span class="toast">{{ mode !== 3 ? '进入全屏' : '退出全屏'}}</span>
+    </span>
   </div>
 </template>
 

@@ -146,6 +146,30 @@ input[type="button"] {
   *zoom: 1;
 }
 
+// 土司
+.top-toast:hover {
+  .toast {
+    transform: translate(-50%, -80%);
+    visibility: visible;
+    transition: transform 0.2s linear;
+  }
+}
+.toast {
+  visibility: hidden;
+  font-size: 12px;
+  top: -28px;
+  // top: 0;
+  left: 50%;
+  white-space: nowrap;
+  position: absolute;
+  z-index: 999;
+  padding: 6px;
+  border-radius: 2px;
+  background-color: rgba(20, 20, 20, 0.897);
+  // background-color: skyblue;
+  transform: translate(-50%, -10%);
+}
+
 @media screen and(max-width: 1756px) {
   .wrapper {
     width: 1360px;

@@ -10,6 +10,7 @@
     tabindex="1"
   >
     <div
+      id="video-player"
       class="video-main-wrapper"
       :class="classList"
       :style="{ 'height': mode === 2 ? '100vh' : playerHeight + 'px' }"
@@ -61,7 +62,7 @@
         @mouseover="controllerIsShow = true"
       >
         <!-- 进度条 -->
-        <ProgressBar :percent="percent" :buffer="buffer" :setVTime="setVTime" />
+        <ProgressBar :percent="percent" :buffer="buffer" :duration="duration" :setVTime="setVTime" />
         <!-- 其他功能 -->
         <ControlBox
           :mode="mode"
@@ -157,6 +158,8 @@ export default {
       // 视频是否在播放
       isPlaying: false,
       canPlay: false,
+      // 自动播放
+      autoPlay: true,
       // 视频是否在等待缓冲
       isWaiting: true,
       // 视频持续时间
@@ -341,6 +344,12 @@ export default {
     palyNextEp () {
       this.$emit('setEpisode', {}, true)
     },
+    /* 自动播放 */
+    videoEnded () {
+      if (this.autoPlay && this.current < this.total) {
+        this.palyNextEp()
+      }
+    },
     /* 全屏事件 */
     fullScreen () {
       const isFull = !!(
@@ -456,6 +465,8 @@ export default {
     video.addEventListener('timeupdate', this.updateProgressBar)
     // 监听视频加载
     video.addEventListener('waiting', this.waitingBuffer)
+    // 视频播放结束
+    video.addEventListener('ended', this.videoEnded)
 
     this.addToDanmuPool()
       // 监听全屏事件
@@ -472,6 +483,7 @@ export default {
     video.removeEventListener('canplay', this.getVDurdation)
     video.removeEventListener('timeupdate', this.updateProgressBar)
     video.removeEventListener('waiting', this.waitingBuffer)
+    video.removeEventListener('ended', this.videoEnded)
       ;['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((item) => {
         document.removeEventListener(item, this.fullScreenChange)
       })
@@ -636,7 +648,7 @@ export default {
     right: 30px;
     font-size: 64px;
     color: #f7f4f4;
-    z-index: 9;
+    // z-index: 9;
   }
 
   .waiting-tip {

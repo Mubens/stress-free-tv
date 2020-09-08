@@ -125,7 +125,7 @@ export default {
             this.commentData.unshift(data)
             this.scrollToTop()
           }
-          this.mainTotal++
+          this.allTotal++
         }
       })
     },

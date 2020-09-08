@@ -15,7 +15,7 @@
         />
       </div>
       <!-- 视频简介组件 -->
-      <div class="video-info"></div>
+      <VideoInfo v-if="playData" :playData="playData" />
       <!-- 评论组件 -->
       <CommentList />
     </div>
@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
+// import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
 import DanmuList from '../components/PlayPage/DanmuList'
 import EpisodeList from '../components/PlayPage/EpisodeList'
-import CommentList from '../components/PlayPage/CommentList'
+// import CommentList from '../components/PlayPage/CommentList'
 
 import axios from 'axios'
 
@@ -51,10 +51,20 @@ export default {
       containerHeight: 0,
       danmuData: [],
       videoSource: {},
-      episodeData: []
+      episodeData: [],
+      playData: null
     }
   },
   methods: {
+    init () {
+      this.mode = 0
+      this.lastMode = 0
+      this.containerHeight = 0
+      this.danmuData = []
+      this.videoSource = {}
+      this.episodeData = []
+      this.playData = null
+    },
     /* 屏幕大小模式切换 */
     setScreenMode (type) {
       if (this.mode !== type) {
@@ -81,10 +91,12 @@ export default {
     getEpisodeData () {
       axios.get(`http://localhost:3000/api/play/list?pId=${this.$route.params.id}`).then(res => {
         if (!res.data.errno) {
-          this.episodeData = res.data.data
+          this.playData = res.data.data.play
+          this.episodeData = res.data.data.eps
           this.redirect()
         } else {
           // 没有该视频资源返回 404 页面 
+          this.init()
           this.$router.push({ name: '404' })
         }
       })
@@ -192,6 +204,7 @@ export default {
   components: {
     VideoPlayer: () => import('../components/VideoPlayer/VideoPlayer'),
     CommentList: () => import('../components/PlayPage/CommentList'),
+    VideoInfo: () => import('../components/PlayPage/VideoInfo'),
     DanmuList,
     EpisodeList
   }
@@ -241,10 +254,5 @@ export default {
   .margin5 {
     margin: 5px 0;
   }
-}
-
-.video-info {
-  width: 100%;
-  height: 200px;
 }
 </style>
