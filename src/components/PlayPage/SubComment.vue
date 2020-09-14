@@ -1,6 +1,12 @@
 <template>
   <div class="comment-items">
-    <div class="comment-item" v-for="item in subCommentData.comments" :key="item.id">
+    <div
+      class="comment-item"
+      @mouseenter="hoverID = item.id"
+      @mouseleave="hoverID = undefined"
+      v-for="item in subCommentData.comments"
+      :key="item.id"
+    >
       <div class="user-head">
         <a href="#">
           <img :src="item.uFace" />
@@ -51,7 +57,25 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(mainCId, { id: item.uId, name: item.uName})">回复</span>
+          <span
+            class="reply"
+            v-if="item.uId !== 1"
+            @click="reply(mainCId, { id: item.uId, name: item.uName})"
+          >回复</span>
+          <div
+            v-show="hoverID === item.id"
+            class="more icon icon-ellipsis"
+            @click="showSwitch($event, 1)"
+            @blur="showSwitch($event, 0)"
+            tabindex="1"
+          >
+            <ul v-if="item.uId === 1">
+              <li>删除</li>
+            </ul>
+            <ul v-else>
+              <li>举报</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -78,12 +102,14 @@ export default {
     mainCId: { type: Number },
     mainUser: { type: Number },
     getSubComment: { type: Function },
-    reply: { type: Function }
+    reply: { type: Function },
+    showSwitch: Function
   },
   data () {
     return {
       currentPage: 1,
-      showAllComment: false
+      showAllComment: false,
+      hoverID: undefined
     }
   },
   methods: {
@@ -137,7 +163,7 @@ export default {
   .user-comment {
     width: 100%;
     margin-left: 10px;
-    padding-right: 15px;
+    // padding-right: 15px;
     line-height: 18px;
   }
 

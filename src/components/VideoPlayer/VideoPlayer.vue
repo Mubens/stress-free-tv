@@ -201,6 +201,11 @@ export default {
         })
       }
     },
+    // 换集重置
+    danmuData () {
+      // console.log(6666666)
+      // this.$refs.danmupool && this.$refs.danmupool.init()
+    },
     isPlaying: {
       handler (val) {
         this.addToDanmuPool()

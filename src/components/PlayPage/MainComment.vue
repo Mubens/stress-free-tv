@@ -51,15 +51,30 @@
             </svg>
           </span>
           <span class="reply" @click="reply(item.id, { id: item.uId, name: item.uName })">回复</span>
+
+          <div
+            class="more icon icon-ellipsis"
+            @click="showSwitch($event, 1)"
+            @blur="showSwitch($event, 0)"
+            tabindex="1"
+          >
+            <ul v-if="item.uId === 1">
+              <li>删除</li>
+            </ul>
+            <ul v-else>
+              <li>举报</li>
+            </ul>
+          </div>
         </div>
         <SubComment
-          v-if="JSON.stringify(item.children) !== '{}'"
+          v-if="item.children.comments.length"
           :subCommentData="item.children"
           :textToHtml="textToHtml"
           :mainCId="item.id"
           :mainUser="item.uId"
           :getSubComment="getSubComment"
           :reply="reply"
+          :showSwitch="showSwitch"
         />
         <CommentInput
           v-if="inputId === item.id"
@@ -99,6 +114,9 @@ export default {
     }
   },
   methods: {
+    showSwitch (e, type) {
+      e.target.firstChild.style = `display: ${type ? 'block' : 'none'};`
+    },
     /* text 转 html */
     textToHtml (text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
@@ -119,6 +137,7 @@ export default {
       if (this.subCommentText.trim()) {
         this.$emit('submitComment', this.subCommentText, this.replyUId, this.inputId)
         this.subCommentText = ''
+        this.inputId = undefined
       }
     },
     watchComment () {
@@ -212,6 +231,8 @@ export default {
 
 <style lang="less">
 .comment-item .info {
+  // display: flex;
+  // align-items: center;
   line-height: 30px;
   font-size: 12px;
 
@@ -244,6 +265,42 @@ export default {
     &:hover {
       color: #ff6b6b;
       background-color: #d6dbe2;
+    }
+  }
+
+  .more {
+    float: right;
+    position: relative;
+    font-size: 20px;
+    cursor: pointer;
+
+    &:hover {
+      color: #ff6b6b;
+    }
+
+    ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 100px;
+      padding: 5px 0;
+      background-color: #ffffff;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      // text-align: center;
+
+      li {
+        font-size: 14px;
+        color: #000000;
+        padding: 5px 20px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #e5e9ef;
+          color: #ff6b6b;
+        }
+      }
     }
   }
 }

@@ -255,6 +255,9 @@ export default {
 
       // 添加自定义样式
       if (danmu.style) {
+        if (typeof danmu.style === 'string') {
+          danmu.style = JSON.parse(danmu.style)
+        }
         const keys = Object.keys(danmu.style)
         keys.forEach((key) => {
           // 检查样式合法性

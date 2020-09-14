@@ -4,7 +4,7 @@
       <i class="icon icon-toggle" @click="toggleNavNarrow"></i>
     </div>
     <SideItem :list="prod" />
-    <SideItem :list="user" />
+    <!-- <SideItem :list="user" /> -->
   </div>
 </template>
 
@@ -17,17 +17,17 @@ export default {
   data () {
     return {
       prod: [
-        { name: 'Home', url: '/home', title: '首页', icon: 'icon-home' },
+        { name: 'Home', url: '/', title: '首页', icon: 'icon-home' },
         { name: 'Movie', url: '/movie', title: '电影', icon: 'icon-movie' },
         { name: 'Game', url: '/game', title: '游戏', icon: 'icon-game' },
         { name: 'Anime', url: '/anime', title: '动漫', icon: 'icon-anime' }
       ],
-      user: [
-        { name: 'History', url: '/history', title: '播放历史', icon: 'icon-history-play' },
-        { name: 'Later', url: '/later', title: '稍后播放', icon: 'icon-later-play' },
-        { name: 'Subs', url: '/subs', title: '订阅', icon: 'icon-subscribe' },
-        { name: 'Collect', url: '/collect', title: '收藏', icon: 'icon-collection' }
-      ]
+      // user: [
+      //   { name: 'History', url: '/history', title: '历史', icon: 'icon-history-play' },
+      //   // { name: 'Later', url: '/later', title: '稍后播放', icon: 'icon-later-play' },
+      //   { name: 'Subs', url: '/bangumi', title: '订阅', icon: 'icon-subscribe' },
+      //   { name: 'Collect', url: '/favlist', title: '收藏', icon: 'icon-collection' }
+      // ]
     }
   },
   methods: {

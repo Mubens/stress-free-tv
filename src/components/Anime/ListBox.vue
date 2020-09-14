@@ -114,12 +114,14 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
     margin: 0 -10px;
+
     li {
       box-sizing: border-box;
       width: 22%;
       margin: 10px;
       overflow: hidden;
     }
+
     a {
       position: relative;
       display: flex;
@@ -175,6 +177,18 @@ export default {
       .msg {
         transform: translateY(20px);
       }
+    }
+  }
+}
+
+@media screen and(max-width: 1400px) {
+  .box-list ul {
+    height: 400px;
+    overflow: hidden;
+
+    li {
+      // padding: 200px;
+      width: 30%;
     }
   }
 }

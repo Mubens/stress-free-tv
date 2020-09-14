@@ -31,7 +31,8 @@ export default {
 <style lang="less">
 #anime {
   box-sizing: border-box;
-  // padding: 0 30px;
+  // padding: 0 120px;
+  width: 1240px;
 }
 .part-split {
   display: flex;
@@ -43,6 +44,13 @@ export default {
     box-sizing: border-box;
     flex: 0 0 340px;
     padding-left: 40px;
+  }
+}
+
+@media screen and(max-width: 1400px) {
+  #anime {
+    // padding: 200px;
+    width: 980px;
   }
 }
 </style>

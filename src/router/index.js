@@ -8,8 +8,7 @@ Vue.use(VueRouter)
 const MAIN_ROUTE = [
   {
     path: '/home',
-    name: 'Home',
-    component: () => import('../views/Index/Home')
+    redirect: '/'
   },
   {
     path: '/movie',
@@ -53,13 +52,19 @@ import Play from '../views/PlayPage'
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    name: 'Home',
+    component: () => import('../views/Index/Home')
   },
   ...MAIN_ROUTE,
   {
     path: '/play/:id',
     name: 'Play',
     component: Play
+  },
+  {
+    path: '/anime/index',
+    name: 'Indexes',
+    component: () => import('../views/IndexesPage')
   },
   {
     path: '*',

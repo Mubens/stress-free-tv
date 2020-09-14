@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <template v-for="item in list">
-      <router-link :to="item.url" class="item" :key="item.url">
+      <router-link :to="item.url" class="item" exact :key="item.url">
         <i class="icon" :class="item.icon" :key="item.icon"></i>
         <span :key="item.title">{{ item.title }}</span>
       </router-link>
@@ -12,9 +12,7 @@
 <script>
 export default {
   props: {
-    list: Array,
-    current: String,
-    // changeCur: Function
+    list: Array
   }
 }
 </script>

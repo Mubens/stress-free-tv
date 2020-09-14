@@ -18,10 +18,10 @@
         </a>
       </div>
       <span class="btn left" @click="pClick">
-        <i class="icon icon-left"></i>
+        <i class="icon icon-arrow-left"></i>
       </span>
       <span class="btn right" @click="pClick">
-        <i class="icon icon-right"></i>
+        <i class="icon icon-arrow-right"></i>
       </span>
     </div>
   </div>
@@ -345,14 +345,15 @@ export default {
     font-size: 20px;
   }
 }
-@media screen and(max-width: 1756px) {
+
+@media screen and(max-width: 1655px) {
   .slider-right .item {
     width: 100% / 3;
   }
 }
-@media screen and(max-width: 1650px) {
-  .slider-right .item {
-    width: 100% / 2;
-  }
-}
+// @media screen and(max-width: 1650px) {
+//   .slider-right .item {
+//     width: 100% / 2;
+//   }
+// }
 </style>

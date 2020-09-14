@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <div class="container" ref="container">
-      <div class="side-box" :class="classList">
+      <!-- <div class="side-box">
         <SideNav />
-      </div>
-      <div class="page-box" :class="classList" @mousedown="toggleNavNarrow" ref="page">
+      </div>-->
+      <div class="page-box" @mousedown="toggleNavNarrow" ref="page">
         <Header />
         <keep-alive>
           <router-view />
@@ -26,9 +26,9 @@ export default {
   computed: {
     classList () {
       if (this.$store.state.hideNav) {
-        return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
+        // return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
       } else {
-        return this.$store.state.narrowNav ? 'narrow' : ''
+        // return this.$store.state.narrowNav ? 'narrow' : ''
       }
     }
   },
@@ -113,19 +113,19 @@ input[type="button"] {
 .page-box {
   box-sizing: border-box;
   flex: 1;
-  min-width: 1120px;
-  margin-left: 220px;
+  // min-width: 1120px;
+  // margin-left: 220px;
   // margin-top: 16px;
   // padding-top: 16px;
   height: 100%;
 
-  &.narrow {
-    margin-left: 80px;
-  }
+  // &.narrow {
+  //   margin-left: 80px;
+  // }
 }
 
 .wrapper {
-  width: 1512px;
+  // width: 1512px;
   margin: 0 auto;
 }
 
@@ -172,23 +172,23 @@ input[type="button"] {
 
 @media screen and(max-width: 1756px) {
   .wrapper {
-    width: 1360px;
+    // width: 1360px;
   }
 }
 @media screen and(max-width: 1650px) {
   .wrapper {
-    width: 1098px;
+    // width: 1098px;
   }
 }
 </style>
 
 <style lang="less">
 // css in App.vue
-.container {
-  display: flex;
-  // padding-top: 56px;
-  width: 100%;
-}
+// .container {
+//   display: flex;
+//   // padding-top: 56px;
+//   width: 100%;
+// }
 
 .side-box {
   position: fixed;

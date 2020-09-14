@@ -92,7 +92,7 @@ export default {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    height: 420px;
+    height: 340px;
     overflow: hidden;
     li {
       box-sizing: border-box;
@@ -183,14 +183,14 @@ export default {
   }
 }
 
-@media screen and(max-width: 1756px) {
+// @media screen and(max-width: 1400px) {
+//   .update-box ul {
+//     height: 380px;
+//   }
+// }
+@media screen and(max-width: 1400px) {
   .update-box ul {
-    height: 380px;
-  }
-}
-@media screen and(max-width: 1650px) {
-  .update-box ul {
-    height: 370px;
+    height: 325px;
     li {
       width: 33.33%;
     }
