@@ -7,7 +7,7 @@
       type="mini"
       :currentPage="currentPage"
       :totalPage="Math.floor(mainTotal / limit + 1)"
-      @getMainComment="getMainComment"
+      @pageChange="getMainComment"
     />
     <!-- 上 input -->
     <CommentInput v-model="commentText" :submitComment="makeMainComment" :borderb="true" />
@@ -32,7 +32,7 @@
       v-if="mainTotal > limit"
       :currentPage="currentPage"
       :totalPage="Math.floor(mainTotal / limit + 1)"
-      @getMainComment="getMainComment"
+      @pageChange="getMainComment"
     />
   </div>
 </template>

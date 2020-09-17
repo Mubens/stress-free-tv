@@ -1,43 +1,49 @@
 <template>
   <ul>
-    <li class="item" :class="{ 'on': index === -1 }" @click="btnClick(item.key[0], -1)">全部</li>
     <li
       class="item"
-      :class="{ 'on': index === i }"
-      v-for="(option, i) in item.value"
-      @click="btnClick(item.key[0], i)"
+      :class="{ on: index === item.value }"
+      v-for="(item, i) in list.options"
+      @click="btnClick(list.key, item.value)"
       :key="i"
-    >{{ option }}</li>
+    >{{ item.title }}</li>
   </ul>
 </template>
 
 <script>
 export default {
   props: {
-    item: Object,
-    filtrate: Function
+    list: Object,
+    setQuery: Function
   },
+  inheritAttrs: false,
   data () {
     return {
-      index: -1
+      index: 0
     }
   },
   methods: {
     btnClick (key, val) {
       if (this.index === val) return
       this.index = val
-      this.$emit('filtrate', key, val)
+      this.$emit('setQuery', key, val)
+    },
+    getKeyValue (key, hash, def = undefined) {
+      const reg = new RegExp(`[\\?&#]${key}=([^&#]+)`, 'gi')
+      const matches = hash.match(reg)
+
+      if (matches.length > 0) {
+        const strArr = matches[matches.length - 1].split('=')
+        return strArr.length > 1 ? strArr[1] : def
+      }
+      return def
     }
   },
   created () {
-    // console.log(this.$route.query[this.item.key[0]])
-    // this.index = this.$route.query[this.item.key[0]]
-    const query = this.$route.query[this.item.key[0]]
-    this.index = query ? parseInt(query) : -1
-    console.log(query)
+    // 获取 index
+    this.index = parseInt(this.getKeyValue(this.item.key, window.location.hash, 0))
   }
 }
 </script>
 
-<style >
-</style>
+<style></style>

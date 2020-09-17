@@ -64,9 +64,9 @@ body,
 }
 
 html {
-  font: 14px -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial,
-    PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
-  color: #505050;
+  font-size: 14px;
+  font-family: Microsoft Yahei, Tahoma, Helvetica, Arial, "\5B8B\4F53",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 body {

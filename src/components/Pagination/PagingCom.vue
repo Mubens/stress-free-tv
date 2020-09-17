@@ -44,7 +44,7 @@ export default {
   props: {
     currentPage: { type: Number, default: 1 },
     totalPage: { type: Number, default: 1 },
-    getMainComment: { type: Function },
+    pageChange: { type: Function },
     type: { type: String, default: '' }
   },
   data () {
@@ -55,11 +55,10 @@ export default {
   methods: {
     /* 换页 */
     changePage (page) {
-      if (page !== this.currentPage) {
-        if (page < 1) page = 1
-        if (page > this.totalPage) page = this.totalPage
-        this.$emit('getMainComment', page)
-      }
+      if (isNaN(page) || page === this.currentPage) return
+      if (page < 1) page = 1
+      if (page > this.totalPage) page = this.totalPage
+      this.$emit('pageChange', page)
     },
     /* 显示这页的按钮 */
     showThis (page) {
@@ -71,9 +70,6 @@ export default {
       let page = Number(this.inputPage)
       // console.log(page)
       this.inputPage = ''
-      if (isNaN(page)) return
-      if (page < 1) page = 1
-      if (page > this.totalPage) page = this.totalPage
       this.changePage(page)
     }
   }

@@ -89,7 +89,7 @@
       type="mini"
       :currentPage="currentPage"
       :totalPage="Math.floor(subCommentData.total / subCommentData.limit + 1)"
-      @getMainComment="getMainComment"
+      @pageChange="getMainComment"
     />
   </div>
 </template>
