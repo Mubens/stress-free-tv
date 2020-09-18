@@ -2,7 +2,7 @@
   <div class="filter-wrap">
     <div class="filter-title">筛选</div>
     <div class="filter-list">
-      <div class="filter-item" v-for="item in filter" :key="item.key">
+      <div class="filter-item" v-for="item in list" :key="item.key">
         <span class="filter">{{ item.name }}</span>
         <FilterList :list="item" v-bind="$attrs" v-on="$listeners" />
       </div>
@@ -15,15 +15,11 @@ import FilterList from './FilterList'
 
 export default {
   props: {
-    filter: { type: Array, default: () => [] },
-    setQuery: Function
+    list: { type: Array, default: () => [] },
+    setKeyValue: Function
   },
   inheritAttrs: false,
-  methods: {
-    filtrate (key, val) {
-      this.$emit('setQuery', key, val)
-    }
-  },
+  methods: {},
   components: { FilterList }
 }
 </script>

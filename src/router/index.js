@@ -52,14 +52,19 @@ import Play from '../views/PlayPage'
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/Index/Home')
+    name: 'Anime',
+    component: () => import('../views/Index/Anime')
   },
   ...MAIN_ROUTE,
   {
     path: '/play/:id',
     name: 'Play',
     component: Play
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginPage')
   },
   {
     path: '/anime/index',

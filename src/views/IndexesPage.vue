@@ -1,28 +1,18 @@
 <template>
   <div class="wrapper">
-    <mixin-list :list="order" @setQuery="setQuery" />
-    <filter-options :filter="filter" @setQuery="setQuery" />
+    <mixin-list :list="order" :data="data" :query="query" @setKeyValue="setKeyValue" />
+    <filter-options :list="filter" :query="query" @setKeyValue="setKeyValue" />
   </div>
 </template>
 
 <script>
-import MixinList from '../components/SearchPage/MixinList'
-import FilterOptions from '../components/SearchPage/FilterOptions'
-
-import { getSession, setSession } from '../assets/js/storage'
+import MixinList from '../components/IndexesPage/MixinList'
+import FilterOptions from '../components/IndexesPage/FilterOptions'
 
 export default {
-  data () {
+  data() {
     return {
-      order: {
-        key: 'order',
-        default: 0,
-        options: [
-          { title: '追番人数', value: 0 },
-          { title: '更新时间', value: 1 }
-        ]
-      },
-      filter: [
+      list: [
         {
           key: 'type',
           name: '类型',
@@ -122,61 +112,134 @@ export default {
             { title: '偶像', value: 27 },
             { title: '职场', value: 28 }
           ]
+        },
+        {
+          key: 'order',
+          default: 0,
+          options: [
+            { title: '追番人数', value: 0 },
+            { title: '更新时间', value: 1 }
+          ]
+        },
+        {
+          key: 'page',
+          default: 1
+        },
+        {
+          key: 'sort',
+          default: 0
         }
       ],
-      list: ['type', 'area', 'is_finish', 'season_month', 'year', 'style_id', 'sort', 'page'],
+      data: {
+        page: 1,
+        total: 50,
+        limit: 20,
+        list: [
+          {
+            url: '#',
+            img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
+            title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
+            newEp: 10,
+            eps: 10,
+            sub_count: 111000
+          },
+          {
+            url: '#',
+            img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
+            title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
+            newEp: 1,
+            eps: 10,
+            sub_count: 111000
+          },
+          {
+            url: '#',
+            img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
+            title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
+            newEp: 1,
+            eps: 10,
+            sub_count: 111000
+          },
+          {
+            url: '#',
+            img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
+            title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
+            newEp: 1,
+            eps: 10,
+            sub_count: 111000
+          },
+          {
+            url: '#',
+            img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
+            title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
+            newEp: 1,
+            eps: 10,
+            sub_count: 111000
+          }
+        ]
+      },
       query: {}
+    }
+  },
+  computed: {
+    filter() {
+      return this.list.filter((item) => item.name)
+    },
+    order() {
+      return this.list.find((item) => item.key === 'order')
     }
   },
   methods: {
     /* 重置 hash */
-    initHash () {
+    initHash() {
       const hash = window.location.hash
 
-      if (!hash || getSession('sftv-indexs') == null) {
-        let newHash = '#'
+      let kv = '#'
+      this.list.forEach((item) => {
+        let value = this.getKeyValue(item.key, hash)
+        value = value == null ? item.default : value
+        kv += `${item.key}=${value}&`
+        this.query[item.key] = value
+      })
+      kv = kv.slice(0, kv.length - 1)
 
-        this.filter.forEach((item) => {
-          newHash += `${item.key}=${item.default}&`
-          this.query[item.key] = item.default
-        })
-
-        // newHash += 
-
-        window.location.hash = newHash
-      } else {
-        this.query = getSession('sftv-indexs')
-      }
+      window.location.hash = kv
+      this.getAnimeList(kv)
     },
-    setQuery (key, val) {
-      console.log(key, val)
-      this.query[key] = val
+    getKeyValue(key, hash, def = undefined) {
+      const reg = new RegExp(`[\\?&#]${key}=([^&#]+)`, 'gi')
+      const matches = hash.match(reg)
 
-      let newHash = ''
-
-      for (const k in this.query) {
-        newHash += `${k}=${this.query[k]}&`
+      if (matches?.length > 0) {
+        const strArr = matches[matches.length - 1].split('=')
+        return strArr.length > 1 ? strArr[1] : def
+      }
+      return def
+    },
+    setKeyValue(option) {
+      for (const key in option) {
+        this.query[key] = option[key]
       }
 
-      newHash = newHash.slice(0, newHash.length - 1)
+      let kv = ''
+      for (const k in this.query) {
+        kv += `${k}=${this.query[k]}&`
+      }
+      kv = kv.slice(0, kv.length - 1)
 
-      this.getAnimeList(newHash)
+      window.location.hash = '#' + kv
 
-      window.location.hash = '#' + newHash
+      this.getAnimeList(kv)
     },
     /*  */
-    getAnimeList (query) {
+    getAnimeList(query) {
+      // console.log(`http://localhost:3000/api/anime/list?${query}`)
       // axios(`http://localhost:3000/api/anime/list?${query}`).then(res => {
       //   console.log(res.data)
       // })
     }
   },
-  created () {
+  created() {
     this.initHash()
-    setSession('sftv-indexs', this.query)
-  },
-  beforeDestroy () {
-    setSession('sftv-indexs', this.query)
   },
   components: {
     'mixin-list': MixinList,

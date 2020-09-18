@@ -12,7 +12,7 @@ export default new Vuex.Store({
     // 是否完全隐藏左侧边栏
     hideNav: false,
     // 登录状态
-    isLogin: true
+    isLogin: false
   },
   mutations: {
     toggleNavNarrow(state, val) {

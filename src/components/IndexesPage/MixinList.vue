@@ -2,24 +2,25 @@
   <div class="mixin-list">
     <ul class="list-order">
       <li class="order" @click="sortChange(item.value)" v-for="(item, i) in list.options" :key="i">
-        <span :class="{ 'on': order === item.value  }">{{ item.title }}</span>
-        <i class="up" :class="{ 'active': order === item.value && sort === 1 }"></i>
-        <i class="down" :class="{ 'active': order === item.value && sort === 0 }"></i>
+        <span :class="{ on: order == item.value }">{{ item.title }}</span>
+        <i class="up" :class="{ active: order == item.value && sort == 1 }"></i>
+        <i class="down" :class="{ active: order == item.value && sort == 0 }"></i>
       </li>
     </ul>
     <div class="item-box">
-      <div class="item" v-for="(item, i) in dataList" :key="i">
+      <div class="item" v-for="(item, i) in data.list" :key="i">
         <a :href="item.url">
           <img :src="item.img" />
+          <span>{{ item.sub_count | subCountFormat }}</span>
         </a>
         <a :href="item.url">{{ item.title }}</a>
         <p>{{ [item.newEp, item.eps] | finishState }}</p>
       </div>
     </div>
-    <div class="paging-wrapper" v-if="total > limit">
+    <div class="paging-wrapper" v-if="data.total > data.limit">
       <paging-com
-        :currentPage="page"
-        :totalPage="Math.floor(total / limit + 1)"
+        :currentPage="data.page"
+        :totalPage="Math.floor(data.total / data.limit + 1)"
         @pageChange="pageChange"
       />
     </div>
@@ -32,92 +33,39 @@ import PagingCom from '../Pagination/PagingCom'
 export default {
   props: {
     list: { type: Object },
-    setQuery: Function,
-    dataList: {
-      type: Array,
-      default: () => [
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 10,
-          eps: 10
-        },
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 1,
-          eps: 10
-        },
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 1,
-          eps: 10
-        },
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 1,
-          eps: 10
-        },
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 1,
-          eps: 10
-        },
-        {
-          url: '#',
-          img: 'http://localhost:3000/images/83ad052250e9a803e4ebaa47bef971cb079e0543.png@320w_428h.webp',
-          title: '辉夜大小姐想让我告白？～天才们的恋爱头脑战～',
-          newEp: 0,
-          eps: 10
-        }
-      ]
-    }
+    setKeyValue: Function,
+    data: Object,
+    query: Object
   },
-  data () {
+  data() {
     return {
-      page: 1,
-      total: 50,
-      limit: 20,
-      sortType: 0,
       order: 0,
       sort: 0
     }
   },
   methods: {
-    pageChange (page) {
-      this.page = page
-      this.$emit('setQuery', 'page', page)
+    pageChange(page) {
+      this.data.page = page
+      this.$emit('setKeyValue', { page })
     },
-    sortChange (val) {
+    sortChange(val) {
       if (this.order === val) {
         this.sort = +!Boolean(this.sort)
       } else {
         this.order = val
         this.sort = 0
       }
-    },
-    getKeyValue (key, hash, def = undefined) {
-      const reg = new RegExp(`[\\?&#]${key}=([^&#]+)`, 'gi')
-      const matches = hash.match(reg)
 
-      if (matches.length > 0) {
-        const strArr = matches[matches.length - 1].split('=')
-        return strArr.length > 1 ? strArr[1] : def
-      }
-      return def
+      this.$emit('setKeyValue', {
+        sort: this.sort,
+        order: this.order,
+        page: 1
+      })
     }
   },
   filters: {
     /* 状态过滤 */
-    finishState ([newEp, eps]) {
+    finishState([newEp, eps]) {
       if (newEp < eps && newEp > 0) {
         return `更新至第${newEp}话`
       } else if (newEp === eps) {
@@ -125,11 +73,24 @@ export default {
       } else {
         return '即将开播'
       }
+    },
+    subCountFormat(num) {
+      let str = ''
+      if (num < 10000) {
+        str += num
+      } else if (num < 100000000) {
+        str += (num / 10000).toFixed(1) + '万'
+      } else {
+        str += (num / 100000000).toFixed(1) + '亿'
+      }
+
+      return str + '追番'
     }
   },
-  created () {
+  created() {
     /* 获取page */
-    this.page = parseInt(this.getKeyValue('page', window.location.hash))
+    this.order = this.query.order
+    this.sort = this.query.sort
   },
   components: {
     'paging-com': PagingCom
@@ -197,13 +158,28 @@ export default {
       height: 300px;
 
       a:nth-child(1) {
+        position: relative;
         display: block;
         width: 160px;
         height: 214px;
         border-radius: 4px;
-        background: url("../../assets/imgs/img_loading.png") no-repeat center;
+        background: url('../../assets/imgs/img_loading.png') no-repeat center;
         background-size: 50px;
         overflow: hidden;
+
+        span {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 50px;
+          padding: 0 8px;
+          font-size: 12px;
+          line-height: 70px;
+          z-index: 1;
+          color: #ffffff;
+          background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0, rgba(0, 0, 0, 0));
+        }
       }
 
       img {

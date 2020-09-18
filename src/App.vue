@@ -1,18 +1,18 @@
 <template>
   <div id="app">
-    <div class="container" ref="container">
-      <!-- <div class="side-box">
+    <!-- <div class="container" ref="container"> -->
+    <!-- <div class="side-box">
         <SideNav />
       </div>-->
-      <div class="page-box" @mousedown="toggleNavNarrow" ref="page">
-        <Header />
-        <keep-alive>
-          <router-view />
-        </keep-alive>
-        <Footer />
-      </div>
+    <div class="page-box" @mousedown="toggleNavNarrow" ref="page">
+      <Header />
+      <keep-alive>
+        <router-view />
+      </keep-alive>
+      <Footer />
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -24,7 +24,7 @@ import { mapMutations } from 'vuex'
 
 export default {
   computed: {
-    classList () {
+    classList() {
       if (this.$store.state.hideNav) {
         // return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
       } else {
@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleNavNarrow', 'toggleNavHide']),
-    toggleNavNarrow () {
+    toggleNavNarrow() {
       if (this.$store.state.hideNav) {
         this.$store.commit('toggleNavNarrow', true)
       }
@@ -65,8 +65,7 @@ body,
 
 html {
   font-size: 14px;
-  font-family: Microsoft Yahei, Tahoma, Helvetica, Arial, "\5B8B\4F53",
-    sans-serif;
+  font-family: Microsoft Yahei, Tahoma, Helvetica, Arial, '\5B8B\4F53', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 body {
@@ -98,7 +97,7 @@ textarea {
 }
 
 button,
-input[type="button"] {
+input[type='button'] {
   cursor: pointer;
 }
 
@@ -111,6 +110,11 @@ input[type="button"] {
 // common css in all .vue
 
 .page-box {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  // align-content: space-between;
   box-sizing: border-box;
   flex: 1;
   // min-width: 1120px;
@@ -136,7 +140,7 @@ input[type="button"] {
 }
 
 .clearfix:after {
-  content: "";
+  content: '';
   display: block;
   height: 0;
   clear: both;
@@ -170,14 +174,9 @@ input[type="button"] {
   transform: translate(-50%, -10%);
 }
 
-@media screen and(max-width: 1756px) {
-  .wrapper {
-    // width: 1360px;
-  }
-}
-@media screen and(max-width: 1650px) {
-  .wrapper {
-    // width: 1098px;
+@media screen and (max-width: 980px) {
+  .page-box {
+    width: 980px;
   }
 }
 </style>
