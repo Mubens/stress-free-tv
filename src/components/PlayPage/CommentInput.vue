@@ -22,6 +22,8 @@
 </template>
 
 <script>
+
+
 export default {
   model: {
     prop: 'commentText',
@@ -30,23 +32,23 @@ export default {
   props: {
     borderb: { type: Boolean, default: false },
     commentText: { type: String, default: '' },
-    submitComment: { type: Function, default: () => {} }
+    submitComment: { type: Function, default: () => { } }
   },
-  data() {
+  data () {
     return {
       face: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
       placeholder: '请输入你要发表的评论'
     }
   },
   methods: {
-    inputFoucs(placeholder) {
+    inputFoucs (placeholder) {
       this.placeholder = `回复@${placeholder}:`
       this.$refs.input.focus()
     }
   },
   computed: {
-    isLogin() {
-      return this.$store.state.isLogin
+    isLogin () {
+      return this.$store.getters.isLogin
     }
   }
 }

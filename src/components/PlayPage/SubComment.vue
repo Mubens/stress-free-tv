@@ -57,11 +57,9 @@
               />
             </svg>
           </span>
-          <span
-            class="reply"
-            v-if="item.uId !== 1"
-            @click="reply(mainCId, { id: item.uId, name: item.uName})"
-          >回复</span>
+          <span class="reply" v-if="item.uId !== user_id" @click="reply(mainCId, { id: item.uId, name: item.uName })"
+            >回复</span
+          >
           <div
             v-show="hoverID === item.id"
             class="more icon icon-ellipsis"
@@ -69,8 +67,8 @@
             @blur="showSwitch($event, 0)"
             tabindex="1"
           >
-            <ul v-if="item.uId === 1">
-              <li>删除</li>
+            <ul v-if="item.uId === user_id">
+              <li @click="deleteComment(mainCId, item.id)">删除</li>
             </ul>
             <ul v-else>
               <li>举报</li>
@@ -97,15 +95,17 @@
 <script>
 export default {
   props: {
-    subCommentData: { type: Object, default: () => { } },
+    subCommentData: { type: Object, default: () => {} },
     textToHtml: { type: Function },
     mainCId: { type: Number },
     mainUser: { type: Number },
     getSubComment: { type: Function },
     reply: { type: Function },
-    showSwitch: Function
+    showSwitch: Function,
+    deleteComment: Function,
+    user_id: Number
   },
-  data () {
+  data() {
     return {
       currentPage: 1,
       showAllComment: false,
@@ -113,14 +113,14 @@ export default {
     }
   },
   methods: {
-    getMainComment (page) {
+    getMainComment(page) {
       this.currentPage = page
       this.getSubComment(this.mainCId, page)
     },
-    seeMore () { }
+    seeMore() {}
   },
   filters: {
-    timeFormat (time) {
+    timeFormat(time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -130,7 +130,7 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0 (val) {
+      function add0(val) {
         return val < 10 ? '0' + val : val
       }
     }

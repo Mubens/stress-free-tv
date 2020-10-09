@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
 
 // import Home from
 
@@ -55,7 +56,6 @@ const routes = [
     name: 'Anime',
     component: () => import('../views/Index/Anime')
   },
-  ...MAIN_ROUTE,
   {
     path: '/play/:id',
     name: 'Play',
@@ -64,7 +64,16 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/LoginPage')
+    component: () => import('../views/LoginPage'),
+    meta: { title: '悠闲悠闲动漫网', keepAlive: true, notlogin: true },
+    beforeEnter: (to, from, next) => {
+      // console.log(store.getters.isLogin)
+      if (store.getters.isLogin) {
+        next({ path: from.path })
+      } else {
+        next()
+      }
+    }
   },
   {
     path: '/anime/index',
@@ -85,11 +94,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // const isMain = ['Home', 'Movie', 'Game', 'Anime', 'History', 'Later', 'Subs', 'Collect'].includes(to.name)
-
-  // if (!isMain) {
-  //   router.app.$options.store.commit('toggleNavHide', true)
-  //   router.app.$options.store.commit('toggleNavNarrow', true)
+  // if (!to.meta.notlogin) {
+  //   next()
+  // } else {
+  //   next('/')
   // }
   next()
 })

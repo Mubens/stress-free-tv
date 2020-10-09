@@ -1,67 +1,91 @@
 <template>
-  <div class="play-wrapper">
+  <div
+    class="play-wrapper"
+    :style="{ width: width + 'px' }"
+    v-if="playData && width"
+  >
     <div class="play-wrapper-left">
-      <div class="player-container margin5" :class="{ 'wide-size': mode === 1 }" ref="container">
-        <!-- 播放器组件 -->
-        <VideoPlayer
+      <div
+        class="player-container"
+        :style="{ height: playerHeight + 'px' }"
+        :class="{ 'wide-size': mode === 1 }"
+        ref="container"
+      >
+        <!-- 视频播放器组件 -->
+        <video-player
           :mode="mode"
           :setScreenMode="setScreenMode"
           :videoSource="videoSource"
           :current="getEpIndex"
-          :total="episodeData.length - 1"
+          :total="episodeList.length - 1"
           @setEpisode="setEpisode"
           @sendDanmuku="sendDanmuku"
-          :danmuData="danmuData"
+          :danmuList="danmuList"
         />
       </div>
       <!-- 视频简介组件 -->
-      <VideoInfo v-if="playData" :playData="playData" />
-      <!-- 评论组件 -->
-      <CommentList />
+      <video-info :playData="playData" />
+      <!-- 评论列表组件 -->
+      <comment-list />
     </div>
     <div class="play-wrapper-right">
-      <div class="left-box" :style="{ 'margin-top': `${mode === 1 ? containerHeight + 15 : 5}px` }">
-        <!-- 弹幕组件 -->
-        <DanmuList :danmuData="danmuData" />
-        <!-- 选集组件 -->
-        <EpisodeList :currentEp="videoSource.ep" :episodeData="episodeData" @setEpisode="setEpisode" ref="epComp" />
+      <div
+        class="left-box"
+        :style="{ 'margin-top': `${mode === 1 ? playerHeight + 15 : 5}px` }"
+      >
+        <!-- 弹幕列表组件 -->
+        <danmu-list :danmuList="danmuList" />
+        <!-- 选集列表组件 -->
+        <episode-list
+          :currentEp="videoSource.ep"
+          :episodeList="episodeList"
+          @setEpisode="setEpisode"
+          ref="eplist"
+        />
       </div>
     </div>
   </div>
+  <!-- 404 -->
+  <not-found v-else-if="!playData && width" />
 </template>
 
 <script>
-// import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
+import VideoPlayer from '../components/VideoPlayer/VideoPlayer'
+import CommentList from '../components/PlayPage/CommentList'
+import VideoInfo from '../components/PlayPage/VideoInfo'
 import DanmuList from '../components/PlayPage/DanmuList'
 import EpisodeList from '../components/PlayPage/EpisodeList'
-// import CommentList from '../components/PlayPage/CommentList'
 
-import axios from 'axios'
+
 
 export default {
-  data() {
+  data () {
     return {
-      mode: 0, // 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
+      // 播放器尺寸模式 0: 默认, 1: 宽屏, 2: 网页全屏, 3: 全屏
+      mode: 0,
+      // play-wrapper 宽度
+      minWidth: 980,
+      maxWidth: 1488,
+      width: 0,
+      // 上一次的模式
       lastMode: 0,
-      containerHeight: 0,
-      danmuData: [],
+      // 播放器的高度
+      playerHeight: 0,
+      // 弹幕列表
+      danmuList: [],
+      // 当前视频资源
       videoSource: {},
-      episodeData: [],
-      playData: null
+      // 选集列表
+      episodeList: [],
+      // 番剧信息
+      playData: null,
+      // resize 防抖
+      timer: null
     }
   },
   methods: {
-    init() {
-      this.mode = 0
-      this.lastMode = 0
-      this.containerHeight = 0
-      this.danmuData = []
-      this.videoSource = {}
-      this.episodeData = []
-      this.playData = null
-    },
-    /* 屏幕大小模式切换 */
-    setScreenMode(type) {
+    /* 播放器尺寸模式切换 */
+    setScreenMode (type) {
       if (this.mode !== type) {
         // 网页全屏 -> 全屏 不记录 lastMode
         if (!(this.mode === 2 && type === 3)) {
@@ -74,96 +98,111 @@ export default {
         this.mode = type === 1 ? 0 : this.lastMode
       }
     },
-    /* 监听播放器高度 */
-    getContainerHeight() {
-      // 默认和宽屏才记录
+    /* 获取播放器的尺寸 */
+    getSize () {
+      let width = document.body.clientWidth * 0.8
+      if (width < this.minWidth) {
+        width = this.minWidth
+      } else if (width > this.maxWidth) {
+        width = this.maxWidth
+      }
+      // console.log(123)
+      this.width = width
+      this.playerHeight = this.mode === 1 ? width * 0.59 : (width - 320) * 0.59
+    },
+    /* window resize */
+    resize () {
       if (this.mode === 1 || this.mode === 0) {
-        const container = this.$refs.container.getBoundingClientRect()
-        this.containerHeight = container.height
+        this.timer && clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
+          this.getSize()
+        }, 200);
       }
     },
     /* 获取视频集数 */
-    getEpisodeData() {
-      axios.get(`http://localhost:3000/api/play/list?pId=${this.$route.params.id}`).then((res) => {
+    getEpisodeData () {
+      this.$http.get(`http://localhost:3000/api/play/list?pId=${this.$route.params.id}`).then((res) => {
         if (!res.data.errno) {
           this.playData = res.data.data.play
-          this.episodeData = res.data.data.eps
+          this.episodeList = res.data.data.eps
+          this.success = true
           this.redirect()
         } else {
-          // 没有该视频资源返回 404 页面
-          this.init()
-          this.$router.push({ name: '404' })
+          this.success = false
         }
       })
     },
     /* 选集重定向 */
-    redirect() {
-      if (this.episodeData.length) {
-        // 有没有 query 中打那一集
-        const exit = this.episodeData.find((item) => item.ep === +this.$route.query.ep)
+    redirect () {
+      if (this.episodeList.length) {
+        // 查找有没有那一集
+        const exit = this.episodeList.find((item) => item.ep === +this.$route.query.ep)
         // console.log(exit)
-        /* 如果没有重定向到第一集 */
+        // 如果没有重定向到第一集
         if (exit == null) {
-          const params = { query: { ep: this.episodeData[0].ep } }
-          this.$router.push(params)
-          this.videoSource = this.episodeData[0]
+          this.$router.push({ query: { ep: this.episodeList[0].ep } })
+          this.videoSource = this.episodeList[0]
         } else {
           this.videoSource = exit
         }
+
+        document.title = `正在播放：${this.playData.title} 第${this.videoSource.ep}话`
         this.getDanmaku(this.videoSource.id)
-        this.$refs.epComp.scrollToY(this.getEpIndex)
+        this.$refs.eplist?.scrollToY(this.getEpIndex)
       }
     },
     /* 选集 */
-    setEpisode(ep, isNext) {
+    setEpisode (ep, isNext) {
       if (!isNext) {
-        this.videoSource = this.episodeData.find((item) => item.ep === ep)
+        this.videoSource = this.episodeList.find((item) => item.ep === ep)
       } else {
-        const episode = this.episodeData[this.getEpIndex + 1]
+        const episode = this.episodeList[this.getEpIndex + 1]
         this.videoSource = episode
         ep = episode.ep
       }
       this.$router.push({ query: { ep } })
+      document.title = `正在播放：${this.playData.title} 第${this.videoSource.ep}话`
       this.getDanmaku(this.videoSource.id)
-      this.$refs.epComp.scrollToY(this.getEpIndex)
+      this.$refs.eplist.scrollToY(this.getEpIndex)
     },
     /* 获取弹幕 */
-    getDanmaku(vId) {
+    getDanmaku (vId) {
       const route = this.$route
       // console.log(route.params.id, route.query.ep)
-      axios.get(`http://localhost:3000/api/danmaku/list?vId=${vId}`).then((res) => {
+      this.$http.get(`http://localhost:3000/api/danmaku/list?vId=${vId}`).then((res) => {
         if (res.data) {
-          this.danmuData = res.data.data
+          this.danmuList = res.data.data
         }
       })
     },
     /* 发送弹幕 */
-    sendDanmuku(type, style, content, vtime) {
+    sendDanmuku (type, style, content, vtime) {
       axios
         .post('http://localhost:3000/api/danmaku/new', {
           type,
           style,
           content,
           vtime,
-          uId: 1, // session
-          vId: this.videoSource.id
+          uId: this.$store.user_id, // session
+          vId: this.videoSource.id,
+          token: this.$store.state.token
         })
         .then((res) => {
           if (res.status === 200 && !res.data.errno) {
             const data = res.data.data[0]
             data.isCurr = true
-            this.danmuData.push(data)
+            this.danmuList.push(data)
           }
         })
     }
   },
   computed: {
     /* 获取当前集的索引 */
-    getEpIndex() {
-      let index = this.episodeData.length
+    getEpIndex () {
+      let index = this.episodeList.length
       if (index) {
         while (index--) {
-          if (this.episodeData[index].ep === this.videoSource.ep) return index
+          if (this.episodeList[index].ep === this.videoSource.ep) return index
         }
       }
       return -1
@@ -171,7 +210,7 @@ export default {
   },
   watch: {
     // 监听 mode 变化，网页全屏（mode = 2）需要隐藏滚动条
-    mode() {
+    mode () {
       const doc = document.documentElement || document.body
       if (this.mode === 2) {
         doc.style.overflow = 'hidden'
@@ -180,30 +219,30 @@ export default {
       }
 
       // 获取播放器高度
-      setTimeout(() => {
-        this.getContainerHeight()
-      })
+      if (this.mode === 1 || this.mode === 0) {
+        this.getSize()
+      }
     }
   },
-  mounted() {
+  mounted () {
     // 获取视频集数
     this.getEpisodeData()
 
     // 获取播放器高度
-    setTimeout(() => {
-      this.getContainerHeight()
-    })
-    window.addEventListener('resize', this.getContainerHeight)
+    this.getSize()
+
+    window.addEventListener('resize', this.resize)
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.getContainerHeight)
+  beforeDestroy () {
+    window.removeEventListener('resize', this.resize)
   },
   components: {
-    VideoPlayer: () => import('../components/VideoPlayer/VideoPlayer'),
-    CommentList: () => import('../components/PlayPage/CommentList'),
-    VideoInfo: () => import('../components/PlayPage/VideoInfo'),
-    DanmuList,
-    EpisodeList
+    'video-player': VideoPlayer,
+    'comment-list': CommentList,
+    'video-info': VideoInfo,
+    'danmu-list': DanmuList,
+    'episode-list': EpisodeList,
+    'not-found': () => import('../components/NotFound')
   }
 }
 </script>
@@ -214,21 +253,14 @@ export default {
   position: relative;
   top: 0;
   left: 0;
-  width: 80%;
-  min-width: 1098px;
-  max-width: 1512px;
   margin: 10px auto;
 
   .play-wrapper-left {
     flex: 1;
-    // float: left;
-    // width: calc(100% - 350px);
   }
   .play-wrapper-right {
     flex: 0 0 320px;
     padding-left: 30px;
-    // float: right;
-    // width: 320px;
   }
 
   .player-box {
@@ -243,13 +275,11 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
+    margin: 5px 0;
+
     &.wide-size {
       width: calc(100% + 350px);
     }
-  }
-
-  .margin5 {
-    margin: 5px 0;
   }
 }
 </style>

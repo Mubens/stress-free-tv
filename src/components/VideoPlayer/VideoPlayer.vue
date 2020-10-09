@@ -13,13 +13,15 @@
       id="video-player"
       class="video-main-wrapper"
       :class="classList"
-      :style="{ 'height': mode === 2 ? '100vh' : playerHeight + 'px' }"
+      :style="{ width: '100%', height: mode === 2 ? '100vh' : 100 + '%' }"
       @mouseleave="controllerIsShow = false"
       ref="wrapper"
     >
       <!-- 视频标题 -->
-      <div class="video-title" :class="{ 'show': controllerIsShow }">
-        <span class="title" @mouseover="controllerIsShow = true">{{ videoSource.title }}</span>
+      <div class="video-title" :class="{ show: controllerIsShow }">
+        <span class="title" @mouseover="controllerIsShow = true">{{
+          videoSource.title
+        }}</span>
       </div>
       <!-- 视频和弹幕 -->
       <div
@@ -31,11 +33,24 @@
       >
         <video preload="auto" :src="videoSource.video" ref="video" />
         <!-- 弹幕池 -->
-        <DanmuPool v-if="needDanmuPlay" :danmu="danmuPool" :isPlaying="isPlaying" ref="danmupool" />
+        <DanmuPool
+          v-if="needDanmuPlay"
+          :danmu="danmuPool"
+          :isPlaying="isPlaying"
+          ref="danmupool"
+        />
         <!-- 方向键控制音量显示提示 -->
-        <div class="volume-tip" :class="showVolumeTip ? 'fade-out' : 'transparent'">
-          <i class="icon" :class="volume === 0 ? 'icon-mute' : 'icon-volume'"></i>
-          <span>{{ volume === 0 ? '静音' : `${parseInt(volume * 100)}%` }}</span>
+        <div
+          class="volume-tip"
+          :class="showVolumeTip ? 'fade-out' : 'transparent'"
+        >
+          <i
+            class="icon"
+            :class="volume === 0 ? 'icon-mute' : 'icon-volume'"
+          ></i>
+          <span>{{
+            volume === 0 ? "静音" : `${parseInt(volume * 100)}%`
+          }}</span>
         </div>
         <!-- 视频暂停提示 -->
         <div class="pause-tip" v-if="!isPlaying">
@@ -58,11 +73,16 @@
       <!-- 控制器 -->
       <div
         class="video-controller"
-        :class="{ 'show': controllerIsShow }"
+        :class="{ show: controllerIsShow }"
         @mouseover="controllerIsShow = true"
       >
         <!-- 进度条 -->
-        <ProgressBar :percent="percent" :buffer="buffer" :duration="duration" :setVTime="setVTime" />
+        <ProgressBar
+          :percent="percent"
+          :buffer="buffer"
+          :duration="duration"
+          :setVTime="setVTime"
+        />
         <!-- 其他功能 -->
         <ControlBox
           :mode="mode"
@@ -110,7 +130,7 @@
     <!-- 弹幕 send 盒子 -->
     <div class="danmu-sendbar">
       <div class="danmu-sendbar-left">
-        <span>{{ 1 }}人正在观看，{{ danmuData.length }}条弹幕</span>
+        <span>{{ 1 }}人正在观看，{{ danmuList.length }}条弹幕</span>
         <input
           type="checkbox"
           class="danmu-switch-btn"
@@ -138,7 +158,7 @@ import CenterControl from './CenterControl'
 import DanmuInput from './DanmuInput'
 
 import { getLocal } from '../../assets/js/storage'
-import axios from 'axios'
+
 
 export default {
   props: {
@@ -149,7 +169,7 @@ export default {
     total: Number,
     setEpisode: Function,
     sendDanmuku: Function,
-    danmuData: { type: Array, default: () => [] }
+    danmuList: { type: Array, default: () => [] }
   },
   data () {
     return {
@@ -202,7 +222,7 @@ export default {
       }
     },
     // 换集重置
-    danmuData () {
+    danmuList () {
       // console.log(6666666)
       // this.$refs.danmupool && this.$refs.danmupool.init()
     },
@@ -347,7 +367,7 @@ export default {
     },
     /* 播放下一集 */
     palyNextEp () {
-      this.$emit('setEpisode', {}, true)
+      this.$emit('setEpisode', null, true)
     },
     /* 自动播放 */
     videoEnded () {
@@ -422,7 +442,7 @@ export default {
         this.danmuTimer = setInterval(() => {
           if (this.isPlaying) {
             const time = Math.floor(this.currentTime)
-            const danmus = this.danmuData.filter((danmu) => Math.floor(danmu.vtime) === time)
+            const danmus = this.danmuList.filter((danmu) => Math.floor(danmu.vtime) === time)
             if (danmus.length > 0) {
               this.danmuPool.push(...danmus)
               // console.log(danmus)
@@ -506,6 +526,8 @@ export default {
 
 <style lang="less">
 .video-player {
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
   height: 100%;
@@ -514,12 +536,12 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  z-index: 999;
 
   .video-main-wrapper {
     position: relative;
     width: 100%;
-    height: calc(100% - 45px);
+    flex: 1;
+    // height: calc(100% - 45px);
     background-color: #000000;
 
     // 网页全屏
@@ -529,7 +551,7 @@ export default {
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 9876;
+      z-index: 999;
 
       .video-controller {
         bottom: 0;
@@ -547,6 +569,12 @@ export default {
     width: 100%;
     height: 100%;
     cursor: pointer;
+
+    video {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   // 视频控制器
@@ -581,9 +609,8 @@ export default {
       rgba(0, 0, 0, 0)
     );
     transition: all ease 0.4s;
-    z-index: 99;
     opacity: 0;
-    z-index: 999;
+    z-index: 1;
 
     .title {
       display: block;
@@ -653,7 +680,6 @@ export default {
     right: 30px;
     font-size: 64px;
     color: #f7f4f4;
-    // z-index: 9;
   }
 
   .waiting-tip {
@@ -773,7 +799,6 @@ export default {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9876;
 
     .video-controller {
       height: 60px;
@@ -793,7 +818,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 45px;
+  flex: 0 0 45px;
   padding: 0 10px;
   background-color: #ffffff;
   box-shadow: 0px 1px 5px #e6e6e6;

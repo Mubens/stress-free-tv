@@ -1,30 +1,30 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { getLocal, setLocal } from '../assets/js/storage'
+import { getLocal, setLocal, delLocl } from '../assets/js/storage'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // 左侧边栏是否要缩略
-    narrowNav: getLocal('narrow-icon') || false,
-    // 是否完全隐藏左侧边栏
-    hideNav: false,
-    // 登录状态
-    isLogin: false
+    token: getLocal('ease_token')?.token,
+    user_id: getLocal('ease_token')?.id
+  },
+  getters: {
+    isLogin(state) {
+      return state.token == null ? false : true
+    }
   },
   mutations: {
-    toggleNavNarrow(state, val) {
-      if (val) {
-        state.narrowNav = val
-      } else {
-        state.narrowNav = !state.narrowNav
-        setLocal('narrow-icon', state.narrowNav)
-      }
+    setToken(state, data) {
+      state.token = data.token
+      state.user_id = data.id
+      setLocal('ease_token', data)
     },
-    toggleNavHide(state, val) {
-      state.hideNav = val
+    delToken(state) {
+      state.token = undefined
+      state.user_id = undefined
+      delLocl('ease_token')
     }
   },
   actions: {},

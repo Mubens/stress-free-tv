@@ -221,7 +221,7 @@ export default {
   mounted () {
     this.dataList.carousel.push(this.dataList.carousel[0])
     // const url = ''
-    // axios.get(url).then(res => {
+    // this.$http.get(url).then(res => {
     //   res.data.carousel.push(res.data.carousel[0])
     //   this.dataList = res.data
     // })

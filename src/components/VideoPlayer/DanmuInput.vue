@@ -76,7 +76,12 @@
       请先
       <a href="#">登录</a>
     </span>
-    <input type="button" class="danmu-submit" value="发送" @click="shootDanmu" />
+    <input
+      type="button"
+      class="danmu-submit"
+      value="发送"
+      @click="shootDanmu"
+    />
   </div>
 </template>
 
@@ -122,7 +127,7 @@ export default {
   },
   computed: {
     isLogin () {
-      return this.$store.state.isLogin
+      return this.$store.getters.isLogin
     }
   }
 }

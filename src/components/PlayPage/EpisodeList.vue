@@ -1,5 +1,5 @@
 <template>
-  <div class="episode-list-wrapper" v-if="episodeData.length > 1">
+  <div class="episode-list-wrapper" v-if="episodeList.length > 1">
     <div class="episode-list-title">
       <span class="title">选集</span>
       <i class="icon" :class="isGridLayout ? 'icon-grid' : 'icon-item'" @click="switchLayout"></i>
@@ -7,7 +7,7 @@
     <div class="episode-list-content" ref="scroll">
       <div :class=" isGridLayout ? 'grid-layout' : 'list-layout' ">
         <a
-          v-for="(item, index) in episodeData"
+          v-for="(item, index) in episodeList"
           :class="currentEp === item.ep ? 'current' : ''"
           :href="`${$route.path}?ep=${item.ep}`"
           @click.prevent="episodeClick(item.ep, index)"
@@ -27,7 +27,7 @@ import { setLocal, getLocal } from '../../assets/js/storage'
 export default {
   props: {
     currentEp: { type: Number },
-    episodeData: { type: Array },
+    episodeList: { type: Array },
     setEpisode: { type: Function }
   },
   data () {
@@ -104,9 +104,13 @@ export default {
   .episode-list-content {
     padding-left: 15px;
     padding-bottom: 10px;
-    height: 375px;
+    height: 386px;
     overflow-x: hidden;
     overflow-y: auto;
+
+    a:visited {
+      color: #757575;
+    }
 
     .grid-layout {
       display: flex;
@@ -124,7 +128,7 @@ export default {
         border: 1px solid #e5e9ef;
         border-radius: 2px;
         background-color: #fff;
-        font-size: 13px;
+        font-size: 12px;
         cursor: pointer;
 
         &:hover {
@@ -146,11 +150,11 @@ export default {
       text-overflow: ellipsis;
 
       a {
-        font-size: 13px;
         width: 280px;
         margin: 3px -3px;
         padding: 5px 0 5px 5px;
         border-radius: 4px;
+        font-size: 13px;
         cursor: pointer;
       }
 

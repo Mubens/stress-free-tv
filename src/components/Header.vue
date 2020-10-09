@@ -5,7 +5,13 @@
       <form>
         <input type="text" class="search" autocomplete="off" v-model="keyword" @blur="toHide" />
         <button class="search-btn" @click.prevent="goToSearch">
-          <svg viewBox="0 0 1075 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
+          <svg
+            viewBox="0 0 1075 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+          >
             <path
               d="M715.509344 578.848102m-54.305801 54.305801l0 0q-54.305801 54.305801 0 108.611601l253.42707 253.427071q54.305801 54.305801 108.611602 0l0 0q54.305801-54.305801 0-108.611602l-253.427071-253.42707q-54.305801-54.305801-108.611601 0Z"
             />
@@ -47,7 +53,7 @@ import UserCenter from './UserCenter/UserCenter'
 import { getLocal, setLocal } from '../assets/js/storage'
 
 export default {
-  data() {
+  data () {
     return {
       keyword: '',
       searchList: [],
@@ -56,16 +62,16 @@ export default {
     }
   },
   methods: {
-    toShow() {
+    toShow () {
       setTimeout(() => {
         this.isShow = true
       })
     },
-    toHide(e) {
+    toHide (e) {
       this.isShow = false
     },
     /* 点击搜索 */
-    goToSearch() {
+    goToSearch () {
       const keyword = this.keyword
       const href = `http://localhost:8080/search?keyword=${keyword}`
 
@@ -78,21 +84,21 @@ export default {
       this.saveSearchList()
     },
     /* 获取搜索记录 */
-    getSearchList() {
+    getSearchList () {
       const history = getLocal('sftv-search')
       this.searchList = history ? history : []
     },
     /* 保存搜索记录 */
-    saveSearchList() {
+    saveSearchList () {
       setLocal('sftv-search', this.searchList)
     },
     /* 删除某条记录 */
-    delThisItem(index) {
+    delThisItem (index) {
       this.searchList.splice(index, 1)
       this.saveSearchList()
     }
   },
-  mounted() {
+  mounted () {
     this.getSearchList()
   },
   components: {
@@ -104,18 +110,18 @@ export default {
 <style lang="less">
 .header {
   box-sizing: border-box;
-  padding: 10px 12px;
+  // padding: 10px 12px;
+  padding: 0 20px;
   line-height: 30px;
   position: relative;
   // margin: 0 auto;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   // width: 100%;
   height: 56px;
   background-color: #ffffff;
   box-shadow: 0 -2px 16px 0px rgba(0, 0, 0, 0.08);
-  z-index: 9999;
 
   .nav-link {
     height: 100%;

@@ -5,6 +5,15 @@ import store from './store'
 
 import './assets/fonts/style.css'
 
+import { getLocal } from './assets/js/storage'
+
+import axios from 'axios'
+axios.interceptors.request.use((config) => {
+  config.headers.common['Authorization'] = 'Bearer ' + store.state.token
+  return config
+})
+Vue.prototype.$http = axios
+
 Vue.config.productionTip = false
 
 Vue.directive('top-toast', {

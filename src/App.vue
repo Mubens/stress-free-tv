@@ -3,7 +3,7 @@
     <!-- <div class="container" ref="container"> -->
     <!-- <div class="side-box">
         <SideNav />
-      </div>-->
+    </div>-->
     <div class="page-box" @mousedown="toggleNavNarrow" ref="page">
       <Header />
       <keep-alive>
@@ -24,7 +24,7 @@ import { mapMutations } from 'vuex'
 
 export default {
   computed: {
-    classList() {
+    classList () {
       if (this.$store.state.hideNav) {
         // return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
       } else {
@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleNavNarrow', 'toggleNavHide']),
-    toggleNavNarrow() {
+    toggleNavNarrow () {
       if (this.$store.state.hideNav) {
         this.$store.commit('toggleNavNarrow', true)
       }
@@ -65,11 +65,9 @@ body,
 
 html {
   font-size: 14px;
-  font-family: Microsoft Yahei, Tahoma, Helvetica, Arial, '\5B8B\4F53', sans-serif;
+  font-family: Microsoft Yahei, Tahoma, Helvetica, Arial, "\5B8B\4F53",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-body {
-  background-color: #f9f9f9;
 }
 
 a {
@@ -97,7 +95,7 @@ textarea {
 }
 
 button,
-input[type='button'] {
+input[type="button"] {
   cursor: pointer;
 }
 
@@ -140,7 +138,7 @@ input[type='button'] {
 }
 
 .clearfix:after {
-  content: '';
+  content: "";
   display: block;
   height: 0;
   clear: both;
