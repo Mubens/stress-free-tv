@@ -1,18 +1,21 @@
 <template>
-  <div class="anime-carousel" ref="carousel" @mouseover="stopCricle" @mouseout="startCricle">
+  <div class="anime-carousel" @mouseover="stopCricle" @mouseout="startCricle">
     <!-- 核心滚动区 -->
-    <ul ref="ul">
-      <li v-for="(item, i) in carousel" :key="i">
-        <a :href="`/anime/${item.id}`" target="_blank">
+    <ul :class="{ animation: animating }" :style="{ transform: `translateX(${translateX})` }">
+      <li v-for="(item, i) in dataList" :key="i">
+        <a :href="item.url" target="_blank">
           <img :src="item.img" />
         </a>
       </li>
     </ul>
+    <div class="title">
+      <a :class="{'fade-in': fadeIn}" :href="url">{{ title}}</a>
+    </div>
     <!-- 循环按钮 -->
     <ol>
-      <template v-for="(item, i) in carousel">
-        <li v-if="i < carousel.length - 1" @click="indexClick(i)" :key="i">
-          <img :src="item.simg" :class="current % 5 === i ? 'current' : ''" />
+      <template v-for="(item, i) in dataList">
+        <li v-if="i < dataList.length - 1" @click="indexClick(i)" :key="i">
+          <img :src="item.small_img" :class="index % 5 === i ? 'active' : ''" />
         </li>
       </template>
     </ol>
@@ -21,41 +24,23 @@
 
 <script>
 export default {
-  props: {
-    // carousel: Array
-  },
   data () {
     return {
-      current: 0, // 当前图片索引
-      timer: null, // 定时器
-      durtion: 4000, // 每一张图片的停滞时间
-      animeTime: 400, // 动画的持续时间，与 css 保持一致
-      carousel: [
-        {
-          title: '少女的福音',
-          id: '1',
-          img: require('../../images/98272592ecc6189caf306e9e863a825257df83c3.jpg@2320w_664h.jpg'),
-          simg: require('../../images/7780b1d45215358294e6824632699b50c79ad1f6.jpg@100w_76h.jpg')
-        },
-        {
-          title: '少女的福音',
-          id: '2',
-          img: require('../../images/98272592ecc6189caf306e9e863a825257df83c3.jpg@2320w_664h.jpg'),
-          simg: require('../../images/7780b1d45215358294e6824632699b50c79ad1f6.jpg@100w_76h.jpg')
-        },
-        {
-          title: '少女的福音',
-          id: '3',
-          img: require('../../images/98272592ecc6189caf306e9e863a825257df83c3.jpg@2320w_664h.jpg'),
-          simg: require('../../images/7780b1d45215358294e6824632699b50c79ad1f6.jpg@100w_76h.jpg')
-        },
-        {
-          title: '少女的福音',
-          id: '4',
-          img: require('../../images/98272592ecc6189caf306e9e863a825257df83c3.jpg@2320w_664h.jpg'),
-          simg: require('../../images/7780b1d45215358294e6824632699b50c79ad1f6.jpg@100w_76h.jpg')
-        }
-      ]
+      // 当前图片索引
+      index: 0, 
+      // 定时器
+      timer: null, 
+      // 每一张图片的停滞时间
+      duration: 4000,
+      // 动画的持续时间，与 css 保持一致
+      animeTime: 300,
+      animating: false,
+      translateX: 0,
+      // 数据
+      dataList: [],
+      fadeIn: true,
+      title: '',
+      url: ''
     }
   },
   methods: {
@@ -63,18 +48,19 @@ export default {
     startCricle () {
       this.timer = setInterval(() => {
         // cur 下一张图片的索引
-        let cur = this.current + 1
+        const cur = this.index + 1
         // 如果 下一张是最后一张（后来手动添加的那一张），那么直接播放最后一张，并立刻回到第一张图片
-        if (cur === this.carousel.length - 1) {
+        if (cur === this.dataList.length - 1) {
           this.translate(() => {
-            this.current = 0
-            this.$refs.ul.style.transform = `translateX(-0)`
+            this.index = 0
+            this.translateX = 0
           })
         }
+
         // 播放下一张图片
-        this.current = cur
+        this.index = cur
         this.translate()
-      }, this.durtion)
+      }, this.duration)
     },
     // 停止自动播放
     stopCricle () {
@@ -83,28 +69,42 @@ export default {
     // 圆点点击事件
     indexClick (index) {
       this.stopCricle()
-      this.current = index
+      this.index = index
       this.translate()
-      console.log(index)
     },
     // translate 动画效果
     translate (calback) {
-      const ul = this.$refs.ul
-      ul.classList.add('animation')
-      ul.style.transform = `translateX(${-this.current * (100 / this.carousel.length)}%)`
+      // 改变下方 title 和 url
+      this.title = this.dataList[this.index].title
+      this.url = this.dataList[this.index].url
+
+      this.fadeIn = false
+      this.animating = true
+      this.translateX = `${-this.index * (100 / this.dataList.length)}%`
 
       // 滑动动画完成后要做的事情
-      let timer = setTimeout(() => {
-        ul.classList.remove('animation')
+      setTimeout(() => {
+        this.fadeIn = true
+        this.animating = false
         calback && calback()
-        clearTimeout(timer)
       }, this.animeTime)
+    },
+    async getDataList() {
+      const res = (await this.$http.get('http://localhost:3000/api/index/hot_carousel')).data
+      if (!res.errno) {
+        // 复制第一份到最后
+        res.data.push(res.data[0])
+        this.dataList = res.data
+
+        this.title = this.dataList[0].title
+        this.startCricle()
+      }
     }
   },
-  mounted () {
-    this.startCricle()
+  mounted() {
+    this.getDataList()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.stopCricle()
   }
 }
@@ -114,24 +114,50 @@ export default {
 .anime-carousel {
   position: relative;
   width: 100%;
-  // height: 320px;
+  height: 300px;
   margin: 10px 0;
   border-radius: 4px;
   overflow: hidden;
 
-  @duration: 0.4s;
+  @duration: 0.3s;
   .animation {
     transition: transform @duration linear;
   }
+
+  .title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      margin-left: 10px;
+      color: #ffffff;
+      opacity: 0;
+      transition: all .1s;
+    }
+
+    a.fade-in {
+      opacity: 1;
+    }
+  }
+
   ul {
     // position: absolute;
     display: flex;
     width: 100% * 4;
     height: 100%;
+
     li {
-      float: left;
+      position: relative;
+      // float: left;
       width: 100%;
       height: 100%;
+
       img {
         width: 100%;
         height: 100%;
@@ -155,7 +181,7 @@ export default {
         border: 2px solid #ffeeff;
         border-radius: 2px;
       }
-      img.current {
+      img.active {
         border-color: #ff6b6b;
       }
     }

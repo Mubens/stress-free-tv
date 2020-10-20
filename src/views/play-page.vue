@@ -177,13 +177,13 @@ export default {
     },
     /* 发送弹幕 */
     sendDanmuku (type, style, content, vtime) {
-      axios
+      this.$http
         .post('http://localhost:3000/api/danmaku/new', {
           type,
           style,
           content,
           vtime,
-          uId: this.$store.user_id, // session
+          // uId: this.$store.user_id, // session
           vId: this.videoSource.id,
           token: this.$store.state.token
         })
@@ -242,7 +242,7 @@ export default {
     'video-info': VideoInfo,
     'danmu-list': DanmuList,
     'episode-list': EpisodeList,
-    'not-found': () => import('../components/NotFound')
+    'not-found': () => import('../views/404-page')
   }
 }
 </script>

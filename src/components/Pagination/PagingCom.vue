@@ -1,6 +1,11 @@
 <template>
   <div class="paging-wrapper">
-    <ul :class="{ 'mini-paging': type === 'mini', 'btn-paging': type === 'btn' || type === ''  }">
+    <ul
+      :class="{
+        'mini-paging': type === 'mini',
+        'btn-paging': type === 'btn' || type === '',
+      }"
+    >
       <li v-if="type === 'mini'">共{{ totalPage }}页</li>
       <li v-show="currentPage !== 1" @click="changePage(currentPage - 1)">
         <a href="javascript:;">上一页</a>
@@ -8,7 +13,9 @@
       <!-- 页数少于 10 -->
       <template v-if="totalPage < 10">
         <li v-for="page in totalPage" @click="changePage(page)" :key="page">
-          <a href="javascript:;" :class="{ 'current': currentPage === page }">{{ page }}</a>
+          <a href="javascript:;" :class="{ current: currentPage === page }">{{
+            page
+          }}</a>
         </li>
       </template>
       <!-- 页数多于 10 -->
@@ -16,18 +23,25 @@
         <template v-for="page in totalPage">
           <li
             v-if="showThis(page)"
-            :class="{ 'after': page === 1 && currentPage >= 5, 'before' : page === totalPage && currentPage <= totalPage - 3 }"
+            :class="{
+              after: page === 1 && currentPage >= 5,
+              before: page === totalPage && currentPage <= totalPage - 3,
+            }"
             :key="page"
           >
             <a
               href="javascript:;"
-              :class="{ 'current': currentPage === page }"
+              :class="{ current: currentPage === page }"
               @click="changePage(page)"
-            >{{ page }}</a>
+              >{{ page }}</a
+            >
           </li>
         </template>
       </template>
-      <li v-show="currentPage !== totalPage" @click="changePage(currentPage + 1)">
+      <li
+        v-show="currentPage !== totalPage"
+        @click="changePage(currentPage + 1)"
+      >
         <a href="javascript:;">下一页</a>
       </li>
     </ul>
@@ -44,7 +58,6 @@ export default {
   props: {
     currentPage: { type: Number, default: 1 },
     totalPage: { type: Number, default: 1 },
-    pageChange: { type: Function },
     type: { type: String, default: '' }
   },
   data () {
@@ -84,6 +97,7 @@ export default {
 .paging-wrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .mini-paging {

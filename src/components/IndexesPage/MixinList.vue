@@ -1,21 +1,22 @@
 <template>
   <div class="mixin-list">
-    <ul class="list-order">
+    <ul class="list-order" v-if="list">
       <li class="order" @click="sortChange(item.value)" v-for="(item, i) in list.options" :key="i">
         <span :class="{ on: order == item.value }">{{ item.title }}</span>
-        <i class="up" :class="{ active: order == item.value && sort == 1 }"></i>
-        <i class="down" :class="{ active: order == item.value && sort == 0 }"></i>
+        <i class="up" :class="{ active: order == item.value && curSort == sort.up }"></i>
+        <i class="down" :class="{ active: order == item.value && curSort == sort.down }"></i>
       </li>
     </ul>
     <div class="item-box">
       <div class="item" v-for="(item, i) in data.list" :key="i">
-        <a :href="item.url">
+        <a :href="'/play/' + item.id">
           <img :src="item.img" />
           <span>{{ item.sub_count | subCountFormat }}</span>
         </a>
-        <a :href="item.url">{{ item.title }}</a>
-        <p>{{ [item.newEp, item.eps] | finishState }}</p>
+        <a :href="'/play/' + item.id">{{ item.title }}</a>
+        <p>{{ [item.new_ep, item.all_eps, item.status] | finishState }}</p>
       </div>
+      <div class="no-such-item" v-show="!data.total">没有这样的番剧哦～</div>
     </div>
     <div class="paging-wrapper" v-if="data.total > data.limit">
       <paging-com
@@ -33,14 +34,17 @@ import PagingCom from '../Pagination/PagingCom'
 export default {
   props: {
     list: { type: Object },
+    sort: Object,
     setKeyValue: Function,
     data: Object,
     query: Object
   },
-  data() {
-    return {
-      order: 0,
-      sort: 0
+  computed: {
+    order() {
+      return this.query.order
+    },
+    curSort() {
+      return  this.query.sort
     }
   },
   methods: {
@@ -49,27 +53,26 @@ export default {
       this.$emit('setKeyValue', { page })
     },
     sortChange(val) {
+      let sort, order
       if (this.order === val) {
-        this.sort = +!Boolean(this.sort)
+        order = this.order
+        sort = +!Boolean(this.curSort)
       } else {
-        this.order = val
-        this.sort = 0
+        order = val
+        sort = 0
       }
+      
 
-      this.$emit('setKeyValue', {
-        sort: this.sort,
-        order: this.order,
-        page: 1
-      })
+      this.$emit('setKeyValue', { sort, order, page: 1 })
     }
   },
   filters: {
     /* 状态过滤 */
-    finishState([newEp, eps]) {
-      if (newEp < eps && newEp > 0) {
-        return `更新至第${newEp}话`
-      } else if (newEp === eps) {
-        return `共${eps}话`
+    finishState([new_ep, all_eps, status]) {
+      if (status === 0) {
+        return `更新至第${new_ep}话`
+      } else if (status === 1) {
+        return `共${all_eps}话`
       } else {
         return '即将开播'
       }
@@ -86,11 +89,6 @@ export default {
 
       return str + '追番'
     }
-  },
-  created() {
-    /* 获取page */
-    this.order = this.query.order
-    this.sort = this.query.sort
   },
   components: {
     'paging-com': PagingCom
@@ -150,12 +148,12 @@ export default {
   .item-box {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    padding-right: 20px;
+    min-height: 620px;
 
     .item {
       width: 160px;
       height: 300px;
+      padding-right: 20px;
 
       a:nth-child(1) {
         position: relative;
@@ -210,6 +208,12 @@ export default {
         color: #a6abc8;
         cursor: pointer;
       }
+    }
+
+    .no-such-item {
+      margin: 0 auto;
+      align-self: center;
+      color: #99a2aa;
     }
   }
 }

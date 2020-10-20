@@ -2,12 +2,22 @@
   <div class="user-center">
     <div class="search-icon"></div>
     <div class="user-signin" v-if="isLogin">
-      <div class="item" :class="{ visible }" @mouseover="visible = true" @mouseleave="visible = false">
+      <div
+        class="item"
+        :class="{ visible }"
+        @mouseover="onMouseOver"
+        @mouseleave="onMouseLeave"
+      >
         <a class="user-face" href="#">
-          <img src="http://localhost:3000/images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp" />
+          <img
+            src="http://localhost:3000/images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp"
+          />
         </a>
-        <div class="vp-tool" :style="{ display: visible ? 'block' : 'none' }">
-          <div class="user_name">{{ 'er发现' }}</div>
+        <div
+          class="vp-tool"
+          :style="{ visibility: visible ? 'visible' : 'hidden' }"
+        >
+          <div class="user_name">{{ "er发现" }}</div>
           <div class="logout">
             <span @click="logout">退出登录</span>
           </div>
@@ -16,9 +26,7 @@
       <div class="item">
         <a href="#">消息</a>
       </div>
-      <div class="item">
-        <a href="#">历史</a>
-      </div>
+      <HistoryTool class="item" />
     </div>
     <div class="user-logout" v-else>
       <div class="logout-face">
@@ -34,27 +42,46 @@
       </div>
     </div>
     <div>
-      <a href="https://github.com/Mubens/stress-free-tv" target="_blank" class="refrence">GitHub</a>
+      <a
+        href="https://github.com/Mubens/stress-free-tv"
+        target="_blank"
+        class="refrence"
+        >GitHub</a
+      >
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
-      visible: false
+      visible: false,
+      timeout: null
     }
   },
   computed: {
-    isLogin() {
+    isLogin () {
       return this.$store.getters.isLogin
     }
   },
   methods: {
-    logout() {
+    logout () {
       this.$store.commit('delToken')
+    },
+    onMouseOver () {
+      this.timeout && clearTimeout(this.timeout)
+      this.visible = true
+    },
+    onMouseLeave () {
+      this.timeout && clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.visible = false
+      }, 200);
     }
+  },
+  components: {
+    HistoryTool: () => import('../Header/history-tool')
   }
 }
 </script>
@@ -87,7 +114,7 @@ export default {
 
 .user-face {
   .face();
-  transition: all 0.3s;
+  transition: all 0.1s;
   z-index: 9;
 }
 

@@ -20,21 +20,16 @@ export default {
     query: Object
   },
   inheritAttrs: false,
-  data() {
-    return {
-      index: undefined
+  computed: {
+    index() {
+      return this.query[this.list.key]
     }
   },
   methods: {
     btnClick(key, val) {
       if (this.index === val) return
-      this.index = val
       this.$emit('setKeyValue', { [key]: val, page: 1 })
     }
-  },
-  created() {
-    // 获取 index
-    this.index = this.query[this.list.key]
   }
 }
 </script>

@@ -1,273 +1,134 @@
 <template>
-  <div class="box-list part-split">
-    <div class="left-part">
-      <slot name="title"></slot>
-      <ul>
-        <li v-for="(item, i) in lian_zai" :key="i">
-          <a :href="item.url" target="_blank">
-            <img class="pic" :src="item.img" target="_blank" />
-            <div class="info">
-              <p class="title" :title="item.title">{{ item.title }}</p>
-              <p class="msg">
-                <span class="play">
-                  <i class="icon icon-play-count"></i>
-                  {{ item.play | numfilter }}
-                </span>
-                <span class="danmu">
-                  <i class="icon icon-danmu-count"></i>
-                  {{ item.danmu | numfilter }}
-                </span>
-              </p>
-            </div>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="right-part">
-      <slot name="sub-content"></slot>
-    </div>
-  </div>
+  <CommenItem :title="title">
+    <ul class="box-list">
+      <li v-for="(item, i) in list" :key="i">
+        <a :href="`/play/${item.play_id}?ep=${item.ep}`" target="_blank">
+          <img class="pic" :src="item.img" target="_blank" />
+          <div class="info">
+            <p class="title" :title="item.title">{{ item.title + ' ' + item.ep }}</p>
+            <p class="msg">
+              <span class="play">
+                <i class="icon icon-play-count"></i>
+                {{ item.play_num || 0 | formateNumber }}
+              </span>
+              <span class="danmu">
+                <i class="icon icon-danmu-count"></i>
+                {{ item.danmaku_num || 0 | formateNumber }}
+              </span>
+            </p>
+          </div>
+        </a>
+      </li>
+    </ul>
+    <slot slot="right" />
+  </CommenItem>
 </template>
 
 <script>
+import CommenItem from './commen-item'
+
 export default {
-  data () {
-    return {
-      lian_zai: [
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？～天才们的恋爱头脑战～ 01【独家正版】',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3366000,
-          danmu: 40000
-        },
-        {
-          title: '【4月】辉夜大小姐想让我告白？',
-          img: require('../../images/hq720.webp'),
-          url: '#',
-          play: 3000,
-          danmu: 40000
-        }
-      ]
-    }
+  props: {
+    title: { type: String, default: '标题' },
+    list: { type: Array, default: () => [] }
   },
   filters: {
-    numfilter (num) {
-      if (num > 10000) {
-        return (num / 10000).toFixed(1) + '万'
-      }
-      return num + ''
+    formateNumber (num) {
+      return num > 10000 ? (num / 10000).toFixed(1) + '万' : num + ''
     }
-  }
+  },
+  components: { CommenItem }
 }
 </script>
 
 <style lang="less">
 .box-list {
-  width: 100%;
-  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 220px);
+  grid-template-rows: repeat(auto-fill, 174px);
+  margin: 20px 0;
+  height: 368px;
+  justify-content: space-between;
+  gap: 20px 0;
 
-  ul {
+  li {
+    box-sizing: border-box;
+    width: 220px;
+    border-radius: 4px;
+    background-color: #ffffff;
+    overflow: hidden;
+  }
+
+  a {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 0 -10px;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 
-    li {
-      box-sizing: border-box;
-      width: 22%;
-      margin: 10px;
-      overflow: hidden;
-    }
-
-    a {
-      position: relative;
-      display: flex;
-      flex-direction: column;
+    .pic {
       width: 100%;
-      height: 100%;
-      .pic {
-        width: 100%;
-        border-radius: 4px;
-        object-fit: cover;
-      }
+      border-radius: 4px;
+      object-fit: cover;
     }
 
-    .icon {
-      box-sizing: border-box;
-      display: block;
-      width: 16px;
-      height: 100%;
-      margin: 0 5px;
+    .info {
+      height: 50px;
+      line-height: 23px;
     }
-    .icon-play-count {
-      padding-top: 1px;
-      font-size: 18px;
+  }
+
+  .icon {
+    box-sizing: border-box;
+    display: block;
+    width: 16px;
+    height: 20px;
+    // margin: 0 5px;
+    margin-right: 4px;
+  }
+
+  .icon-play-count {
+    padding-top: 1px;
+    font-size: 16px;
+  }
+
+  .icon-danmu-count {
+    padding-top: 2px;
+    font-size: 14px;
+  }
+
+  .title {
+    padding: 4px 0;
+    box-sizing: border-box;
+    color: #404041;
+  }
+
+  .msg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    color: #7b7f83;
+    background-color: #ffffff;
+    transform: translateY(0px);
+    transition: transform 0.2s linear;
+
+    span {
+      display: flex;
+      flex: 1;
+      line-height: 20px;
     }
-    .icon-danmu-count {
-      padding-top: 2px;
-      font-size: 16px;
-    }
+  }
+
+  li:hover {
     .title {
-      padding: 4px 0;
-      box-sizing: border-box;
+      overflow: auto;
+      white-space: normal;
     }
     .msg {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      display: flex;
-      width: 100%;
-      background-color: #f9f9f9;
-      transform: translateY(0px);
-      transition: transform 0.2s linear;
-      span {
-        display: flex;
-        flex: 1;
-        line-height: 20px;
-      }
-    }
-    li:hover {
-      .title {
-        overflow: auto;
-        white-space: normal;
-      }
-      .msg {
-        transform: translateY(20px);
-      }
+      transform: translateY(20px);
     }
   }
 }
-
-@media screen and(max-width: 1400px) {
-  .box-list ul {
-    height: 400px;
-    overflow: hidden;
-
-    li {
-      // padding: 200px;
-      width: 30%;
-    }
-  }
-}
-
-// @media screen and(max-width: 1756px) {
-//   .box-list {
-//     width: 1360px;
-//   }
-// }
-// @media screen and(max-width: 1650px) {
-//   .box-list {
-//     width: 1098px;
-//   }
-// }
-// .box-list {
-//   // display: flex;
-//   // flex-direction: column;
-//   // padding: 10px 0;
-
-//   h3 {
-//     font-size: 24px;
-//     line-height: 24px;
-//     font-weight: 400;
-//     color: #222;
-//   }
-
-//   ul {
-//     // margin: 10px 0;
-//     display: flex;
-//     flex-wrap: wrap;
-//     justify-content: space-between;
-//     li {
-//       width: 280px;
-//       // height: 216px;
-//       margin: 10px 0;
-//       overflow: hidden;
-//       img {
-//         width: 100%;
-//         height: 100%;
-//         border-radius: 4px;
-//         object-fit: cover;
-//       }
-//       a {
-//         display: block;
-//         position: relative;
-//         top: 0;
-//         left: 0;
-//       }
-//       p {
-//         font-size: 14px;
-//       }
-//       .icon {
-//         width: 20px;
-//         height: 20px;
-//       }
-//       p.title {
-//         transition: all 0.2s;
-//       }
-//       p.title:hover {
-//         color: #23ade5;
-//       }
-//       p.num {
-//         position: absolute;
-//         left: 0;
-//         bottom: 0;
-//         width: 100%;
-//         background-color: #ffffff;
-//         color: #98a2aa;
-//         // font-size: 12px;
-//         transition: all 0.3s;
-//         span {
-//           display: inline-block;
-//           width: 50%;
-//         }
-//       }
-//     }
-//     li:hover p.num {
-//       bottom: -20px;
-//     }
-//   }
-// }
 </style>

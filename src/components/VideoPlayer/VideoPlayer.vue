@@ -221,11 +221,6 @@ export default {
         })
       }
     },
-    // 换集重置
-    danmuList () {
-      // console.log(6666666)
-      // this.$refs.danmupool && this.$refs.danmupool.init()
-    },
     isPlaying: {
       handler (val) {
         this.addToDanmuPool()
@@ -233,12 +228,13 @@ export default {
     },
     $route: {
       handler (to, from = { query: { ep: undefined } }) {
-        if (to.query.ep !== from.query.ep) {
-          this.$nextTick(() => {
-            this.$refs.video.play()
-            this.isPlaying = true
-          })
-        }
+        // if (to.query.ep !== from.query.ep) {
+        this.$nextTick(() => {
+          this.$refs.video.play()
+          this.isPlaying = true
+        })
+        // }
+        this.addToHistory()
       }
     }
   },
@@ -449,6 +445,23 @@ export default {
             }
           }
         }, 1000)
+      }
+    },
+    /* 添加到历史记录 */
+    async addToHistory () {
+      if (this.$store.state.token && this.videoSource.id) {
+        try {
+          const res = (await this.$http.post('http://localhost:3000/api/user/update_history', {
+            play_id: this.$route.params.id,
+            ep: this.$route.query.ep,
+            play_time: Date.now(),
+            video_time: this.currentTime
+          }))
+
+          // console.log(res)
+        } catch (err) {
+
+        }
       }
     }
   },

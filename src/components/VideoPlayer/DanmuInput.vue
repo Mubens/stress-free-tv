@@ -74,7 +74,7 @@
     </div>
     <span class="danmu-input to-login" v-else>
       请先
-      <a href="#">登录</a>
+      <a href="/login">登录</a>
     </span>
     <input
       type="button"

@@ -14,7 +14,7 @@
       ></textarea>
       <div class="textarea to-login" v-else>
         请先
-        <a href="#">登录</a>
+        <a href="/login" style="color: #FF6B6B">登录</a>
       </div>
       <button @click="submitComment">发表评论</button>
     </div>

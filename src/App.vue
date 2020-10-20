@@ -95,9 +95,11 @@ textarea {
 }
 
 button,
-input[type="button"] {
+input[type="button"], 
+input[type="checkbox"] {
   cursor: pointer;
 }
+
 
 [tabindex] {
   outline: none;
@@ -129,12 +131,6 @@ input[type="button"] {
 .wrapper {
   // width: 1512px;
   margin: 0 auto;
-}
-
-.h-title {
-  font-size: 20px;
-  line-height: 2em;
-  font-weight: 700;
 }
 
 .clearfix:after {

@@ -1,89 +1,56 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '../store'
 
-// import Home from
+import { requireUnLogin, setTitle } from './middleware'
 
 Vue.use(VueRouter)
-
-const MAIN_ROUTE = [
-  {
-    path: '/home',
-    redirect: '/'
-  },
-  {
-    path: '/movie',
-    name: 'Movie',
-    component: () => import('../views/Index/Movie')
-  },
-  {
-    path: '/game',
-    name: 'Game',
-    component: () => import('../views/Index/Game')
-  },
-  {
-    path: '/anime',
-    name: 'Anime',
-    component: () => import('../views/Index/Anime')
-  },
-  {
-    path: '/history',
-    name: 'History',
-    component: () => import('../views/Index/PlayHistory')
-  },
-  {
-    path: '/later',
-    name: 'Later',
-    component: () => import('../views/Index/PlayLater')
-  },
-  {
-    path: '/subs',
-    name: 'Subs',
-    component: () => import('../views/Index/Subscribe')
-  },
-  {
-    path: '/collect',
-    name: 'Collect',
-    component: () => import('../views/Index/Collection')
-  }
-]
-
-import Play from '../views/PlayPage'
 
 const routes = [
   {
     path: '/',
-    name: 'Anime',
-    component: () => import('../views/Index/Anime')
+    name: 'Index',
+    component: () => import('../views/index-page')
   },
   {
     path: '/play/:id',
     name: 'Play',
-    component: Play
+    component: () => import('../views/play-page')
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/LoginPage'),
-    meta: { title: '悠闲悠闲动漫网', keepAlive: true, notlogin: true },
-    beforeEnter: (to, from, next) => {
-      // console.log(store.getters.isLogin)
-      if (store.getters.isLogin) {
-        next({ path: from.path })
-      } else {
-        next()
-      }
-    }
+    component: () => import('../views/login-page'),
+    beforeEnter: requireUnLogin
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/register-page'),
+    beforeEnter: requireUnLogin
   },
   {
     path: '/anime/index',
     name: 'Indexes',
-    component: () => import('../views/IndexesPage')
+    component: () => import('../views/indexes-page'),
+    meta: { title: '番剧索引 - 悠哉悠哉在线动漫网（*＾ワ＾*）' },
+    beforeEnter: setTitle
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: () => import('../views/search-page')
+  },
+  {
+    path: '/history',
+    name: 'History',
+    component: () => import('../views/history-page'),
+    meta: { title: '历史记录 - 悠哉悠哉在线动漫网（*＾ワ＾*）' },
+    beforeEnter: setTitle
   },
   {
     path: '*',
     name: '404',
-    component: () => import('../components/NotFound')
+    component: () => import('../views/404-page')
   }
 ]
 
@@ -94,11 +61,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // if (!to.meta.notlogin) {
-  //   next()
-  // } else {
-  //   next('/')
-  // }
   next()
 })
 
