@@ -3,7 +3,7 @@
     <div class="comment-item" v-for="item in commentData" :key="item.id">
       <div>
         <a href="#" class="user-head">
-          <img :src="item.uFace" />
+          <img v-lazy="item.uFace" />
         </a>
       </div>
       <div class="user-comment">
@@ -50,7 +50,11 @@
               />
             </svg>
           </span>
-          <span class="reply" @click="reply(item.id, { id: item.uId, name: item.uName })">回复</span>
+          <span
+            class="reply"
+            @click="reply(item.id, { id: item.uId, name: item.uName })"
+            >回复</span
+          >
 
           <div
             class="more icon icon-ellipsis"
@@ -78,7 +82,12 @@
           :deleteComment="deleteComment"
           :user_id="user_id"
         />
-        <CommentInput v-if="inputId === item.id" v-model="subCommentText" :submitComment="makeSubComment" ref="input" />
+        <CommentInput
+          v-if="inputId === item.id"
+          v-model="subCommentText"
+          :submitComment="makeSubComment"
+          ref="input"
+        />
       </div>
     </div>
   </div>
@@ -89,12 +98,12 @@ export default {
   props: {
     commentData: { type: Array, default: () => [] },
     watchCommentHeight: { type: Function },
-    submitComment: { type: Function, default: () => {} },
+    submitComment: { type: Function, default: () => { } },
     getSubComment: { type: Function },
     deleteComment: { type: Function },
     user_id: Number
   },
-  data() {
+  data () {
     return {
       inputId: undefined,
       replyUId: undefined,
@@ -105,7 +114,7 @@ export default {
     commentData: {
       immediate: true,
       deep: true,
-      handler() {
+      handler () {
         this.$nextTick(() => {
           this.watchComment()
         })
@@ -113,15 +122,15 @@ export default {
     }
   },
   methods: {
-    showSwitch(e, type) {
+    showSwitch (e, type) {
       e.target.firstChild.style = `display: ${type ? 'block' : 'none'};`
     },
     /* text 转 html */
-    textToHtml(text) {
+    textToHtml (text) {
       return text.replace(/ /g, '&#160;').replace(/\n/g, '<br />')
     },
     /* 回复 */
-    reply(mainCommentId, reply_user) {
+    reply (mainCommentId, reply_user) {
       // console.log('mainCommentId', mainCommentId)
       this.inputId = mainCommentId
       this.replyUId = reply_user.id
@@ -132,25 +141,25 @@ export default {
       })
     },
     /* 发表二级评论 */
-    makeSubComment() {
+    makeSubComment () {
       if (this.subCommentText.trim()) {
         this.$emit('submitComment', this.subCommentText, this.replyUId, this.inputId)
         this.subCommentText = ''
         this.inputId = undefined
       }
     },
-    watchComment() {
+    watchComment () {
       const docHeight = (document.documentElement || document.body).clientHeight
       // console.log(docHeight, this.$refs.clientHeight)
       const flag = this.$refs['comment-items'].clientHeight > docHeight ? true : false
       this.$emit('watchCommentHeight', flag)
     },
-    clearInputId() {
+    clearInputId () {
       this.inputId = undefined
     }
   },
   filters: {
-    timeFormat(time) {
+    timeFormat (time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -160,15 +169,15 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0(val) {
+      function add0 (val) {
         return val < 10 ? '0' + val : val
       }
     }
   },
-  mounted() {
+  mounted () {
     window.addEventListener('resize', this.watchComment)
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.removeEventListener('resize', this.watchComment)
   },
   components: {

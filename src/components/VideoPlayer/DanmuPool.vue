@@ -33,7 +33,7 @@ export default {
       // 弹幕容器
       container: null,
       // 自定义样式
-      cssLsit: ['color', 'font-size']
+      cssList: ['color', 'font-size']
     }
   },
   watch: {
@@ -63,11 +63,11 @@ export default {
           // animation 完成后的初始化动作
           span.addEventListener('animationend', () => {
             span.style.animationName = ''
-            span.style.transform = `translateX(-100%)`
+            span.style.transform = `translate3d(-100%, 0, 0)`
             span.style.border = 'none'
 
             // 清空自定义样式
-            this.cssLsit.forEach((key) => {
+            this.cssList.forEach((key) => {
               span.style[key] = null
             })
 
@@ -176,7 +176,7 @@ export default {
         const keys = Object.keys(danmu.style)
         keys.forEach((key) => {
           // 检查样式合法性
-          if (this.cssLsit.includes(key)) {
+          if (this.cssList.includes(key)) {
             span.style[key] = danmu.style[key]
           }
         })
@@ -190,7 +190,7 @@ export default {
       // 添加动画效果
       span.style.animationName = 'danmu-roll'
       // 起始从屏幕右侧切入
-      span.style.transform = `translateX(${this.container.clientWidth}px)`
+      span.style.transform = `translate3d(${this.container.clientWidth}px, 0, 0)`
       span.style.animationDuration = `${domItem.duration}s`
 
       // 弹幕右侧完全进入容器后，才能开始放下一条
@@ -237,7 +237,7 @@ export default {
         span.style.visibility = 'hidden'
 
         // 清空自定义样式
-        this.cssLsit.forEach((key) => {
+        this.cssList.forEach((key) => {
           span.style[key] = null
         })
 
@@ -261,7 +261,7 @@ export default {
         const keys = Object.keys(danmu.style)
         keys.forEach((key) => {
           // 检查样式合法性
-          if (this.cssLsit.includes(key)) {
+          if (this.cssList.includes(key)) {
             span.style[key] = danmu.style[key]
           }
         })
@@ -359,12 +359,12 @@ export default {
     font-size: 23px;
     padding: 0 4px 0 2px;
     animation-timing-function: linear;
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 
   @keyframes danmu-roll {
     100% {
-      transform: translateX(-100%);
+      transform: translate3d(-100%, 0, 0);
     }
   }
 

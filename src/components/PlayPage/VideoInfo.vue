@@ -1,17 +1,19 @@
 <template>
   <div class="video-info-wrapper">
     <div class="video-info">
-      <img :src="playData.img" />
+      <img v-lazy="playData.img" />
       <div class="video-info-right">
         <div class="media-tool-bar">
           <a href="#">{{ playData.title }}</a>
         </div>
-        <div
-          class="video-count"
-        >{{ playData.pCount | numFormat }}播放 · {{ playData.dCount | numFormat }}弹幕 · {{ playData.cCount | numFormat }}追番</div>
+        <div class="video-count">
+          {{ playData.pCount | numFormat }}播放 ·
+          {{ playData.dCount | numFormat }}弹幕 ·
+          {{ playData.cCount | numFormat }}追番
+        </div>
         <div class="pub-wrapper">
           <a href="#">{{ playData.type }}</a>
-          <div class="pub-info">{{ playData.status ? '完结' : '连载中' }}</div>
+          <div class="pub-info">{{ playData.status ? "完结" : "连载中" }}</div>
         </div>
         <a href="#">{{ playData.description }}</a>
         <div class="video-rating">

@@ -1,7 +1,7 @@
 <template>
   <div class="comment-input">
     <div class="user-face">
-      <img :src="face" />
+      <img v-lazy="face" />
     </div>
     <div class="textarea-input" :class="{ 'border-bottom': borderb }">
       <textarea
@@ -14,7 +14,7 @@
       ></textarea>
       <div class="textarea to-login" v-else>
         请先
-        <a href="/login" style="color: #FF6B6B">登录</a>
+        <a href="/login" style="color: #ff6b6b">登录</a>
       </div>
       <button @click="submitComment">发表评论</button>
     </div>
@@ -36,7 +36,7 @@ export default {
   },
   data () {
     return {
-      face: require('../../images/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'),
+      face: this.$store.state.user_face,
       placeholder: '请输入你要发表的评论'
     }
   },

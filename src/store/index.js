@@ -3,16 +3,19 @@ import Vuex from 'vuex'
 
 import { getLocal, setLocal, delLocl } from '../assets/js/storage'
 
+const ease_token = getLocal('ease_token') || {}
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: getLocal('ease_token')?.token,
-    user_id: getLocal('ease_token')?.id
+    token: ease_token?.token || '',
+    user_id: ease_token?.id || '',
+    user_face: 'http://localhost:3000/img/head/70a44598a0fc5c3f3539dd2e22890f674e0b8678.png@144w_144h.webp'
   },
   getters: {
     isLogin(state) {
-      return state.token == null ? false : true
+      return state.token ? true : false
     }
   },
   mutations: {
@@ -22,8 +25,8 @@ export default new Vuex.Store({
       setLocal('ease_token', data)
     },
     delToken(state) {
-      state.token = undefined
-      state.user_id = undefined
+      state.token = ''
+      state.user_id = ''
       delLocl('ease_token')
     }
   },

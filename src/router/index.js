@@ -9,48 +9,48 @@ const routes = [
   {
     path: '/',
     name: 'Index',
-    component: () => import('../views/index-page')
+    component: () => import('../views/IndexPage')
   },
   {
     path: '/play/:id',
     name: 'Play',
-    component: () => import('../views/play-page')
+    component: () => import('../views/PlayPage')
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/login-page'),
+    component: () => import('../views/LoginPage'),
     beforeEnter: requireUnLogin
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('../views/register-page'),
+    component: () => import('../views/RegisterPage'),
     beforeEnter: requireUnLogin
   },
   {
     path: '/anime/index',
     name: 'Indexes',
-    component: () => import('../views/indexes-page'),
+    component: () => import('../views/IndexesPage'),
     meta: { title: '番剧索引 - 悠哉悠哉在线动漫网（*＾ワ＾*）' },
     beforeEnter: setTitle
   },
   {
     path: '/search',
     name: 'Search',
-    component: () => import('../views/search-page')
+    component: () => import('../views/SearchPage')
   },
   {
     path: '/history',
     name: 'History',
-    component: () => import('../views/history-page'),
+    component: () => import('../views/HistoryPage'),
     meta: { title: '历史记录 - 悠哉悠哉在线动漫网（*＾ワ＾*）' },
     beforeEnter: setTitle
   },
   {
     path: '*',
-    name: '404',
-    component: () => import('../views/404-page')
+    name: 'NotFound',
+    component: () => import('../views/NotFound')
   }
 ]
 

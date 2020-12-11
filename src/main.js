@@ -3,9 +3,16 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import './assets/fonts/style.css'
+import '@/assets/css/icomoon.css'
+import '@/directive/index'
 
-import { getLocal } from './assets/js/storage'
+import VueLazyload from 'vue-lazyload'
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: 'http://localhost:3000/img/img_loading.png',
+  loading: 'http://localhost:3000/img/img_loading.png',
+  attempt: 1
+})
 
 import axios from 'axios'
 axios.interceptors.request.use((config) => {
@@ -15,20 +22,6 @@ axios.interceptors.request.use((config) => {
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
-
-Vue.directive('top-toast', {
-  inserted(el, { value }) {
-    el.style.position = 'relative'
-    const parent = document.querySelector(`#${value}`).getBoundingClientRect()
-    const child = el.children[0].getBoundingClientRect()
-
-    if (child.right > parent.right) {
-      el.children[0].style.left = `calc(50% - ${child.right - parent.right + 5}px)`
-    } else if (child.left < parent.left) {
-      el.children[0].style.left = `calc(50% + ${parent.left - child.left + 5}px)`
-    }
-  }
-})
 
 new Vue({
   router,

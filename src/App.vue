@@ -1,10 +1,6 @@
 <template>
   <div id="app">
-    <!-- <div class="container" ref="container"> -->
-    <!-- <div class="side-box">
-        <SideNav />
-    </div>-->
-    <div class="page-box" @mousedown="toggleNavNarrow" ref="page">
+    <div class="page-box">
       <Header />
       <keep-alive>
         <router-view />
@@ -12,37 +8,15 @@
       <Footer />
     </div>
   </div>
-  <!-- </div> -->
 </template>
 
 <script>
-import Header from './components/Header'
-import SideNav from './components/SideNav/SideNav'
-import Footer from './components/Footer'
-
-import { mapMutations } from 'vuex'
+import Header from './views/Header'
+import Footer from './views/Footer'
 
 export default {
-  computed: {
-    classList () {
-      if (this.$store.state.hideNav) {
-        // return this.$store.state.narrowNav ? 'hide-side hide' : 'hide-side'
-      } else {
-        // return this.$store.state.narrowNav ? 'narrow' : ''
-      }
-    }
-  },
-  methods: {
-    ...mapMutations(['toggleNavNarrow', 'toggleNavHide']),
-    toggleNavNarrow () {
-      if (this.$store.state.hideNav) {
-        this.$store.commit('toggleNavNarrow', true)
-      }
-    }
-  },
   components: {
     Header,
-    SideNav,
     Footer
   }
 }
@@ -95,11 +69,10 @@ textarea {
 }
 
 button,
-input[type="button"], 
+input[type="button"],
 input[type="checkbox"] {
   cursor: pointer;
 }
-
 
 [tabindex] {
   outline: none;

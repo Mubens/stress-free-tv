@@ -1,25 +1,26 @@
 function setLocal(key, value) {
-  window.localStorage.setItem(key, JSON.stringify(value))
+  localStorage.setItem(key, JSON.stringify(value))
 }
 
 function getLocal(key) {
-  return JSON.parse(window.localStorage.getItem(key))
+  const str = localStorage.getItem(key)
+  return str === 'undefined' ? str : JSON.parse(str)
 }
 
 function delLocl(key) {
-  window.localStorage.removeItem(key)
+  localStorage.removeItem(key)
 }
 
 function setSession(key, value) {
-  window.sessionStorage.setItem(key, JSON.stringify(value))
+  sessionStorage.setItem(key, JSON.stringify(value))
 }
 
 function getSession(key) {
-  return JSON.parse(window.sessionStorage.getItem(key))
+  return JSON.parse(sessionStorage.getItem(key))
 }
 
 function delSession(key) {
-  window.sessionStorage.removeItem(key)
+  sessionStorage.removeItem(key)
 }
 
 module.exports = {

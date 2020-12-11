@@ -9,13 +9,15 @@
     >
       <div class="user-head">
         <a href="#">
-          <img :src="item.uFace" />
+          <img v-lazy="item.uFace" />
         </a>
       </div>
       <div class="user-comment">
         <span class="user-name">
           <a class="name" href="#">{{ item.uName }}</a>
-          <a class="at" href="#" v-if="mainUser !== item.ruId">@{{ item.ruName }}</a>
+          <a class="at" href="#" v-if="mainUser !== item.ruId"
+            >@{{ item.ruName }}</a
+          >
         </span>
         <span class="comment" v-html="textToHtml(item.content)"></span>
         <div class="info">
@@ -57,7 +59,10 @@
               />
             </svg>
           </span>
-          <span class="reply" v-if="item.uId !== user_id" @click="reply(mainCId, { id: item.uId, name: item.uName })"
+          <span
+            class="reply"
+            v-if="item.uId !== user_id"
+            @click="reply(mainCId, { id: item.uId, name: item.uName })"
             >回复</span
           >
           <div
@@ -78,7 +83,10 @@
       </div>
     </div>
     <!-- 分页 -->
-    <div class="see-more" v-if="subCommentData.limit === 3 && subCommentData.total > 3">
+    <div
+      class="see-more"
+      v-if="subCommentData.limit === 3 && subCommentData.total > 3"
+    >
       共{{ subCommentData.total }}条回复，
       <span class="more-btn" @click="getSubComment(mainCId, 1)">点击查看</span>
     </div>
@@ -95,7 +103,7 @@
 <script>
 export default {
   props: {
-    subCommentData: { type: Object, default: () => {} },
+    subCommentData: { type: Object, default: () => { } },
     textToHtml: { type: Function },
     mainCId: { type: Number },
     mainUser: { type: Number },
@@ -105,7 +113,7 @@ export default {
     deleteComment: Function,
     user_id: Number
   },
-  data() {
+  data () {
     return {
       currentPage: 1,
       showAllComment: false,
@@ -113,14 +121,14 @@ export default {
     }
   },
   methods: {
-    getMainComment(page) {
+    getMainComment (page) {
       this.currentPage = page
       this.getSubComment(this.mainCId, page)
     },
-    seeMore() {}
+    seeMore () { }
   },
   filters: {
-    timeFormat(time) {
+    timeFormat (time) {
       const date = new Date(time)
       const Y = date.getFullYear()
       const M = add0(date.getMonth() + 1)
@@ -130,7 +138,7 @@ export default {
 
       return `${Y}-${M}-${D} ${h}:${m}`
 
-      function add0(val) {
+      function add0 (val) {
         return val < 10 ? '0' + val : val
       }
     }
